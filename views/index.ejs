@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>Mockable Express</title>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <td>
+          <a href="/domain"> View Domain </a>
+        </td>
+        <td>
+          <a href="/add"> Add New </a>
+        </td>
+        <td>
+          <a href="/restart"> Restart </a>
+        </td>
+      </tr>
+    </table>
+
+    <% if(endpoints !== null && endpoints.length !== 0){ %>
+    <table border="1">
+      <thead>
+        <th>path</th>
+        <th>method</th>
+        <th>Actions</th>
+      </thead>
+      <tbody>
+        <% endpoints.forEach(function(endpoint,index){ %>
+        <tr>
+          <td><%= endpoint.domain%><%= endpoint.path%></td>
+          <td><%= endpoint.method%></td>
+          <td>
+            <a href="/edit/<%=index%>">Edit</a>
+            <a href="/delete/<%=index%>">Delete</a>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <% } %>
+  </body>
+</html>

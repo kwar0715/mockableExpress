@@ -1,0 +1,60 @@
+<html>
+  <head>
+    <title>Mockable Express - Edit Endpoint</title>
+  </head>
+  <body>
+    <h2>
+      Edit End Point
+    </h2>
+    <form method="POST" action='/edit/<%=id%>'>
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              Path : <%= domain%>
+            </td>
+            <td>
+              <input name="path" value="<%= path%>" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Method :
+            </td>
+            <td>
+              <div id="method">
+                <select name="method">
+                  <option value="get" <%=get%>>Get</option>
+                  <option value="post" <%=post%>>Post</option>
+                  <option value="put" <%=put%>>Put</option>
+                  <option value="delete" <%=del%>>Delete</option>
+                </select>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Header :
+            </td>
+            <td>
+              <textarea rows="4" cols="50" name="header"><%=JSON.stringify(header)%></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Body :
+            </td>
+            <td>
+              <textarea rows="4" cols="50" name="body"><%=body%></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="submit" value="Submit" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </body>
+</html>

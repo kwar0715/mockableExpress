@@ -1,0 +1,1 @@
+{"time":"2019-04-06T12:34:56.189Z","env":"LOCAL","level":"error","message":"Retrive Domain Data {Error: DataError: Can't find dataPath: /domains. Stopped at domains}","charCount":89}

@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <title>Mockable Express</title>
+    <script>
+        function deletePath(domainId,pathID) {
+          var result = confirm("Do You Want to delete?");
+                    if(result){
+                      window.location.href=`/domain/paths/${domainId}/${pathID}/delete`;
+                    }
+        }
+    </script>
+  </head>
+  <body>
+    <h2>Domain : <%= domainName%></h2>
+    <table>
+      <tr>
+        <td>
+          <input
+            type="button"
+            onClick="location.href='/domain'"
+            value="Domains"
+          />
+          <input
+            type="button"
+            onClick="location.href='/domain/paths/<%=domainId%>/new'"
+            value="New Path"
+          />
+        </td>
+      </tr>
+    </table>
+
+    <% if(endpoints !== null && endpoints.length !== 0){ %>
+    <table border="1">
+      <thead>
+        <th>path</th>
+        <th>method</th>
+        <th>Actions</th>
+      </thead>
+      <tbody>
+        <% endpoints.forEach(function(endpoint,index){ %>
+        <tr>
+          <td><%= endpoint.domain%><%= endpoint.path%></td>
+          <td><%= endpoint.method%></td>
+          <td>
+            <input
+              type="button"
+              onClick="location.href='/domain/paths/<%=domainId%>/<%=index%>/edit'"
+              value="Edit"
+            />
+            <input
+            type="button"
+            onClick="deletePath(<%=domainId%>,<%=index%>)"
+            value="Delete"
+            />
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <% } %>
+  </body>
+</html>

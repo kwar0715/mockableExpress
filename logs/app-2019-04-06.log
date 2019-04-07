@@ -1,0 +1,16 @@
+{"time":"2019-04-06T11:13:53.604Z","env":"LOCAL","level":"info","message":"Domain Saved {name: /FG}","charCount":24}
+{"time":"2019-04-06T11:14:44.120Z","env":"LOCAL","level":"info","message":"Domain Saved {name: /g}","charCount":23}
+{"time":"2019-04-06T11:14:49.131Z","env":"LOCAL","level":"info","message":"Domain Saved {name: /g}","charCount":23}
+{"time":"2019-04-06T11:15:16.412Z","env":"LOCAL","level":"info","message":"Domain Saved {name: /K}","charCount":23}
+{"time":"2019-04-06T12:34:56.189Z","env":"LOCAL","level":"error","message":"Retrive Domain Data {Error: DataError: Can't find dataPath: /domains. Stopped at domains}","charCount":89}
+{"time":"2019-04-06T12:35:00.079Z","env":"LOCAL","level":"info","message":"Domain Saved {name: /a}","charCount":23}
+{"time":"2019-04-06T12:35:58.907Z","env":"LOCAL","level":"info","message":"Load Domains : [object Object]","charCount":30}
+{"time":"2019-04-06T12:36:10.961Z","env":"LOCAL","level":"info","message":"Domain Saved {name: /QA}","charCount":24}
+{"time":"2019-04-06T12:37:01.358Z","env":"LOCAL","level":"info","message":"Load Domains : [object Object],[object Object]","charCount":46}
+{"time":"2019-04-06T12:37:27.643Z","env":"LOCAL","level":"info","message":"Domain Saved {name: /Dev}","charCount":25}
+{"time":"2019-04-06T12:37:49.149Z","env":"LOCAL","level":"info","message":"Load Domains : [object Object],[object Object],[object Object]","charCount":62}
+{"time":"2019-04-06T12:37:54.957Z","env":"LOCAL","level":"info","message":"Domain Saved {name: /C}","charCount":23}
+{"time":"2019-04-06T12:37:54.965Z","env":"LOCAL","level":"info","message":"Load Domains : [object Object],[object Object],[object Object],[object Object]","charCount":78}
+{"time":"2019-04-06T12:40:42.825Z","env":"LOCAL","level":"info","message":"Load Domains : [object Object],[object Object],[object Object],[object Object]","charCount":78}
+{"time":"2019-04-06T12:45:07.663Z","env":"LOCAL","level":"info","message":"Load Domains : [object Object],[object Object],[object Object],[object Object]","charCount":78}
+{"time":"2019-04-06T12:51:06.528Z","env":"LOCAL","level":"info","message":"Load Domains : [{\"domain\":\"/a\",\"paths\":[]},{\"domain\":\"/QA\",\"paths\":[]},{\"domain\":\"/Dev\",\"paths\":[]},{\"domain\":\"/C\",\"paths\":[]}]","charCount":127}
