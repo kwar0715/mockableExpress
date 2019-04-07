@@ -1,7 +1,7 @@
 const express = require("express");
 const pathRouter = express.Router();
-const Database = require("../api/db");
-const Logger = require("../api/logger");
+const Database = require("../framework/db");
+const Logger = require("../framework/logger");
 
 pathRouter.get("/:domainId", function(req, res) {
   const domainId = req.params.domainId;
@@ -48,8 +48,10 @@ pathRouter.post("/:domainId/new", function(req, res) {
   let header;
   try {
     header = JSON.parse(req.body.header);
+    let path = req.body.path;
+    path = path.startsWith('/') ? path : `/${path}`
     const record = {
-      path: req.body.path,
+      path: path,
       method: req.body.method,
       header: header,
       body: req.body.body
@@ -119,8 +121,10 @@ pathRouter.post('/:domainId/:pathId/edit',function(req,res){
 
   try {
     const header = JSON.parse(req.body.header);
+    let path = req.body.path;
+    path = path.startsWith('/') ? path : `/${path}`
     const record = {
-      path: req.body.path,
+      path: path,
       method: req.body.method,
       header: header,
       body: req.body.body

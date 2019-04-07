@@ -792,3 +792,28 @@
 {"time":"2019-04-07T15:07:36.476Z","env":"LOCAL","level":"info","message":"Domain View {Id: 0,domains:{\"domainName\":\"/QA\",\"domainId\":\"0\",\"endpoints\":[{\"path\":\"/b\",\"method\":\"get\",\"header\":{\"Content-Type\":\"application/json\"},\"body\":\" bb\"}]}}","charCount":164}
 {"time":"2019-04-07T15:07:38.422Z","env":"LOCAL","level":"info","message":"Domain View {Id: 0,domains:{\"domainName\":\"/QA\",\"domainId\":\"0\",\"endpoints\":[{\"path\":\"/b\",\"method\":\"get\",\"header\":{\"Content-Type\":\"application/json\"},\"body\":\" bb\"}]}}","charCount":164}
 {"time":"2019-04-07T15:07:40.426Z","env":"LOCAL","level":"info","message":"Domain New Path View {Id: 0,domains:{\"domainName\":\"/QA\",\"domainId\":\"0\"}}","charCount":72}
+{"time":"2019-04-07T15:49:42.060Z","env":"LOCAL","level":"info","message":"Start Listening at 3000","charCount":23}
+{"time":"2019-04-07T15:50:25.839Z","env":"LOCAL","level":"error","message":"Retrive Domain Data {Error: DataError: Can't find dataPath: /domains. Stopped at domains}","charCount":89}
+{"time":"2019-04-07T15:50:36.153Z","env":"LOCAL","level":"info","message":"Domain Saved {name: /Dev}","charCount":25}
+{"time":"2019-04-07T15:50:36.158Z","env":"LOCAL","level":"info","message":"Load Domains : [{\"domain\":\"/Dev\",\"paths\":[]}]","charCount":45}
+{"time":"2019-04-07T15:50:49.156Z","env":"LOCAL","level":"info","message":"Domain Saved {name: /QA}","charCount":24}
+{"time":"2019-04-07T15:50:49.170Z","env":"LOCAL","level":"info","message":"Load Domains : [{\"domain\":\"/Dev\",\"paths\":[]},{\"domain\":\"/QA\",\"paths\":[]}]","charCount":73}
+{"time":"2019-04-07T15:53:56.512Z","env":"LOCAL","level":"info","message":"Start Listening at 3000","charCount":23}
+{"time":"2019-04-07T15:53:59.061Z","env":"LOCAL","level":"info","message":"Load Domains : [{\"domain\":\"/Dev\",\"paths\":[]},{\"domain\":\"/QA\",\"paths\":[]}]","charCount":73}
+{"time":"2019-04-07T15:54:03.347Z","env":"LOCAL","level":"info","message":"Domain Saved {name: /kap}","charCount":25}
+{"time":"2019-04-07T15:54:03.354Z","env":"LOCAL","level":"info","message":"Load Domains : [{\"domain\":\"/Dev\",\"paths\":[]},{\"domain\":\"/QA\",\"paths\":[]},{\"domain\":\"/kap\",\"paths\":[]}]","charCount":102}
+{"time":"2019-04-07T15:56:09.601Z","env":"LOCAL","level":"info","message":"Start Listening at 3000","charCount":23}
+{"time":"2019-04-07T15:56:11.588Z","env":"LOCAL","level":"info","message":"Load Domains : [{\"domain\":\"/Dev\",\"paths\":[]},{\"domain\":\"/QA\",\"paths\":[]},{\"domain\":\"/kap\",\"paths\":[]}]","charCount":102}
+{"time":"2019-04-07T15:56:13.808Z","env":"LOCAL","level":"info","message":"Domain Edit View Loaded {name: {\"domains\":[{\"domain\":\"/Dev\",\"paths\":[]},{\"domain\":\"/QA\",\"paths\":[]},{\"domain\":\"/kap\",\"paths\":[]}],\"editable\":{\"domain\":\"/Dev\",\"paths\":[]},\"id\":\"0\",\"_locals\":{}}}","charCount":193}
+{"time":"2019-04-07T15:56:58.378Z","env":"LOCAL","level":"info","message":"Start Listening at 3000","charCount":23}
+{"time":"2019-04-07T15:57:00.502Z","env":"LOCAL","level":"info","message":"Load Domains : [{\"domain\":\"/Dev\",\"paths\":[]},{\"domain\":\"/QA\",\"paths\":[]},{\"domain\":\"/kap\",\"paths\":[]}]","charCount":102}
+{"time":"2019-04-07T15:57:01.937Z","env":"LOCAL","level":"info","message":"Domain Edit View Loaded {name: {\"domains\":[{\"domain\":\"/Dev\",\"paths\":[]},{\"domain\":\"/QA\",\"paths\":[]},{\"domain\":\"/kap\",\"paths\":[]}],\"editable\":{\"domain\":\"/Dev\",\"paths\":[]},\"id\":\"0\",\"_locals\":{}}}","charCount":193}
+{"time":"2019-04-07T15:57:07.318Z","env":"LOCAL","level":"info","message":"Domain Edited {Id: 0, current name:/Dev }","charCount":41}
+{"time":"2019-04-07T15:57:07.324Z","env":"LOCAL","level":"info","message":"Load Domains : [{\"domain\":\"/Dev\",\"paths\":[]},{\"domain\":\"/QA\",\"paths\":[]},{\"domain\":\"/kap\",\"paths\":[]}]","charCount":102}
+{"time":"2019-04-07T15:57:11.875Z","env":"LOCAL","level":"info","message":"Domain Deleted {Id: 2}","charCount":22}
+{"time":"2019-04-07T15:57:11.878Z","env":"LOCAL","level":"info","message":"Load Domains : [{\"domain\":\"/Dev\",\"paths\":[]},{\"domain\":\"/QA\",\"paths\":[]}]","charCount":73}
+{"time":"2019-04-07T15:57:12.977Z","env":"LOCAL","level":"info","message":"Domain View {Id: 0,domains:{\"domainName\":\"/Dev\",\"domainId\":\"0\",\"endpoints\":[]}}","charCount":79}
+{"time":"2019-04-07T15:57:14.286Z","env":"LOCAL","level":"info","message":"Domain New Path View {Id: 0,domains:{\"domainName\":\"/Dev\",\"domainId\":\"0\"}}","charCount":73}
+{"time":"2019-04-07T15:57:19.919Z","env":"LOCAL","level":"info","message":"Domain New Path Added {Id: 0,domains:{\"path\":\"/ty\",\"method\":\"get\",\"header\":{\"Content-Type\":\"application/json\"},\"body\":\" s\"}}","charCount":124}
+{"time":"2019-04-07T15:57:19.928Z","env":"LOCAL","level":"info","message":"Domain View {Id: 0,domains:{\"domainName\":\"/Dev\",\"domainId\":\"0\",\"endpoints\":[{\"path\":\"/ty\",\"method\":\"get\",\"header\":{\"Content-Type\":\"application/json\"},\"body\":\" s\"}]}}","charCount":165}
+{"time":"2019-04-07T15:57:22.495Z","env":"LOCAL","level":"info","message":"Domain Edit Path {id : 0/0,pathinfo:{\"path\":\"/ty\",\"method\":\"get\",\"header\":{\"Content-Type\":\"application/json\"},\"body\":\" s\",\"get\":\"selected\",\"post\":null,\"put\":null,\"del\":null,\"pathId\":\"0\",\"domainId\":\"0\",\"domainName\":\"/Dev\"}}","charCount":222}

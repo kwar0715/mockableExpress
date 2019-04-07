@@ -1,7 +1,7 @@
 const express = require("express");
 const domainRouter = express.Router();
-const Database = require("../api/db");
-const Logger = require("../api/logger");
+const Database = require("../framework/db");
+const Logger = require("../framework/logger");
 
 // view domains
 domainRouter.get("/", function(req, res) {
@@ -17,8 +17,9 @@ domainRouter.get("/", function(req, res) {
 
 domainRouter.post("/add", function(req, res) {
   try {
-    const name = req.body.domainName;
+    let name = req.body.domainName;
     if (name === "") throw new Error("Neme is null");
+    name = name.startsWith('/') ? name : `/${name}`;
     Database.addDomain(name);
     Logger.info(`Domain Saved {name: ${name}}`);
   } catch (error) {
@@ -47,12 +48,13 @@ domainRouter.get("/edit/:domainId", function(req, res) {
 
 domainRouter.post("/edit/:domainId", function(req, res) {
   const domainId = req.params.domainId;
-  const currentName = req.body.domainName;
+  let name = req.body.domainName;
+  name = name.startsWith('/') ? name : `/${name}`
   try {
-    Database.updateDomaiName(domainId, currentName);
+    Database.updateDomaiName(domainId, name);
 
     Logger.info(
-      `Domain Edited {Id: ${domainId}, current name:${currentName} }`
+      `Domain Edited {Id: ${domainId}, current name:${name} }`
     );
   } catch (error) {
     Logger.error(`Domain Edited Error {id : ${domainId}, error ${error}}`);

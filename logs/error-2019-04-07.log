@@ -555,3 +555,4 @@
 {"time":"2019-04-07T09:36:53.657Z","env":"LOCAL","level":"error","message":"Domain Paths View Error {id : 0}, error:TypeError: Converting circular structure to JSON","charCount":88}
 {"time":"2019-04-07T09:36:53.660Z","env":"LOCAL","level":"error","message":"Domain Paths View Error {id : 0}, error:TypeError: Converting circular structure to JSON","charCount":88}
 {"time":"2019-04-07T09:36:53.664Z","env":"LOCAL","level":"error","message":"Domain Paths View Error {id : 0}, error:TypeError: Converting circular structure to JSON","charCount":88}
+{"time":"2019-04-07T15:50:25.839Z","env":"LOCAL","level":"error","message":"Retrive Domain Data {Error: DataError: Can't find dataPath: /domains. Stopped at domains}","charCount":89}
