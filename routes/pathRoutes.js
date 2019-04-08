@@ -2,6 +2,7 @@ const express = require("express");
 const pathRouter = express.Router();
 const Database = require("../framework/db");
 const Logger = require("../framework/logger");
+const Server = require("../framework/server");
 
 pathRouter.get("/:domainId", function(req, res) {
   const domainId = req.params.domainId;
@@ -47,9 +48,10 @@ pathRouter.post("/:domainId/new", function(req, res) {
   const domainId = req.params.domainId;
   let header;
   try {
+    const domainName = Database.getDomainFromId(domainId).domain;
     header = JSON.parse(req.body.header);
     let path = req.body.path;
-    path = path.startsWith('/') ? path : `/${path}`
+    path = path.startsWith("/") ? path : `/${path}`;
     const record = {
       path: path,
       method: req.body.method,
@@ -58,6 +60,7 @@ pathRouter.post("/:domainId/new", function(req, res) {
     };
 
     Database.addPath(domainId, record);
+    Server().createEndpoint(domainName, record);
     Logger.info(
       `Domain New Path Added {Id: ${domainId},domains:${JSON.stringify(
         record
@@ -110,19 +113,22 @@ pathRouter.get("/:domainId/:pathId/edit", function(req, res) {
     );
     res.render(`paths/editPath`, assignedData);
   } catch (error) {
-    Logger.error(`Domain Edit Path Error {id : ${domainId}/${pathId}, error:${error}}`);
+    Logger.error(
+      `Domain Edit Path Error {id : ${domainId}/${pathId}, error:${error}}`
+    );
     res.redirect(`/domain/paths/${domainId}`);
   }
 });
 
-pathRouter.post('/:domainId/:pathId/edit',function(req,res){
+pathRouter.post("/:domainId/:pathId/edit", function(req, res) {
   const domainId = req.params.domainId;
-  const pathId =req.params.pathId;
+  const pathId = req.params.pathId;
 
   try {
+    const domainName = Database.getDomainFromId(domainId).domain;
     const header = JSON.parse(req.body.header);
     let path = req.body.path;
-    path = path.startsWith('/') ? path : `/${path}`
+    path = path.startsWith("/") ? path : `/${path}`;
     const record = {
       path: path,
       method: req.body.method,
@@ -130,35 +136,40 @@ pathRouter.post('/:domainId/:pathId/edit',function(req,res){
       body: req.body.body
     };
 
-    Database.updatePath(domainId,pathId, record);
+    Server().removeRoute(`${domainName}${path}`, record.method);
+    Server().createEndpoint(domainName, record);
+    Database.updatePath(domainId, pathId, record);
     Logger.info(
-      `Domain New Path Added {id : ${domainId}/${pathId},domains:${JSON.stringify(
+      `Domain Path Edited {id : ${domainId}/${pathId},domains:${JSON.stringify(
         record
       )}}`
     );
   } catch (error) {
     Logger.error(
-      `Domain New Path Added Error {id : ${domainId}/${pathId}, error:${error}}`
+      `Domain Path Edited Error {id : ${domainId}/${pathId}, error:${error}}`
     );
   }
   res.redirect(`/domain/paths/${domainId}`);
-})
+});
 
-pathRouter.get('/:domainId/:pathId/delete',function(req,res){
-    const domainId = req.params.domainId;
-    const pathId =req.params.pathId;
-  
-    try {
-      Database.deletePath(domainId,pathId);
-      Logger.info(
-        `Domain Path Deleted {id : ${domainId}/${pathId}}`
-      );
-    } catch (error) {
-      Logger.error(
-        `Domain Path Deleted Error {id : ${domainId}/${pathId}, error:${error}}`
-      );
-    }
-    res.redirect(`/domain/paths/${domainId}`);
-  })
+pathRouter.get("/:domainId/:pathId/delete", function(req, res) {
+  const domainId = req.params.domainId;
+  const pathId = req.params.pathId;
+
+  try {
+    const domain = Database.getDomainFromId(domainId);
+    const path = Database.getPath(domainId, pathId);
+
+    Server().removeRoute(`${domain.domain}${path.path}`, path.method);
+    Database.deletePath(domainId, pathId);
+
+    Logger.info(`Domain Path Deleted {id : ${domain.domain}${path.path}}`);
+  } catch (error) {
+    Logger.error(
+      `Domain Path Deleted Error {id : ${domainId}:${pathId}, error:${error}}`
+    );
+  }
+  res.redirect(`/domain/paths/${domainId}`);
+});
 
 module.exports = pathRouter;

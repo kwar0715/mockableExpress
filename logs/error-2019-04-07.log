@@ -556,3 +556,12 @@
 {"time":"2019-04-07T09:36:53.660Z","env":"LOCAL","level":"error","message":"Domain Paths View Error {id : 0}, error:TypeError: Converting circular structure to JSON","charCount":88}
 {"time":"2019-04-07T09:36:53.664Z","env":"LOCAL","level":"error","message":"Domain Paths View Error {id : 0}, error:TypeError: Converting circular structure to JSON","charCount":88}
 {"time":"2019-04-07T15:50:25.839Z","env":"LOCAL","level":"error","message":"Retrive Domain Data {Error: DataError: Can't find dataPath: /domains. Stopped at domains}","charCount":89}
+{"time":"2019-04-07T16:39:49.783Z","env":"LOCAL","level":"error","message":"Domain Path Edited Error {id : 0/0, error:ReferenceError: createEndpoint is not defined}","charCount":88}
+{"time":"2019-04-07T16:39:58.076Z","env":"LOCAL","level":"error","message":"Domain Path Edited Error {id : 0/0, error:ReferenceError: createEndpoint is not defined}","charCount":88}
+{"time":"2019-04-07T16:40:19.017Z","env":"LOCAL","level":"error","message":"Domain Path Edited Error {id : 0/0, error:ReferenceError: createEndpoint is not defined}","charCount":88}
+{"time":"2019-04-07T16:58:50.592Z","env":"LOCAL","level":"error","message":"Domain Path Edited Error {id : 0/0, error:ReferenceError: app is not defined}","charCount":77}
+{"time":"2019-04-07T16:59:57.692Z","env":"LOCAL","level":"error","message":"Domain Path Edited Error {id : 0/0, error:ReferenceError: app is not defined}","charCount":77}
+{"time":"2019-04-07T17:09:20.029Z","env":"LOCAL","level":"error","message":"Domain Path Edited Error {id : 0/0, error:ReferenceError: app is not defined}","charCount":77}
+{"time":"2019-04-07T17:09:37.421Z","env":"LOCAL","level":"error","message":"Domain Path Edited Error {id : 0/0, error:ReferenceError: app is not defined}","charCount":77}
+{"time":"2019-04-07T17:11:22.143Z","env":"LOCAL","level":"error","message":"Domain Path Edited Error {id : 0/0, error:ReferenceError: app is not defined}","charCount":77}
+{"time":"2019-04-07T17:12:41.650Z","env":"LOCAL","level":"error","message":"Domain Path Edited Error {id : 0/0, error:ReferenceError: app is not defined}","charCount":77}

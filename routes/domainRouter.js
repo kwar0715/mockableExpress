@@ -1,6 +1,7 @@
 const express = require("express");
 const domainRouter = express.Router();
 const Database = require("../framework/db");
+const Server = require("../framework/server");
 const Logger = require("../framework/logger");
 
 // view domains
@@ -51,6 +52,18 @@ domainRouter.post("/edit/:domainId", function(req, res) {
   let name = req.body.domainName;
   name = name.startsWith('/') ? name : `/${name}`
   try {
+    const domain = Database.getDomainFromId(domainId);
+    const domainName = domain.domain;
+    if (domain.paths.length > 0) {
+      domain.paths.forEach(function (path) {
+        Server().removeRoute(`${domainName}${path.path}`,path.method);
+      })
+
+      domain.paths.forEach(function (path) {
+        Server().createEndpoint(name, path);
+      })
+      
+    }
     Database.updateDomaiName(domainId, name);
 
     Logger.info(
@@ -65,8 +78,14 @@ domainRouter.post("/edit/:domainId", function(req, res) {
 domainRouter.get("/delete/:domainId", function(req, res) {
   const domainId = req.params.domainId;
   try {
+    const domain = Database.getDomainFromId(domainId);
+    const domainName = domain.domain;
+    if (domain.paths.length > 0) {
+      domain.paths.forEach(function (path) {
+        Server().removeRoute(`${domainName}${path.path}`,path.method);
+      })
+    }
     Database.deleteDomain(domainId);
-
     Logger.info(`Domain Deleted {Id: ${domainId}}`);
   } catch (error) {
     Logger.error(`Domain Deleted Error {id : ${domainId}}, error:${error}`);
