@@ -13,7 +13,8 @@ domainRouter.get("/", function(req, res) {
   } catch (error) {
     Logger.error(`Retrive Domain Data {Error: ${error}}`);
   }
-  res.render("domain/viewDomain", { domains });
+  const status = Server().status;
+  res.render("domain/viewDomain", { domains, status });
 });
 
 domainRouter.post("/add", function(req, res) {
@@ -92,5 +93,15 @@ domainRouter.get("/delete/:domainId", function(req, res) {
   }
   res.redirect("/domain");
 });
+
+domainRouter.get('/restart', async function (req, res) {
+  await Server().restart();
+  res.redirect("/domain");
+})
+
+domainRouter.get('/stop', async function (req, res) {
+  await Server().stop();
+  res.redirect("/domain");
+})
 
 module.exports = domainRouter;

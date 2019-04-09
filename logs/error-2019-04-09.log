@@ -1,0 +1,6 @@
+{"time":"2019-04-09T02:03:49.057Z","env":"LOCAL","level":"error","message":"Cannot Close Server at 3000","charCount":27}
+{"time":"2019-04-09T02:03:54.061Z","env":"LOCAL","level":"error","message":"Cannot Close Server at 3000","charCount":27}
+{"time":"2019-04-09T02:04:18.217Z","env":"LOCAL","level":"error","message":"Cannot Close Server at 3000, error : TypeError: this.app.close is not a function","charCount":80}
+{"time":"2019-04-09T02:04:22.102Z","env":"LOCAL","level":"error","message":"Cannot Close Server at 3000, error : TypeError: this.app.close is not a function","charCount":80}
+{"time":"2019-04-09T02:04:27.107Z","env":"LOCAL","level":"error","message":"Cannot Close Server at 3000, error : TypeError: this.app.close is not a function","charCount":80}
+{"time":"2019-04-09T02:06:27.118Z","env":"LOCAL","level":"error","message":"Cannot Close Server at 3000, error : TypeError: this.app.close is not a function","charCount":80}

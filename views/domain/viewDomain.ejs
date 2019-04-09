@@ -16,6 +16,9 @@
       action=<%= (typeof editable !== 'undefined' && editable !== null) ? id : 'domain/add'%>
     >
       <div>
+        <h3>Server Status : <%= status%></h3>
+      </div>
+      <div>
         Domain Name :
         <input
           type="text"

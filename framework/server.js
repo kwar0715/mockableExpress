@@ -13,15 +13,17 @@ const Server = function () {
 
     this.app.use(bodyParser.urlencoded({ extended: false }));
     this.app.use(bodyParser.json());
+    this.status = 'Initialized';
     return this;
 }
 
 Server.prototype.init = function (port) {
     this.port = port;
     this.applyDomainList();
-    this.app.listen(port, function () {
+    this.listner = this.app.listen(this.port, function () {
         Logger.info(`Mockable Server : Start Listening at ${port}`)
     });
+    this.status = 'Started';
 }
 
 Server.prototype.createEndpoint= function(domainName, pathObject){
@@ -113,6 +115,24 @@ Server.prototype.removeRoute = function (path, method) {
         }
     });
     return true;
+}
+
+Server.prototype.stop = async function () {
+    const port = this.port;
+    try {
+        await this.listner.close()
+        Logger.info(`Closed Server at ${port}`);
+        this.status = 'Stopped';
+    } catch (error) {
+        Logger.error(`Cannot Close Server at ${this.port}, error : ${error}`)
+    }
+}
+
+Server.prototype.restart = async function () {
+    if (this.port === null)
+        return;
+    await this.stop();
+    this.init(this.port);
 }
 
 module.exports = () => {
