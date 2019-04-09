@@ -12,7 +12,12 @@ Open Source Express Server for mocked services. Mock your services and test as y
   - npm ``` npm run-script start ``` or on custom port  ``` npm run-script start --port 80 ```
   - yarn ``` yarn start ``` or on custom port ``` yarn start 80 ```
 
-  *Default port is 3000*
+## Usage 
+
+1. goto the administration server using ``` <YOUR_IP>:9000 ```
+2. generated mockable endpoints must be run on ``` <YOUR_IP>:<PORT> ```
+
+*Default Port is 3000*
 
 ## Technologies
 

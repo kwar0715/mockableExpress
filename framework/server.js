@@ -16,6 +16,14 @@ const Server = function () {
     return this;
 }
 
+Server.prototype.init = function (port) {
+    this.port = port;
+    this.applyDomainList();
+    this.app.listen(port, function () {
+        Logger.info(`Mockable Server : Start Listening at ${port}`)
+    });
+}
+
 Server.prototype.createEndpoint= function(domainName, pathObject){
     const path = `${domainName}${pathObject.path}`;
     try {
