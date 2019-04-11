@@ -14,7 +14,7 @@ domainRouter.get("/", function(req, res) {
     Logger.error(`Retrive Domain Data {Error: ${error}}`);
   }
   const status = Server().status;
-  res.render("domain/viewDomain", { domains, status });
+  res.render("domain/viewDomain", { domains, status,  port: Server().port });
 });
 
 domainRouter.post("/add", function(req, res) {
@@ -38,7 +38,9 @@ domainRouter.get("/edit/:domainId", function(req, res) {
     const params = {
       domains,
       editable: domain,
-      id: domainId
+      id: domainId,
+      status: Server().status,
+      port: Server().port
     };
     res.render("domain/viewDomain", params);
     Logger.info(`Domain Edit View Loaded {name: ${JSON.stringify(params)}}`);

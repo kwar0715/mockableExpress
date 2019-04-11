@@ -1,0 +1,13 @@
+{"time":"2019-04-11T05:49:58.083Z","env":"LOCAL","level":"error","message":"Domain Lost cannot Find TypeError: Cannot read property 'length' of undefined","charCount":77}
+{"time":"2019-04-11T05:50:55.358Z","env":"LOCAL","level":"error","message":"Domains are empty DataError: Can't find dataPath: /domains. Stopped at domains","charCount":78}
+{"time":"2019-04-11T05:50:55.381Z","env":"LOCAL","level":"error","message":"Domain List cannot Find DataError: Can't find dataPath: /domains. Stopped at domains","charCount":84}
+{"time":"2019-04-11T05:51:28.780Z","env":"LOCAL","level":"error","message":"Retrive Domain Data {Error: DataError: Can't find dataPath: /domains. Stopped at domains}","charCount":89}
+{"time":"2019-04-11T06:01:40.774Z","env":"LOCAL","level":"error","message":"Domains are empty DataError: Can't find dataPath: /domains. Stopped at domains","charCount":78}
+{"time":"2019-04-11T06:01:40.797Z","env":"LOCAL","level":"error","message":"Domain List cannot Find DataError: Can't find dataPath: /domains. Stopped at domains","charCount":84}
+{"time":"2019-04-11T06:02:01.478Z","env":"LOCAL","level":"error","message":"Retrive Domain Data {Error: DataError: Can't find dataPath: /domains. Stopped at domains}","charCount":89}
+{"time":"2019-04-11T06:03:19.941Z","env":"LOCAL","level":"error","message":"Retrive Domain Data {Error: DataError: Can't find dataPath: /domains. Stopped at domains}","charCount":89}
+{"time":"2019-04-11T06:03:54.997Z","env":"LOCAL","level":"error","message":"Domains are empty DataError: Can't find dataPath: /domains. Stopped at domains","charCount":78}
+{"time":"2019-04-11T06:03:55.020Z","env":"LOCAL","level":"error","message":"Domain List cannot Find DataError: Can't find dataPath: /domains. Stopped at domains","charCount":84}
+{"time":"2019-04-11T06:04:05.867Z","env":"LOCAL","level":"error","message":"Domains are empty DataError: Can't find dataPath: /domains. Stopped at domains","charCount":78}
+{"time":"2019-04-11T06:04:05.894Z","env":"LOCAL","level":"error","message":"Domain List cannot Find DataError: Can't find dataPath: /domains. Stopped at domains","charCount":84}
+{"time":"2019-04-11T06:04:21.596Z","env":"LOCAL","level":"error","message":"Retrive Domain Data {Error: DataError: Can't find dataPath: /domains. Stopped at domains}","charCount":89}

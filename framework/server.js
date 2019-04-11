@@ -57,20 +57,24 @@ Server.prototype.createEndpoint= function(domainName, pathObject){
         Logger.info(`Endpoint Created {Domain: ${domainName},Endpoint info: ${JSON.stringify(pathObject)}}`)
     }
     catch (error) {
-        Logger.info(`Endpoint Created Error {Domain: ${domainName}${pathObject.path},error: ${error}}`)
+        Logger.error(`Endpoint Created Error {Domain: ${domainName}${pathObject.path},error: ${error}}`)
     }
 }
 
 Server.prototype.applyDomainList = function () {
-    const domains = Database.getAllDomains();
-    domains.forEach(domain => {
-        if (domain.paths.length === 0)
-            return;
-        domain.paths.forEach(path => {
-            Logger.info(`Apply Endpoint : ${domain.domain}${path.path}`);
-            this.createEndpoint(domain.domain,path);
+    try {
+        const domains = Database.getAllDomains();
+        domains.forEach(domain => {
+            if (domain.paths.length === 0)
+                return;
+            domain.paths.forEach(path => {
+                Logger.info(`Apply Endpoint : ${domain.domain}${path.path}`);
+                this.createEndpoint(domain.domain,path);
+            });
         });
-    });
+    } catch (error) {
+        Logger.error(`Domain List cannot Find ${error}`)
+    }
 }
 
 const trimPrefix = function (path, prefix) {
