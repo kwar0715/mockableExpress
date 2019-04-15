@@ -1,6 +1,8 @@
 const Server = require('./framework/server');
 const express = require('express');
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const http = require('http');
 const logger = require('./framework/logger');
 const domainRouter = require("./routes/domainRouter");
@@ -13,6 +15,7 @@ const DEV_SERER_PORT = 9000
 const systemApp = express();
 
 systemApp.set("view engine", "ejs");
+
 
 try {
     db.getAllDomains();
@@ -29,11 +32,43 @@ try {
 systemApp.use(bodyParser.urlencoded({ extended: false }));
 systemApp.use(bodyParser.json());
 
+systemApp.use(cookieParser())
+systemApp.use(session({
+    key: 'userId',
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        expires: 600000
+    }
+}));
+
+systemApp.use((req, res, next) => {
+    if (req.cookies.userId && !req.session.user) {
+        res.clearCookie('userId');        
+    }
+    next();
+});
+
+const sessionChecker = (req, res, next) => {
+    if (req.session.user && req.cookies.userId) {
+        next();
+    } else {
+        res.redirect('/');
+    }    
+};
+
 systemApp.get('/', function (req, res) {
     res.render('login/login');
 })
 
-systemApp.post('/passChange', async function (req, res) { 
+systemApp.get('/logout', function (req, res) {
+    req.session.user = null;
+    logger.error(`Logging out`)
+    res.redirect('/');
+})
+
+systemApp.post('/passChange',sessionChecker, async function (req, res) { 
     try {
         db.deleteAllUsers();
         db.setUser(req.body.username, req.body.password);
@@ -48,6 +83,7 @@ systemApp.post('/login',  async function (req, res) {
     const user = await db.getUser(req.body.username, req.body.password);
     logger.info(`Logged User : ${JSON.stringify(user)}`)
     if (user.action) {
+        req.session.user = user;
         if (req.body.username == 'user' && req.body.password == '12345678' && user.userId == 556677) {
             logger.info('Need To Reset Default Password')
             res.render('login/resetPassword', user);
@@ -60,8 +96,8 @@ systemApp.post('/login',  async function (req, res) {
     res.redirect('/')
 })
 
-systemApp.use("/domain", domainRouter);
-systemApp.use("/domain/paths", pathRouter);
+systemApp.use("/domain",sessionChecker ,domainRouter);
+systemApp.use("/domain/paths", sessionChecker,pathRouter);
 
 const server = http.createServer(systemApp);
 server.listen(DEV_SERER_PORT, function () {
