@@ -28,7 +28,12 @@ Open Source Express Server for mocked services. Mock your services and test as y
 1. You can pass your true data as url parameters and make the custom responses
 
 As an example your url can be like below one
+
+* by URL parameters
 ``` <host>/users/:userID ```
+
+* by QUERY parameters
+``` <host>/users/?userID=123456```
 
 then your response can be customized by the url paramter
 ```
