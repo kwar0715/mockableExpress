@@ -23,6 +23,22 @@ Open Source Express Server for mocked services. Mock your services and test as y
 4. reset password
 5. enjoy the mockable express. :)
 
+## Customizable Responses
+
+1. You can pass your true data as url parameters and make the custom responses
+
+As an example your url can be like below one
+``` <host>/users/:userID ```
+
+then your response can be customized by the url paramter
+```
+{
+  Id : {{userID}},
+  Name: "Name"
+}
+```
+then Id can be changed according to the *userID* parameter
+
 ## Technologies
 
 1. Node JS : https://nodejs.org/en/

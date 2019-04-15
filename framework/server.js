@@ -31,8 +31,25 @@ Server.prototype.createEndpoint= function(domainName, pathObject){
     try {
 
         const response = function (req, res) {
-            res.set(pathObject.header);
-            res.status(Number(pathObject.statusCode) || 200).send(pathObject.body);
+            try {
+                res.set(pathObject.header);
+
+                // with params
+                const params = req.params;
+                const values = Object.values(params); 
+                let objectBody = pathObject.body;
+
+                Object.keys(params).forEach(function (key, index) {
+
+                    const value = Number(values[index]) || `"${values[index]}"`;
+                    
+                    objectBody = objectBody.replace(`{{${key}}}`,value);
+                })
+
+                res.status(Number(pathObject.statusCode) || 200).send(objectBody);
+            } catch (error) {
+                res.send(`Response Body Error ${error}`)
+            }
         };
         
         switch (pathObject.method) {
