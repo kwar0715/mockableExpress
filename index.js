@@ -9,8 +9,10 @@ const domainRouter = require("./routes/domainRouter");
 const pathRouter = require("./routes/pathRoutes");
 const db = require('./framework/db');
 
-const port = process.argv[2] || 3000
+const port = Number(process.argv[2]) || 3000
 const DEV_SERER_PORT = 9000
+
+const COOKIE_EXPIRES = 600000
 
 const systemApp = express();
 
@@ -35,11 +37,11 @@ systemApp.use(bodyParser.json());
 systemApp.use(cookieParser())
 systemApp.use(session({
     key: 'userId',
-    secret: process.env.SESSION_SECRET,
+    secret: 'aaaa',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        expires: 600000
+        expires: COOKIE_EXPIRES
     }
 }));
 

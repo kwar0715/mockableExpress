@@ -32,13 +32,15 @@
     <% if(endpoints !== null && endpoints.length !== 0){ %>
     <table border="1">
       <thead>
-        <th>path</th>
-        <th>method</th>
+        <th>Name</th>
+        <th>Path</th>
+        <th>Method</th>
         <th>Actions</th>
       </thead>
       <tbody>
         <% endpoints.forEach(function(endpoint,index){ %>
         <tr>
+          <td><%= endpoint.name%></td>
           <td><%= endpoint.domain%><%= endpoint.path%></td>
           <td><%= endpoint.method%></td>
           <td>

@@ -9,6 +9,14 @@
     <form method="POST" action="/domain/paths/<%=domainId%>/<%=pathId%>/edit">
       <table>
         <tbody>
+            <tr>
+            <td>
+              Name
+            </td>
+            <td>
+              <input name="name" value="<%= name%>" />
+            </td>
+          </tr>
           <tr>
             <td>
               Path : <%= domainName%>
@@ -31,6 +39,10 @@
                 </select>
               </div>
             </td>
+          </tr>
+          <tr>
+            <td>Status Code</td>
+            <td><input name="statusCode" value=<%= statusCode%>></td>
           </tr>
           <tr>
             <td>

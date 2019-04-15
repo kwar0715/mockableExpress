@@ -53,8 +53,10 @@ pathRouter.post("/:domainId/new", function(req, res) {
     let path = req.body.path;
     path = path.startsWith("/") ? path : `/${path}`;
     const record = {
+      name: req.body.name,
       path: path,
       method: req.body.method,
+      statusCode: req.body.statusCode,
       header: header,
       body: req.body.body
     };
@@ -130,8 +132,10 @@ pathRouter.post("/:domainId/:pathId/edit", function(req, res) {
     let path = req.body.path;
     path = path.startsWith("/") ? path : `/${path}`;
     const record = {
+      name: req.body.name,
       path: path,
       method: req.body.method,
+      statusCode: req.body.statusCode,
       header: header,
       body: req.body.body
     };

@@ -32,7 +32,7 @@ Server.prototype.createEndpoint= function(domainName, pathObject){
 
         const response = function (req, res) {
             res.set(pathObject.header);
-            res.send(pathObject.body);
+            res.status(Number(pathObject.statusCode) || 200).send(pathObject.body);
         };
         
         switch (pathObject.method) {
