@@ -35,6 +35,14 @@ As an example your url can be like below one
 * by QUERY parameters
 ``` <host>/users/?userID=123456```
 
+* by Body parameters
+``` 
+  {
+    "userID":"123456"
+  }
+```
+
+
 then your response can be customized by the url paramter
 ```
 {

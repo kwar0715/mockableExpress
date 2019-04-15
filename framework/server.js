@@ -34,6 +34,7 @@ function changeResponseBody(params, body) {
         const value = Number(values[index]) || `"${values[index]}"`;
         objectBody = objectBody.replace(`{{${key}}}`,value);
     })
+
     return objectBody;
 }
 
@@ -49,6 +50,7 @@ Server.prototype.createEndpoint= function(domainName, pathObject){
 
                 objectBody = changeResponseBody(req.params, objectBody)
                 objectBody = changeResponseBody(req.query, objectBody)
+                objectBody = changeResponseBody(req.body, objectBody)
                 
                 res.status(Number(pathObject.statusCode) || 200).send(objectBody);
             } catch (error) {
