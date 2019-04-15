@@ -1,4 +1,0 @@
-{"time":"2019-04-08T06:11:32.513Z","env":"LOCAL","level":"error","message":"Domain New Path Added Error {id : 0, error:ReferenceError: domainName is not defined}","charCount":85}
-{"time":"2019-04-08T09:46:49.403Z","env":"LOCAL","level":"error","message":"Domain Path Deleted Error {id : 0:5, error:ReferenceError: deleting is not defined}","charCount":83}
-{"time":"2019-04-08T13:37:09.508Z","env":"LOCAL","level":"error","message":"Domain Registration Error Error: Neme is null","charCount":45}
-{"time":"2019-04-08T13:40:49.417Z","env":"LOCAL","level":"error","message":"Domain Registration Error Error: Neme is null","charCount":45}
