@@ -29,13 +29,13 @@ Open Source Express Server for mocked services. Mock your services and test as y
 
 As an example your url can be like below one
 
-* by URL parameters
+#### URL parameters
 ``` <host>/users/:userID ```
 
-* by QUERY parameters
+#### QUERY parameters
 ``` <host>/users/?userID=123456```
 
-* by Body parameters
+#### Body parameters
 ``` 
   {
     "userID":"123456"
@@ -51,6 +51,61 @@ then your response can be customized by the url paramter
 }
 ```
 then Id can be changed according to the *userID* parameter
+
+## Custom Database Actions
+
+You can use your own database to save and retrive your mocked data temporarly.
+
+### save your data on database
+
+```
+{
+  #save("<your key >","<your value>")#
+}
+```
+
+save with parameters,
+
+you are passing a value as URL, Query, Body parameter. you can add you parameter as below,
+
+*url : <your host>/users/:id/:value*
+```
+{
+  #save("{{id}}","{{value}}")#
+}
+```
+
+### get your data from database
+
+```
+{ 
+  value: #get("<your key >")# 
+}
+```
+
+you are passing a value as URL, Query, Body parameter. you can retrieve your data as below,
+
+*url : <your host>/users/:id*
+
+```
+{
+  value: #get("{{id}}")#
+}
+```
+### delete your data from database
+
+```
+#del("<your key >")#
+```
+
+you are passing a value as URL, Query, Body parameter. you can retrieve your data as below,
+
+*url : <your host>/users/:id*
+
+```
+#get("{{id}}")#
+```
+
 
 ## Technologies
 
