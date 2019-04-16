@@ -141,4 +141,18 @@ Database.prototype.getUser = async function(username, password) {
   };
 };
 
+Database.prototype.saveCustomCommand= function(key,value){
+  db.push(`/userCommands/${key}/`, value, true);
+  return "";
+}
+
+Database.prototype.getCustomCommand= function(key,value){
+  return db.getData(`/userCommands/${key}/`);
+}
+
+Database.prototype.delCustomCommand = function (key, value) {
+  db.delete(`/userCommands/${key}/`);
+  return "";
+}
+
 module.exports = new Database();
