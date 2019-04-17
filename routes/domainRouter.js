@@ -1,9 +1,10 @@
 const express = require("express");
+const ip = require("ip");
 const domainRouter = express.Router();
 const Database = require("../framework/db");
 const Server = require("../framework/server");
 const Logger = require("../framework/logger");
-
+const IP = ip.address();
 // view domains
 domainRouter.get("/", function(req, res) {
   let domains = null;
@@ -14,14 +15,20 @@ domainRouter.get("/", function(req, res) {
     Logger.error(`Retrive Domain Data {Error: ${error}}`);
   }
   const status = Server().status;
-  res.render("domain/viewDomain", { domains, status,  port: Server().port });
+
+  res.render("domain/viewDomain", {
+    domains,
+    status,
+    ip: IP,
+    port: Server().port
+  });
 });
 
 domainRouter.post("/add", function(req, res) {
   try {
     let name = req.body.domainName;
     if (name === "") throw new Error("Neme is null");
-    name = name.startsWith('/') ? name : `/${name}`;
+    name = name.startsWith("/") ? name : `/${name}`;
     Database.addDomain(name);
     Logger.info(`Domain Saved {name: ${name}}`);
   } catch (error) {
@@ -39,6 +46,7 @@ domainRouter.get("/edit/:domainId", function(req, res) {
       domains,
       editable: domain,
       id: domainId,
+      ip: IP,
       status: Server().status,
       port: Server().port
     };
@@ -53,25 +61,22 @@ domainRouter.get("/edit/:domainId", function(req, res) {
 domainRouter.post("/edit/:domainId", function(req, res) {
   const domainId = req.params.domainId;
   let name = req.body.domainName;
-  name = name.startsWith('/') ? name : `/${name}`
+  name = name.startsWith("/") ? name : `/${name}`;
   try {
     const domain = Database.getDomainFromId(domainId);
     const domainName = domain.domain;
     if (domain.paths.length > 0) {
-      domain.paths.forEach(function (path) {
-        Server().removeRoute(`${domainName}${path.path}`,path.method);
-      })
+      domain.paths.forEach(function(path) {
+        Server().removeRoute(`${domainName}${path.path}`, path.method);
+      });
 
-      domain.paths.forEach(function (path) {
+      domain.paths.forEach(function(path) {
         Server().createEndpoint(name, path);
-      })
-      
+      });
     }
     Database.updateDomaiName(domainId, name);
 
-    Logger.info(
-      `Domain Edited {Id: ${domainId}, current name:${name} }`
-    );
+    Logger.info(`Domain Edited {Id: ${domainId}, current name:${name} }`);
   } catch (error) {
     Logger.error(`Domain Edited Error {id : ${domainId}, error ${error}}`);
   }
@@ -84,9 +89,9 @@ domainRouter.get("/delete/:domainId", function(req, res) {
     const domain = Database.getDomainFromId(domainId);
     const domainName = domain.domain;
     if (domain.paths.length > 0) {
-      domain.paths.forEach(function (path) {
-        Server().removeRoute(`${domainName}${path.path}`,path.method);
-      })
+      domain.paths.forEach(function(path) {
+        Server().removeRoute(`${domainName}${path.path}`, path.method);
+      });
     }
     Database.deleteDomain(domainId);
     Logger.info(`Domain Deleted {Id: ${domainId}}`);
@@ -96,14 +101,14 @@ domainRouter.get("/delete/:domainId", function(req, res) {
   res.redirect("/domain");
 });
 
-domainRouter.get('/restart', async function (req, res) {
+domainRouter.get("/restart", async function(req, res) {
   await Server().restart();
   res.redirect("/domain");
-})
+});
 
-domainRouter.get('/stop', async function (req, res) {
+domainRouter.get("/stop", async function(req, res) {
   await Server().stop();
   res.redirect("/domain");
-})
+});
 
 module.exports = domainRouter;
