@@ -107,7 +107,7 @@ you are passing a value as URL, Query, Body parameter. you can retrieve your dat
 *url : <your host>/users/:id*
 
 ```
-#get("{{id}}")#
+#del("{{id}}")#
 ```
 
 
