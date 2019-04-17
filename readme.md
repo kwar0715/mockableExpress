@@ -25,7 +25,7 @@ Open Source Express Server for mocked services. Mock your services and test as y
 
 3. when you run the server first, You should change the default password. type username as ```user``` and password as ```12345678```
 4. reset password
-5. enjoy the mockable express. :)
+5. enjoy :-)
 
 ## Customizable Responses
 
