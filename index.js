@@ -17,7 +17,7 @@ const COOKIE_EXPIRES = 600000
 const systemApp = express();
 
 systemApp.set("view engine", "ejs");
-
+systemApp.use(express.static('public'))
 
 try {
     db.getAllDomains();

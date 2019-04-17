@@ -1,23 +1,50 @@
 <html>
-    <header>
-        <title>Login</title>
-    </header>
-    <body>
-        <h2> Login </h2>
-        <div>
-            <form method="POST" action="/login">
-                <div>
-                    User Name : 
-                    <input type="text" name="username"/>
-                </div>
-                <div>
-                    Password : 
-                    <input type="password" name="password"/>
-                </div>
-                <div>
-                    <input type="submit" value="Login"/>
-                </div>
-            </form>
-        </div>
-    </body>
+  <head>
+    <title>Login</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+
+    <link href="styles/login.css" rel="stylesheet" />
+  </head>
+  <body class="text-center">
+    <form method="POST" action="/login" class="form-signin">
+      <img
+        class="mb-4"
+        src="imgs/logo.png"
+        alt=""
+        height="190"
+      />
+      <label for="username" class="sr-only">Username</label>
+      <input
+        type="text"
+        name="username"
+        class="form-control"
+        placeholder="Username"
+        required
+      />
+
+      <label for="password" class="sr-only">Password</label>
+      <input
+        type="password"
+        name="password"
+        class="form-control"
+        placeholder="Password"
+        required
+      />
+
+      <button class="btn btn-lg btn-primary btn-block" type="submit">
+        Sign in
+      </button>
+      <p class="mt-5 mb-3 text-muted">&copy; 2019 - Open source</p>
+    </form>
+  </body>
 </html>
