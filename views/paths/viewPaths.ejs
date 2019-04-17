@@ -1,64 +1,88 @@
 <html>
-  <head>
-    <title>Mockable Express</title>
-    <script>
-        function deletePath(domainId,pathID) {
-          var result = confirm("Do You Want to delete?");
-                    if(result){
-                      window.location.href=`/domain/paths/${domainId}/${pathID}/delete`;
-                    }
-        }
-    </script>
-  </head>
+    <head>
+        <title><%= domainName%> Paths</title>
+        <link
+          rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+          integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+          crossorigin="anonymous"
+        ></script>
+        <script
+          src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+          integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+          crossorigin="anonymous"
+        ></script>
+        <script
+          src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+          integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+          crossorigin="anonymous"
+        ></script>
+    
+        <link href="/styles/viewPath.css" rel="stylesheet" />
+        <script src="/scripts/viewPath.js"></script>
+      </head>
   <body>
-    <h2>Domain : <%= domainName%></h2>
-    <table>
-      <tr>
-        <td>
-          <input
-            type="button"
-            onClick="location.href='/domain'"
-            value="Domains"
-          />
-          <input
-            type="button"
-            onClick="location.href='/domain/paths/<%=domainId%>/new'"
-            value="New Path"
-          />
-        </td>
-      </tr>
-    </table>
+    <div class="container">
+        <header>
+            <div class="row flex-nowrap justify-content-between align-items-center">
+              <div class="col-2">
+                <img class="mb-4" src="/imgs/logo.png" alt="" height="75" />
+              </div>
+              <div class="col-8 text-center">
+              </div>
+              <div class="col-2 d-flex justify-content-end align-items-center">
+                <a class="btn btn-sm btn-outline-secondary" href="/logout"
+                  >Sign out</a
+                >
+              </div>
+            </div>
+          </header>
 
-    <% if(endpoints !== null && endpoints.length !== 0){ %>
-    <table border="1">
-      <thead>
-        <th>Name</th>
-        <th>Path</th>
-        <th>Method</th>
-        <th>Actions</th>
-      </thead>
-      <tbody>
-        <% endpoints.forEach(function(endpoint,index){ %>
-        <tr>
-          <td><%= endpoint.name%></td>
-          <td><%= endpoint.domain%><%= endpoint.path%></td>
-          <td><%= endpoint.method%></td>
-          <td>
-            <input
-              type="button"
-              onClick="location.href='/domain/paths/<%=domainId%>/<%=index%>/edit'"
-              value="Edit"
-            />
-            <input
-            type="button"
-            onClick="deletePath(<%=domainId%>,<%=index%>)"
-            value="Delete"
-            />
-          </td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
-    <% } %>
+          <div class="row buttonlist">
+              <button type="button" class="btn btn-dark" onClick="location.href='/domain'">Domains</button>
+              <button type="button" class="btn btn-success" onClick="location.href='/domain/paths/<%=domainId%>/new'">New Path</button>
+          </div>
+
+          <% if(endpoints !== null && endpoints.length !== 0){ %>
+            <table class="table table-hover">
+              <thead>
+                <th scope="col">Name</th>
+                <th scope="col">Path</th>
+                <th scope="col">Method</th>
+                <th scope="col">Actions</th>
+              </thead>
+              <tbody>
+                <% endpoints.forEach(function(endpoint,index){ %>
+                <tr>
+                  <th scope="row"><%= endpoint.name%></th>
+                  <td>
+                    <p class="path">
+                        <%= endpoint.domain%><%= endpoint.path%>
+                    </p>
+                  </td>
+                  <td>
+                    <p class="method">
+                      <%= endpoint.method%>
+                    </p>
+                  </td>
+                  <td>
+                      <button type="button" class="btn btn-success btn-sm" onClick="location.href='/domain/paths/<%=domainId%>/<%=index%>/edit'">
+                        Edit
+                      </button>
+                      <button type="button" class="btn btn-danger btn-sm" onClick="deletePath(<%=domainId%>,<%=index%>)">
+                        Delete
+                      </button>
+                  </td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+            <% } %>
+    </div>
   </body>
 </html>

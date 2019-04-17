@@ -23,38 +23,23 @@ body {
   margin-left: auto;
 }
 
-.status {
-  color: #b70062;
+.btn-dark {
+  margin-right: 10px;
+}
+
+.buttonlist {
+  margin: 10px;
+}
+
+.path {
+  color: blue;
+}
+
+.method {
+  color: red;
+  border-color: red;
   border: solid;
   border-width: 1px;
+  text-align: center;
+  border-radius: 30px;
 }
-.statuslabel {
-  text-align: right;
-}
-
-.form-group{
-    width: 100%;
-}
-
-.form-inline {
-  width: 100%;
-}
-
-.form-inline .form-control{
-    margin-right: 5px;
-    
-}
-
-.domaincount{
-    color: red;
-    border: solid 1px;
-    border-radius: 66px;
-    text-align: center;
-    align-items: center;
-    align-self: center;
-    font-size: 18px;
-    width: 35px;
-    height: 26px;
-    border-radius: 50%;
-}
-

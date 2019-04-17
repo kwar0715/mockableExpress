@@ -40,7 +40,7 @@
                   Your Server is on
               </div>
               <div class="col-6 status">
-                  <%= ip%> : <%= port%>
+                  <%= ip%>:<%= port%>
               </div>
             </div>
           </div>
@@ -110,61 +110,5 @@
   
         <%} %>
     </div>
-
-    <!-- <form
-          method="POST"
-          action=<%= (typeof editable !== 'undefined' && editable !== null) ? id : 'domain/add'%>
-        >
-          <div>
-            <h3>Server Status : <%= status%></h3>
-            <h4> Runs On <%= ip%>:<%= port%></h4>
-          </div>
-          <div>
-            Domain Name :
-            <input
-              type="text"
-              name="domainName"
-              value="<%=  (typeof editable !== 'undefined' && editable !== null)? editable.domain : ''%>"
-            />
-            <input type="submit" value="Save Domain" />
-          </div>
-          <% if(domains !== null && domains.length !== 0){%>
-          <div>
-            <table>
-              <thead>
-                <th>Name</th>
-                <th>Mocks Count</th>
-                <th>Actions</th>
-              </thead>
-              <tbody>
-                <% domains.forEach(function(domain,index){ %>
-                <tr>
-                  <td><%= domain.domain%></td>
-                  <td><%= domain.paths.length%></td>
-                  <td>
-                    <input
-                      type="button"
-                      onClick="location.href='/domain/paths/<%=index%>'"
-                      value="View"
-                    />
-                    <input
-                      type="button"
-                      onClick="location.href='/domain/edit/<%=index%>'"
-                      value="Edit"
-                    />
-                    <input
-                      type="button"
-                      onClick='deleteDomain(<%=index%>)'
-                      value="Delete"
-                    />
-                  </td>
-                </tr>
-                <% }) %>
-              </tbody>
-            </table>
-          </div>
-    
-          <%} %>
-        </form> -->
   </body>
 </html>
