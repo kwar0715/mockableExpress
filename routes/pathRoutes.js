@@ -59,6 +59,7 @@ pathRouter.post("/:domainId/new", function(req, res) {
       method: req.body.method,
       statusCode: req.body.statusCode,
       header: header,
+      authentication: req.body.authentication? true:false,
       body: req.body.body
     };
 
@@ -138,6 +139,7 @@ pathRouter.post("/:domainId/:pathId/edit", function(req, res) {
       path: path,
       method: req.body.method,
       statusCode: req.body.statusCode,
+      authentication: req.body.authentication? true:false,
       header: header,
       body: req.body.body
     };
