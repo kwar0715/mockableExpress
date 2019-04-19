@@ -146,9 +146,9 @@ Ex:- suppose you need to send A if userId equals to 10, unless you need to send 
 
 *url : <your host>/users/:id*
 ```
-#if("{{id}}",=,10){
+#if("{{id}}",=,"10"){
   A
-}
+}#
 B
 ```
 
@@ -173,6 +173,7 @@ you can add json object in the response
 4. JSON-DB : https://github.com/Belphemur/node-json-db
 5. Winston Logger : https://github.com/winstonjs/winston
 6. Bootstrap : https://getbootstrap.com/
+7. Jquery : https://jquery.com/
 
 ## Contribution 
 
