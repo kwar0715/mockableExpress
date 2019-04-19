@@ -27,6 +27,15 @@ Open Source Express Server for mocked services. Mock your services and test as y
 4. reset password
 5. enjoy :-)
 
+## API authentication,
+
+Mockable express is providing token based authentication for endpoints, 
+1. click on the menu icon on right side and create token
+2. create new domain and path,
+3. in the path creation view, enable the *Authorization* check box
+4. Add authentication to your header.
+5. Keep token safe.
+
 ## Customizable Responses
 
 1. You can pass your true data as url parameters and make the custom responses
