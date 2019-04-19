@@ -138,7 +138,7 @@ Server.prototype.createEndpoint = function(domainName, pathObject) {
   try {
     const response = function (req, res) {
 
-      if (pathObject.authorization && (req.headers.authorization !== pathObject.authorization)) {
+      if (pathObject.authorization && (req.headers.authorization !== Database.getToken())) {
         res.status(401).send("Token missmatch; check your api token");
         return;
       }

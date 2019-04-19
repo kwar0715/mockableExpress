@@ -15,9 +15,9 @@ const Database = function() {
   return instance;
 };
 
-Database.prototype.addDomain = function (domainName) {
+Database.prototype.addDomain = function(domainName) {
   if (!domainName) {
-    db.push(`/domains[]`,[], true);
+    db.push(`/domains[]`, [], true);
   }
   const record = {
     domain: domainName,
@@ -68,7 +68,7 @@ Database.prototype.deleteAllUsers = function(domainId, pathId, record) {
   db.delete(`/users`);
 };
 
-Database.prototype.setUser = function(username, password,id) {
+Database.prototype.setUser = function(username, password, id) {
   bcrypt.hash(password, SALT_ROUNDS, function(err, hash) {
     if (err) {
       throw new Error(err);
@@ -141,18 +141,26 @@ Database.prototype.getUser = async function(username, password) {
   };
 };
 
-Database.prototype.saveCustomCommand= function(key,value){
+Database.prototype.saveCustomCommand = function(key, value) {
   db.push(`/userCommands/${key}/`, value, true);
   return "";
-}
+};
 
-Database.prototype.getCustomCommand= function(key,value){
+Database.prototype.getCustomCommand = function(key, value) {
   return db.getData(`/userCommands/${key}/`);
-}
+};
 
-Database.prototype.delCustomCommand = function (key, value) {
+Database.prototype.delCustomCommand = function(key, value) {
   db.delete(`/userCommands/${key}/`);
   return "";
-}
+};
+
+Database.prototype.saveToken = function(token) {
+  db.push(`/authToken/`, token, true);
+};
+
+Database.prototype.getToken = function (token) {
+  return db.getData(`/authToken/`);
+};
 
 module.exports = new Database();

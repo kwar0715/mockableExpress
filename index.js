@@ -64,6 +64,11 @@ systemApp.get('/', function (req, res) {
     res.render('login/login');
 })
 
+systemApp.post('/saveToken', function (req, res) {
+    db.saveToken(`Bearer ${req.body.id}`)
+    res.end();
+})
+
 systemApp.get('/logout', function (req, res) {
     req.session.user = null;
     logger.error(`Logging out`)

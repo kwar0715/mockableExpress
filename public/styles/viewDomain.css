@@ -32,29 +32,38 @@ body {
   text-align: right;
 }
 
-.form-group{
-    width: 100%;
+.form-group {
+  width: 100%;
 }
 
 .form-inline {
   width: 100%;
 }
 
-.form-inline .form-control{
-    margin-right: 5px;
-    
+.form-inline .form-control {
+  margin-right: 5px;
 }
 
-.domaincount{
-    color: red;
-    border: solid 1px;
-    border-radius: 66px;
-    text-align: center;
-    align-items: center;
-    align-self: center;
-    font-size: 18px;
-    width: 35px;
-    height: 26px;
-    border-radius: 50%;
+.domaincount {
+  color: red;
+  border: solid 1px;
+  border-radius: 66px;
+  text-align: center;
+  align-items: center;
+  align-self: center;
+  font-size: 18px;
+  width: 35px;
+  height: 26px;
+  border-radius: 50%;
 }
 
+.dropdown {
+  position: absolute;
+  right: 78px;
+}
+
+.authkey {
+  background: #a7a7a77a;
+  font-style: normal;
+  font-family: monospace;
+}
