@@ -136,7 +136,13 @@ function filterCommands(pattern, commandType, str) {
 Server.prototype.createEndpoint = function(domainName, pathObject) {
   const path = `${domainName}${pathObject.path}`;
   try {
-    const response = function(req, res) {
+    const response = function (req, res) {
+
+      if (pathObject.authorization && (req.headers.authorization !== pathObject.authorization)) {
+        res.status(401).send("Token missmatch; check your api token");
+        return;
+      }
+      console.log()
       try {
         res.set(pathObject.header);
 
