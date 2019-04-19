@@ -110,6 +110,51 @@ you are passing a value as URL, Query, Body parameter. you can retrieve your dat
 #del("{{id}}")#
 ```
 
+## Conditional Response
+
+You can return difference response according to a condition.
+
+```
+#if("value1",<operator>,"value2"){
+response
+}#
+```
+
+value1 and value2 are compaired by the operator what you are using, if the value1 and value2 are satisfied by the comparison, so only the below response will be returened.
+
+#### operators
+
+| Operator| Discription               |
+| --------| ------------------------- |
+|    =    |   equal to                |
+|   !=	  |   not equal               |
+|   >	    | greater than              |
+|   <	    |   less than               |
+|   >=	  | greater than or equal to  |
+|   <=    |	less than or equal to     |
+
+Ex:- suppose you need to send A if userId equals to 10, unless you need to send B as the response
+
+*url : <your host>/users/:id*
+```
+#if("{{id}}",=,10){
+  A
+}
+B
+```
+
+you can add json object in the response
+
+```
+#if("{{id}}",=,"10"){
+  {
+    value: "A"
+  }
+}#
+ {
+    value: "B"
+ }
+```
 
 ## Technologies
 

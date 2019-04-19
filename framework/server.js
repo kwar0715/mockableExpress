@@ -6,14 +6,16 @@ const Logger = require("./logger");
 
 var instance = null;
 
-const SAVE_COMMAND = /#save\(\"+\w+\"+,\"+\w+\"+\)#/;
-const GET_COMMAND = /#get\(\"+\w+\"+\)#/;
-const DEL_COMMAND = /#del\(\"+\w+\"+\)#/;
+const SAVE_COMMAND = /#\nsave\(\"+\w+\"+,\"+\w+\"+\)#/;
+const GET_COMMAND = /#\nget\(\"+\w+\"+\)#/;
+const DEL_COMMAND = /#\ndel\(\"+\w+\"+\)#/;
+const IF_COMMAND = /#\nif\(\"\w+\",.+,\"\w+\"\){.*}#/
 
 const COMMAND_CODE = {
   SAVE: "S",
   GET: "G",
-  DELETE: "D"
+  DELETE: "D",
+  IF:"IF"
 };
 
 const Server = function() {
@@ -41,15 +43,27 @@ function changeResponseBody(params, body) {
 
   Object.keys(params).forEach(function(key, index) {
     const value = Number(values[index]) || `"${values[index]}"`;
-    objectBody = objectBody.replace(`{{${key}}}`, value);
+    objectBody = objectBody.replace(new RegExp(`{{${key}}}`, 'g'), value);
   });
 
   return objectBody;
 }
 
+function compaire(value1, operator, value2) {
+  switch (operator) {
+    case '=': return value1 === value2;
+    case '!=': return value1 !== value2;
+    case '>': return Number(value1) > Number(value2);
+    case '<': return Number(value1) < Number(value2);
+    case '>=': return Number(value1) >= Number(value2);
+    case '<=': return Number(value1) <= Number(value2);
+    default: return false;
+  }
+}
+
 function execSaveCommand(match) {
   const params = match[0]
-    .replace('#save("', "")
+    .replace('#\nsave("', "")
     .replace('","', ",")
     .replace('")#', "")
     .split(",");
@@ -57,22 +71,43 @@ function execSaveCommand(match) {
 }
 
 function execGetCommand(match) {
-  const params = match[0].replace('#get("', "").replace('")#', "");
+  const params = match[0].replace('#\nget("', "").replace('")#', "");
   return Database.getCustomCommand(params);
 }
 
 function execDelCommand(match) {
-    const params = match[0].replace('#del("', "").replace('")#', "");
+    const params = match[0].replace('#\ndel("', "").replace('")#', "");
     return Database.delCustomCommand(params);
+}
+
+function execIfCommand(match,response) {
+  
+  //exatract parameters
+  const params = match[0]
+  .replace('#\nif("', "")
+  .replace('",', ",")
+  .replace(',"', ",")
+  .replace(/\"\){.*}#/, "")
+    .split(",");
+  
+  const isCompaired = compaire(params[0], params[1], params[2]);
+  if (!isCompaired) {
+    const y = response.replace(match[0], "");
+    return y;
+  }
+  
+  return match[0].replace(/#\nif\(\"\w+\",.+,\"\w+\"\){/, "").replace(/}#/, "");
 }
 
 function filterCommands(pattern, commandType, str) {
   try {
     const regExp = RegExp(pattern, "g");
-    let response = str;
-    while ((match = regExp.exec(str))) {
+    const modifiedStr = str.replace(/\s/g, "").replace(/#/g, '#\n');
+    let response = modifiedStr;
+    while ((match = regExp.exec(modifiedStr))) {
       if (match === null) break;
 
+      Logger.info(`filterCommands: filtering {match: ${match[0]},${commandType}}`)
       switch (commandType) {
         case COMMAND_CODE.SAVE: {
           response = response.replace(match[0], execSaveCommand(match));
@@ -86,11 +121,15 @@ function filterCommands(pattern, commandType, str) {
           response = response.replace(match[0], execDelCommand(match));
           break;
         }
+        case COMMAND_CODE.IF: {
+          response = execIfCommand(match,response);
+          break;
+        }
       }
     }
     return response;
   } catch (error) {
-    Logger.error(`filterCommands: Regex filter error {error: ${error}`);
+    Logger.error(`filterCommands: Regex filter error {commandType: ${commandType}, string: ${str},error: ${error}`);
   }
 }
 
@@ -119,8 +158,12 @@ Server.prototype.createEndpoint = function(domainName, pathObject) {
           COMMAND_CODE.DELETE,
           objectBody
         );
-        res.status(Number(pathObject.statusCode) || 200).send(objectBody);
+
+        objectBody = filterCommands(IF_COMMAND, COMMAND_CODE.IF, objectBody,req);
+        Logger.info(`Reached ${path}`);
+        res.status(Number(pathObject.statusCode) || 200).send(objectBody.replace(/\s/g, ""));
       } catch (error) {
+        Logger.info(`Reached Error {${path},error:${error}}`);
         res.send(`Response Body Error ${error}`);
       }
     };
