@@ -215,6 +215,16 @@ suppose you need to make a variable called data and value on data should be prin
 
 ```
 
+## Comments
+
+You can comment on your reponse.
+
+```
+/*
+comment string
+*/
+```
+
 ## Technologies
 
 1. Node JS : https://nodejs.org/en/

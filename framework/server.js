@@ -53,6 +53,10 @@ function changeResponseBody(params, body) {
   return objectBody;
 }
 
+function removeComments(body) {
+  return body.replace(/\/\*[\n\w+\s]*\*\//g, "");
+}
+
 function compaire(value1, operator, value2) {
   switch (operator) {
     case '=': return value1 === value2;
@@ -128,7 +132,7 @@ function execVariables(match, response) {
 function filterCommands(pattern, commandType, str) {
   try {
     const regExp = RegExp(pattern, "g");
-    const modifiedStr = str.replace(/\s/g, "").replace(/#/g, '#\n');
+    const modifiedStr = str.replace(/\s/g, "").replace(/#/g, '#\n').replace(/\/\//g, '\/\/\n');
     let response = modifiedStr;
     while ((match = regExp.exec(modifiedStr))) {
       if (match === null) break;
@@ -180,6 +184,7 @@ Server.prototype.createEndpoint = function(domainName, pathObject) {
 
         let objectBody = pathObject.body;
 
+        objectBody = removeComments(objectBody);
         objectBody = changeResponseBody(req.params, objectBody);
         objectBody = changeResponseBody(req.query, objectBody);
         objectBody = changeResponseBody(req.body, objectBody);
