@@ -10,12 +10,16 @@ const SAVE_COMMAND = /#\nsave\(\"+\w+\"+,\"+\w+\"+\)#/;
 const GET_COMMAND = /#\nget\(\"+\w+\"+\)#/;
 const DEL_COMMAND = /#\ndel\(\"+\w+\"+\)#/;
 const IF_COMMAND = /#\nif\(\"\w+\",.+,\"\w+\"\){.*}#/
+const FOR_COMMAND = /#\nfor\(\"\d+\"\){.*}#/
+const VARIABLES =/!\w+=\w*!/
 
 const COMMAND_CODE = {
-  SAVE: "S",
-  GET: "G",
-  DELETE: "D",
-  IF:"IF"
+  SAVE: "SAVE",
+  GET: "GET",
+  DELETE: "DELETE",
+  IF: "IF",
+  FOR: "FOR",
+  VARIABLE: "VARIABLE"
 };
 
 const Server = function() {
@@ -99,6 +103,28 @@ function execIfCommand(match,response) {
   return match[0].replace(/#\nif\(\"\w+\",.+,\"\w+\"\){/, "").replace(/}#/, "");
 }
 
+function execForCommand(match) {
+  //exatract parameters
+  const params = match[0]
+  .replace('#\nfor("', "")
+    .replace(/\"\){.*}#/, "")
+  const count = Number(params);
+  
+  const body = match[0].replace(/#\nfor\(\"\d+\"\){/, "").replace(/}#/, "");
+  let response = "";
+
+  for (let i = 1; i <= count; i++){
+    response = `${response}${body}`;
+  }
+  return response;
+}
+
+function execVariables(match, response) {
+  
+  const params = match[0].replace(/!/g, "").replace(/=/, ",").split(",");
+  return response.replace(match[0],"").replace(new RegExp(`!${params[0]}`, 'g'),params[1])
+}
+
 function filterCommands(pattern, commandType, str) {
   try {
     const regExp = RegExp(pattern, "g");
@@ -125,6 +151,14 @@ function filterCommands(pattern, commandType, str) {
           response = execIfCommand(match,response);
           break;
         }
+        case COMMAND_CODE.FOR: {
+          response = response.replace(match[0], execForCommand(match));
+          break;
+        }
+        case COMMAND_CODE.VARIABLE: {
+          response = execVariables(match,response)
+          break;
+        }
       }
     }
     return response;
@@ -137,11 +171,10 @@ Server.prototype.createEndpoint = function(domainName, pathObject) {
   const path = `${domainName}${pathObject.path}`;
   try {
     const response = function (req, res) {
-      if (pathObject && (req.headers.authorization !== Database.getToken())) {
+      if (pathObject.authorization && (req.headers.authorization !== Database.getToken())) {
         res.status(401).send("Token missmatch; check your api token");
         return;
       }
-      console.log()
       try {
         res.set(pathObject.header);
 
@@ -164,7 +197,9 @@ Server.prototype.createEndpoint = function(domainName, pathObject) {
           objectBody
         );
 
-        objectBody = filterCommands(IF_COMMAND, COMMAND_CODE.IF, objectBody,req);
+        objectBody = filterCommands(IF_COMMAND, COMMAND_CODE.IF, objectBody);
+        objectBody = filterCommands(FOR_COMMAND, COMMAND_CODE.FOR, objectBody);
+        objectBody = filterCommands(VARIABLES, COMMAND_CODE.VARIABLE, objectBody);
         Logger.info(`Reached ${path}`);
         res.status(Number(pathObject.statusCode) || 200).send(objectBody.replace(/\s/g, ""));
       } catch (error) {
