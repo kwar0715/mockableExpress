@@ -165,6 +165,56 @@ you can add json object in the response
  }
 ```
 
+## Iterative Response
+
+You can generate your response from iterative manner. if you want to repeate something you can use this syntax.
+
+```
+#for("<Count>"){
+<Repeatable part>
+}#
+```
+
+suppose you need to pring "Hello" 10 times, 
+
+```
+#for("10"){
+Hello
+}#
+```
+
+then your response will be 
+
+```
+HELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLO
+```
+
+## Variable allocation
+
+You can define a variable in the response body. you can only pass strings and digits for the variable.
+
+#### allocation
+
+```
+!<variable name>=<value>!
+```
+
+#### usage
+
+```
+!<variable name>
+```
+
+suppose you need to make a variable called data and value on data should be printed twise.
+
+```
+!data=hello!
+
+!data
+!data
+
+```
+
 ## Technologies
 
 1. Node JS : https://nodejs.org/en/
