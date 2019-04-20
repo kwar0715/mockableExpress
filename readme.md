@@ -27,7 +27,7 @@ Open Source Express Server for mocked services. Mock your services and test as y
 4. reset password
 5. enjoy :-)
 
-## API authentication,
+## Authorization
 
 Mockable express is providing token based authentication for endpoints, 
 1. click on the menu icon on right side and create token
@@ -146,9 +146,9 @@ Ex:- suppose you need to send A if userId equals to 10, unless you need to send 
 
 *url : <your host>/users/:id*
 ```
-#if("{{id}}",=,10){
+#if("{{id}}",=,"10"){
   A
-}
+}#
 B
 ```
 
@@ -233,6 +233,7 @@ comment string
 4. JSON-DB : https://github.com/Belphemur/node-json-db
 5. Winston Logger : https://github.com/winstonjs/winston
 6. Bootstrap : https://getbootstrap.com/
+7. Jquery : https://jquery.com/
 
 ## Contribution 
 
