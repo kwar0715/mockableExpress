@@ -206,7 +206,13 @@ Server.prototype.createEndpoint = function(domainName, pathObject) {
         objectBody = filterCommands(FOR_COMMAND, COMMAND_CODE.FOR, objectBody);
         objectBody = filterCommands(VARIABLES, COMMAND_CODE.VARIABLE, objectBody);
         Logger.info(`Reached ${path}`);
-        res.status(Number(pathObject.statusCode) || 200).send(objectBody.replace(/\s/g, ""));
+        const response = res.status(Number(pathObject.statusCode) || 200)
+        const contentType = pathObject.header['Content-Type'];
+        if (contentType.indexOf('application/json')) {
+          response.json(objectBody.replace(/\s/g, ""))
+          return;
+        }
+        response.send(objectBody.replace(/\s/g, ""));
       } catch (error) {
         Logger.info(`Reached Error {${path},error:${error}}`);
         res.send(`Response Body Error ${error}`);
