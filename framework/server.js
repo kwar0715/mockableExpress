@@ -113,11 +113,9 @@ function execForCommand(match) {
   .replace('#for("', "")
     .replace(/\"\)([\n\s]*){((?!for)\w*\W*)*}#/, "")
   const count = Number(params);
-
- 
   
   const body = match[0].replace(/#for\(\"\d+\"\)([\n\s]*){/, "").replace(/}#/, "");
-  console.log(body);
+
   let response = "";
 
   for (let i = 1; i <= count; i++){
