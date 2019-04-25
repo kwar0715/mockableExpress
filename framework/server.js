@@ -6,11 +6,11 @@ const Logger = require("./logger");
 
 var instance = null;
 
-const SAVE_COMMAND = /#\nsave\(\"+\w+\"+,\"+\w+\"+\)#/;
-const GET_COMMAND = /#\nget\(\"+\w+\"+\)#/;
-const DEL_COMMAND = /#\ndel\(\"+\w+\"+\)#/;
-const IF_COMMAND = /#\nif\(\"\w+\",.+,\"\w+\"\){.*}#/
-const FOR_COMMAND = /#\nfor\(\"\d+\"\){.*}#/
+const SAVE_COMMAND = /#save\(\"+\w+\"+,\"+\w+\"+\)#/;
+const GET_COMMAND = /#get\(\"+\w+\"+\)#/;
+const DEL_COMMAND = /#del\(\"+\w+\"+\)#/;
+const IF_COMMAND = /#if\(\"\w+\",.+,\"\w+\"\)([\n\s]*){((?!if|for)\w*\W*)*}#/
+const FOR_COMMAND = /#for\(\"\d+\"\)([\n\s]*){((?!if|for)\w*\W*)*}#/
 const VARIABLES =/!\w+=\w*!/
 
 const COMMAND_CODE = {
@@ -92,10 +92,10 @@ function execIfCommand(match,response) {
   
   //exatract parameters
   const params = match[0]
-  .replace('#\nif("', "")
+  .replace('#if("', "")
   .replace('",', ",")
   .replace(',"', ",")
-  .replace(/\"\){.*}#/, "")
+  .replace(/\"\)([\n\s]*){((?!if)\w*\W*)*}#/, "")
     .split(",");
   
   const isCompaired = compaire(params[0], params[1], params[2]);
@@ -104,17 +104,20 @@ function execIfCommand(match,response) {
     return y;
   }
   
-  return match[0].replace(/#\nif\(\"\w+\",.+,\"\w+\"\){/, "").replace(/}#/, "");
+  return match[0].replace(/#if\(\"\w+\",.+,\"\w+\"\)([\n\s]*){/, "").replace(/}#/, "");
 }
 
 function execForCommand(match) {
   //exatract parameters
   const params = match[0]
-  .replace('#\nfor("', "")
-    .replace(/\"\){.*}#/, "")
+  .replace('#for("', "")
+    .replace(/\"\)([\n\s]*){((?!for)\w*\W*)*}#/, "")
   const count = Number(params);
+
+ 
   
-  const body = match[0].replace(/#\nfor\(\"\d+\"\){/, "").replace(/}#/, "");
+  const body = match[0].replace(/#for\(\"\d+\"\)([\n\s]*){/, "").replace(/}#/, "");
+  console.log(body);
   let response = "";
 
   for (let i = 1; i <= count; i++){
@@ -132,7 +135,7 @@ function execVariables(match, response) {
 function filterCommands(pattern, commandType, str) {
   try {
     const regExp = RegExp(pattern, "g");
-    const modifiedStr = str.replace(/\s/g, "").replace(/#/g, '#\n').replace(/\/\//g, '\/\/\n');
+    const modifiedStr = str;//.replace(/\s/g, "").replace(/#/g, '#\n').replace(/\/\//g, '\/\/\n');
     let response = modifiedStr;
     while ((match = regExp.exec(modifiedStr))) {
       if (match === null) break;
@@ -209,10 +212,10 @@ Server.prototype.createEndpoint = function(domainName, pathObject) {
         const response = res.status(Number(pathObject.statusCode) || 200)
         const contentType = pathObject.header['Content-Type'];
         if (contentType.indexOf('application/json')) {
-          response.json(objectBody.replace(/\s/g, ""))
+          response.json(objectBody);//.replace(/\s/g, ""))
           return;
         }
-        response.send(objectBody.replace(/\s/g, ""));
+        response.send(objectBody)//.replace(/\s/g, ""));
       } catch (error) {
         Logger.info(`Reached Error {${path},error:${error}}`);
         res.send(`Response Body Error ${error}`);
