@@ -189,9 +189,9 @@ then your response will be
 HELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLO
 ```
 
-## Variable allocation
+## Constants allocation
 
-You can define a variable in the response body. you can only pass strings and digits for the variable.
+You can define a constants in the response body. you can only pass strings and digits for the constant.
 
 #### allocation
 
@@ -205,7 +205,7 @@ You can define a variable in the response body. you can only pass strings and di
 !<variable name>
 ```
 
-suppose you need to make a variable called data and value on data should be printed twise.
+suppose you need to make a constant called data and value on data should be printed twise.
 
 ```
 !data=hello!
