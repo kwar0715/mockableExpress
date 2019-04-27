@@ -11,6 +11,7 @@ const GET_COMMAND = /#get\(\"+\w+\"+\)#/;
 const DEL_COMMAND = /#del\(\"+\w+\"+\)#/;
 const IF_COMMAND = /#if\(\"\w+\",.+,\"\w+\"\)([\n\s]*){((?!if)\w|\W)+}endif/
 const FOR_COMMAND = /#for\(\"\d+\"\)([\n\s]*){((?!for)\w|\W)+}endfor/
+const FOR_EACH_COMMAND = /#foreach\(\"+\[?[\w,]+\]?\"+,\"\w+\"\)([\n\s]*){((?!foreach)\w|\W)+}endforeach/
 const VARIABLES =/!\w+=\w*!/
 
 const COMMAND_CODE = {
@@ -19,6 +20,7 @@ const COMMAND_CODE = {
   DELETE: "DELETE",
   IF: "IF",
   FOR: "FOR",
+  FOREACH:"FOREACH",
   VARIABLE: "VARIABLE"
 };
 
@@ -118,9 +120,41 @@ function execForCommand(match) {
   let response = "";
 
   for (let i = 1; i <= count; i++){
-    response = `${response}${body}`;
+    response = `${response}${body}`.replace(/(\r|\n)*/g, "");
   }
-  return response;
+  return `${response}`;
+}
+
+function execForEachCommand(match) {
+  //exatract parameters
+  const params = match[0]
+    .replace(/#foreach\(\"+/, '')
+    .replace(/\"+,"/, '|')
+    .replace(/\"\)([\n\s]*){((?!foreach)\w|\W)+}endforeach/, "").split('|')
+  
+  const arrayString = params[0];
+  const elementString = params[1];
+  let arr;
+  try {
+    arr = JSON.parse(arrayString.startsWith('[') && arrayString.endsWith(']') ? arrayString : `[${arrayString}]`);
+  } catch (error) {
+    return `Invalid Input Combination ${arrayString}`;
+  }
+  
+  const body = match[0].replace(/#foreach\(\"+\[?[\w,]+\]?\"+,\"\w+\"\)([\n\s]*){/, "").replace(/}endforeach/, "");
+
+  const returnArray = []
+
+  arr.forEach(function (element) {
+    let elementOut = body.replace(`{{${elementString}}}`, `${element}`).replace(/(\r|\n)*/g, "");
+    try {
+      elementOut = JSON.stringify(JSON.parse(elementOut));
+    } catch (e) {
+      
+    }
+    returnArray.push(elementOut);
+  })
+  return `[${returnArray}]`;
 }
 
 function execVariables(match, response) {
@@ -130,7 +164,6 @@ function execVariables(match, response) {
 }
 
 function filterCommands(pattern, commandType, str) {
-  console.log(pattern,commandType,str)
   try {
     const regExp = RegExp(pattern, "g");
     const modifiedStr = str;//.replace(/\s/g, "").replace(/#/g, '#\n').replace(/\/\//g, '\/\/\n');
@@ -160,6 +193,10 @@ function filterCommands(pattern, commandType, str) {
           response = response.replace(match[0], execForCommand(match));
           break;
         }
+        case COMMAND_CODE.FOREACH: {
+          response = response.replace(match[0], execForEachCommand(match));
+          break;
+        }
         case COMMAND_CODE.VARIABLE: {
           response = execVariables(match,response)
           break;
@@ -186,9 +223,12 @@ Server.prototype.createEndpoint = function(domainName, pathObject) {
         let objectBody = pathObject.body;
 
         objectBody = removeComments(objectBody);
+        objectBody = filterCommands(VARIABLES, COMMAND_CODE.VARIABLE, objectBody);
         objectBody = changeResponseBody(req.params, objectBody);
         objectBody = changeResponseBody(req.query, objectBody);
         objectBody = changeResponseBody(req.body, objectBody);
+        objectBody = filterCommands(FOR_EACH_COMMAND, COMMAND_CODE.FOREACH, objectBody);
+        
 
         objectBody = filterCommands(
           SAVE_COMMAND,
@@ -205,7 +245,6 @@ Server.prototype.createEndpoint = function(domainName, pathObject) {
         
         objectBody = filterCommands(IF_COMMAND, COMMAND_CODE.IF, objectBody);
         objectBody = filterCommands(FOR_COMMAND, COMMAND_CODE.FOR, objectBody);
-        objectBody = filterCommands(VARIABLES, COMMAND_CODE.VARIABLE, objectBody);
         Logger.info(`Reached ${path}`);
         const response = res.status(Number(pathObject.statusCode) || 200)
         const contentType = pathObject.header['Content-Type'];
