@@ -126,7 +126,7 @@ You can return difference response according to a condition.
 ```
 #if("value1",<operator>,"value2"){
 response
-}#
+}endif
 ```
 
 value1 and value2 are compaired by the operator what you are using, if the value1 and value2 are satisfied by the comparison, so only the below response will be returened.
@@ -148,7 +148,7 @@ Ex:- suppose you need to send A if userId equals to 10, unless you need to send 
 ```
 #if("{{id}}",=,"10"){
   A
-}#
+}endif
 B
 ```
 
@@ -159,7 +159,7 @@ you can add json object in the response
   {
     value: "A"
   }
-}#
+}endif
  {
     value: "B"
  }
@@ -172,7 +172,7 @@ You can generate your response from iterative manner. if you want to repeate som
 ```
 #for("<Count>"){
 <Repeatable part>
-}#
+}endfor
 ```
 
 suppose you need to pring "Hello" 10 times, 
@@ -180,7 +180,7 @@ suppose you need to pring "Hello" 10 times,
 ```
 #for("10"){
 Hello
-}#
+}endfor
 ```
 
 then your response will be 

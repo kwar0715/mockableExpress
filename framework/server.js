@@ -9,8 +9,8 @@ var instance = null;
 const SAVE_COMMAND = /#save\(\"+\w+\"+,\"+\w+\"+\)#/;
 const GET_COMMAND = /#get\(\"+\w+\"+\)#/;
 const DEL_COMMAND = /#del\(\"+\w+\"+\)#/;
-const IF_COMMAND = /#if\(\"\w+\",.+,\"\w+\"\)([\n\s]*){((?!if|for)\w*\W*)*}#/
-const FOR_COMMAND = /#for\(\"\d+\"\)([\n\s]*){((?!if|for)\w*\W*)*}#/
+const IF_COMMAND = /#if\(\"\w+\",.+,\"\w+\"\)([\n\s]*){((?!if)\w|\W)+}endif/
+const FOR_COMMAND = /#for\(\"\d+\"\)([\n\s]*){((?!for)\w|\W)+}endfor/
 const VARIABLES =/!\w+=\w*!/
 
 const COMMAND_CODE = {
@@ -71,7 +71,7 @@ function compaire(value1, operator, value2) {
 
 function execSaveCommand(match) {
   const params = match[0]
-    .replace('#\nsave("', "")
+    .replace('#save("', "")
     .replace('","', ",")
     .replace('")#', "")
     .split(",");
@@ -79,42 +79,41 @@ function execSaveCommand(match) {
 }
 
 function execGetCommand(match) {
-  const params = match[0].replace('#\nget("', "").replace('")#', "");
+  const params = match[0].replace('#get("', "").replace('")#', "");
   return Database.getCustomCommand(params);
 }
 
 function execDelCommand(match) {
-    const params = match[0].replace('#\ndel("', "").replace('")#', "");
+    const params = match[0].replace('#del("', "").replace('")#', "");
     return Database.delCustomCommand(params);
 }
 
 function execIfCommand(match,response) {
-  
   //exatract parameters
   const params = match[0]
   .replace('#if("', "")
   .replace('",', ",")
   .replace(',"', ",")
-  .replace(/\"\)([\n\s]*){((?!if)\w*\W*)*}#/, "")
+  .replace(/\"\)([\n\s]*){((?!if)\w|\W)+}endif/, "")
     .split(",");
-  
+
   const isCompaired = compaire(params[0], params[1], params[2]);
   if (!isCompaired) {
     const y = response.replace(match[0], "");
     return y;
   }
   
-  return match[0].replace(/#if\(\"\w+\",.+,\"\w+\"\)([\n\s]*){/, "").replace(/}#/, "");
+  return match[0].replace(/#if\(\"\w+\",.+,\"\w+\"\)([\n\s]*){/, "").replace(/}endif/, "");
 }
 
 function execForCommand(match) {
   //exatract parameters
   const params = match[0]
   .replace('#for("', "")
-    .replace(/\"\)([\n\s]*){((?!for)\w*\W*)*}#/, "")
+    .replace(/\"\)([\n\s]*){((?!for)\w|\W)+}endfor/, "")
   const count = Number(params);
   
-  const body = match[0].replace(/#for\(\"\d+\"\)([\n\s]*){/, "").replace(/}#/, "");
+  const body = match[0].replace(/#for\(\"\d+\"\)([\n\s]*){/, "").replace(/}endfor/, "");
 
   let response = "";
 
@@ -131,6 +130,7 @@ function execVariables(match, response) {
 }
 
 function filterCommands(pattern, commandType, str) {
+  console.log(pattern,commandType,str)
   try {
     const regExp = RegExp(pattern, "g");
     const modifiedStr = str;//.replace(/\s/g, "").replace(/#/g, '#\n').replace(/\/\//g, '\/\/\n');
@@ -175,7 +175,7 @@ function filterCommands(pattern, commandType, str) {
 Server.prototype.createEndpoint = function(domainName, pathObject) {
   const path = `${domainName}${pathObject.path}`;
   try {
-    const response = function (req, res) {
+    const response = function (req, res, next) {
       if (pathObject.authorization && (req.headers.authorization !== Database.getToken())) {
         res.status(401).send("Token missmatch; check your api token");
         return;
@@ -202,7 +202,7 @@ Server.prototype.createEndpoint = function(domainName, pathObject) {
           COMMAND_CODE.DELETE,
           objectBody
         );
-
+        
         objectBody = filterCommands(IF_COMMAND, COMMAND_CODE.IF, objectBody);
         objectBody = filterCommands(FOR_COMMAND, COMMAND_CODE.FOR, objectBody);
         objectBody = filterCommands(VARIABLES, COMMAND_CODE.VARIABLE, objectBody);
@@ -216,7 +216,8 @@ Server.prototype.createEndpoint = function(domainName, pathObject) {
         response.send(objectBody)//.replace(/\s/g, ""));
       } catch (error) {
         Logger.info(`Reached Error {${path},error:${error}}`);
-        res.send(`Response Body Error ${error}`);
+        next(error);
+
       }
     };
 
