@@ -309,6 +309,6 @@ comment string
 ## Contribution 
 
 1. Kolitha Warnakulasooriya
-2. Prainda Perera
+2. Pravinda Perera
 3. Sameera Jayawardana
 4. Kasun Kodithuwakku
