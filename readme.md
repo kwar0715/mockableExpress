@@ -189,6 +189,77 @@ then your response will be
 HELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLOHELLO
 ```
 
+add to json response 
+
+```
+{
+"value": "#for("10"){
+Hello
+}endfor"
+}
+```
+
+## Array Iterative Response
+
+You can make the response according to the array of comma seperated response. your body, query parameter can be a comma seperated array or string,
+
+body param:
+```
+{
+ "arr": [1,2,3,4,5]
+}
+or 
+{
+ "arr": "1,2,3,4,5"
+}
+```
+query param:
+
+```
+<host>/path?arr=1,2,3,4,5
+```
+
+usage can be
+
+```
+#foreach("[1,2,3,4,5]","ele"){
+{{ele}}
+}endforeach
+```
+
+element iterative element and you can use any name. 
+
+result will be 
+
+```
+[1,2,3,4,5]
+```
+
+you can use this in json object.
+
+```
+{
+"value":#foreach("[1,2,3,4,5]","ele"){
+{{ele}}
+}endforeach
+}
+```
+so the response can be,
+
+```
+{
+    "value": [
+        1,
+        2,
+        3,
+        4,
+        5
+    ]
+}
+```
+
+
+
 ## Constants allocation
 
 You can define a constants in the response body. you can only pass strings and digits for the constant.
