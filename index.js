@@ -8,9 +8,11 @@ const logger = require('./framework/logger');
 const domainRouter = require("./routes/domainRouter");
 const pathRouter = require("./routes/pathRoutes");
 const db = require('./framework/db');
+const { getPublicIP } = require('./framework/utils');
+const { HOST,ADMIN_PORT, API_PORT} = require('./config');
 
-const port = Number(process.argv[2]) || 3000
-const DEV_SERER_PORT = 9000
+const port = Number(process.argv[2]) || API_PORT || 3000
+const DEV_SERER_PORT = ADMIN_PORT || 9000
 
 const COOKIE_EXPIRES = 600000
 
@@ -62,6 +64,11 @@ const sessionChecker = (req, res, next) => {
 
 systemApp.get('/', function (req, res) {
     res.render('login/login');
+})
+
+systemApp.get('/status', sessionChecker, async function (req, res) {
+    const IP = HOST ? HOST : await getPublicIP();
+    res.render('status/index',{location: `${IP}:${port}/exstatus66286721564023`});
 })
 
 systemApp.post('/saveToken', function (req, res) {
