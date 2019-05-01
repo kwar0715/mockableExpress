@@ -1,12 +1,14 @@
 const express = require("express");
-const ip = require("ip");
 const domainRouter = express.Router();
 const Database = require("../framework/db");
 const Server = require("../framework/server");
 const Logger = require("../framework/logger");
-const IP = ip.address();
+const { getPublicIP } = require('../framework/utils');
+const { HOST} = require('../config');
+
 // view domains
-domainRouter.get("/", function(req, res) {
+domainRouter.get("/",async function (req, res) {
+  const IP = HOST ? HOST : await getPublicIP();
   let domains = null;
   try {
     domains = Database.getAllDomains();
@@ -37,7 +39,8 @@ domainRouter.post("/add", function(req, res) {
   res.redirect("/domain");
 });
 
-domainRouter.get("/edit/:domainId", function(req, res) {
+domainRouter.get("/edit/:domainId", async function (req, res) {
+  const IP = HOST ? HOST : await getPublicIP();
   try {
     const domainId = req.params.domainId;
     const domain = Database.getDomainFromId(domainId);

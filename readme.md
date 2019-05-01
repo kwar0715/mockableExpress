@@ -20,12 +20,19 @@ Open Source Express Server for mocked services. Mock your services and test as y
 
 1. goto the administration server using ``` <YOUR_IP>:9000 ```
 2. generated mockable endpoints must be run on ``` <YOUR_IP>:<PORT> ```
+3. edit config.js
+
+```
+module.exports.HOST = 'http://localhost'; // Application host
+module.exports.ADMIN_PORT = '9000';       // administration port
+module.exports.API_PORT = '3000';         // api running port
+```
 
 *Default Port is 3000*
 
-3. when you run the server first, You should change the default password. type username as ```user``` and password as ```12345678```
-4. reset password
-5. enjoy :-)
+4. when you run the server first, You should change the default password. type username as ```user``` and password as ```12345678```
+5. reset password
+6. enjoy :-)
 
 ## Authorization
 
@@ -309,6 +316,6 @@ comment string
 ## Contribution 
 
 1. Kolitha Warnakulasooriya
-2. Prainda Perera
+2. Pravinda Perera
 3. Sameera Jayawardana
 4. Kasun Kodithuwakku
