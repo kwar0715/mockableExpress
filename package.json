@@ -14,7 +14,7 @@
   "author": "Kolitha Warnakulasooriya",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "3.0.0",
+    "bcrypt":"^3.0.2",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.4",
     "ejs": "^2.6.1",
