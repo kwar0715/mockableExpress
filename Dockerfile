@@ -13,4 +13,4 @@ COPY . .
 
 EXPOSE 9000
 
-CMD ["sh", "-c", "npm run-script start --port 80"]
+CMD ["sh", "-c", "npm run-script start"]
