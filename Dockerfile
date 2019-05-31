@@ -8,6 +8,7 @@ COPY package.json ./
 
 RUN npm install bcrypt
 RUN npm install
+RUN npm rebuild bcrypt --update-binary
 
 COPY . .
 
