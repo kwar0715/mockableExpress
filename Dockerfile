@@ -6,9 +6,9 @@ WORKDIR /usr/src/app
 
 COPY package.json ./
 
+RUN npm install --save-dev electron-rebuild
 RUN npm install bcrypt
 RUN npm install
-RUN npm rebuild bcrypt --update-binary
 
 COPY . .
 
