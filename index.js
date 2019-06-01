@@ -33,6 +33,13 @@ try {
     db.setUser('user', '12345678', 556677);
 }
 
+// save api url 
+let apiUrl;
+(async () => {
+    apiUrl = `http://${HOST ? HOST : await getPublicIP()}:${port}`;
+    db.saveApiUrl(apiUrl)
+})()
+
 systemApp.use(bodyParser.urlencoded({ extended: false }));
 systemApp.use(bodyParser.json());
 
@@ -67,8 +74,7 @@ systemApp.get('/', function (req, res) {
 })
 
 systemApp.get('/status', sessionChecker, async function (req, res) {
-    const IP = HOST ? HOST : await getPublicIP();
-    res.render('status/index',{location: `${IP}:${port}/status`});
+    res.render('status/index',{location: `${HOST ? HOST : await getPublicIP()}/status`});
 })
 
 systemApp.post('/saveToken', function (req, res) {

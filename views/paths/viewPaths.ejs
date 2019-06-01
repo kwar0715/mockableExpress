@@ -43,6 +43,7 @@
             </div>
           </header>
 
+          <h1><%= domainName%></h1>
           <div class="row buttonlist">
               <button type="button" class="btn btn-dark" onClick="location.href='/domain'">Domains</button>
               <button type="button" class="btn btn-success" onClick="location.href='/domain/paths/<%=domainId%>/new'">New Path</button>
@@ -62,7 +63,7 @@
                   <th scope="row"><%= endpoint.name%></th>
                   <td>
                     <p class="path">
-                        <%= endpoint.domain%><%= endpoint.path%>
+                      <%= domainName%><%= endpoint.path%>
                     </p>
                   </td>
                   <td>
@@ -76,6 +77,9 @@
                       </button>
                       <button type="button" class="btn btn-danger btn-sm" onClick="deletePath(<%=domainId%>,<%=index%>)">
                         Delete
+                      </button>
+                      <button type="button" class="btn btn-info btn-sm" onClick="window.open('<%=apiUrl%><%=domainName%><%=endpoint.path%>','_blank')">
+                        Go
                       </button>
                   </td>
                 </tr>

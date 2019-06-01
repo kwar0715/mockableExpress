@@ -163,4 +163,12 @@ Database.prototype.getToken = function (token) {
   return db.getData(`/authToken/`);
 };
 
+Database.prototype.saveApiUrl = function(url) {
+  db.push(`/apiUrl/`, url, true);
+};
+
+Database.prototype.getApiUrl = function () {
+  return db.getData(`/apiUrl/`);
+};
+
 module.exports = new Database();

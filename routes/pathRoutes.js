@@ -8,10 +8,11 @@ pathRouter.get("/:domainId", function(req, res) {
   const domainId = req.params.domainId;
   try {
     const domain = Database.getDomainFromId(req.params.domainId);
-
+    const apiUrl = Database.getApiUrl();
     const params = {
       domainName: domain.domain,
       domainId,
+      apiUrl,
       endpoints: domain.paths
     };
     Logger.info(
