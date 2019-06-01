@@ -15,6 +15,9 @@ Open Source Express Server for mocked services. Mock your services and test as y
 4. run the project by using below commands
   - npm ``` npm run-script start ``` or on custom port  ``` npm run-script start --port 80 ```
   - yarn ``` yarn start ``` or on custom port ``` yarn start 80 ```
+5. docker command 
+  - build ``` docker build . -t <name>```
+  - run ```docker run -p 9000:9000 -p 80:80 <name>``` (if run in detached mode use ```-d```)
 
 ## Usage 
 

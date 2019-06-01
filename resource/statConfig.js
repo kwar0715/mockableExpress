@@ -1,7 +1,7 @@
 module.exports = {
     title: 'Mockable Express Process Status',
     theme: 'default.css',
-    path: '/exstatus66286721564023',
+    path: '/status',
     socketPath: '/socket.io',
     spans: [
       {

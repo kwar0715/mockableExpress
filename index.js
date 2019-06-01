@@ -68,7 +68,7 @@ systemApp.get('/', function (req, res) {
 
 systemApp.get('/status', sessionChecker, async function (req, res) {
     const IP = HOST ? HOST : await getPublicIP();
-    res.render('status/index',{location: `${IP}:${port}/exstatus66286721564023`});
+    res.render('status/index',{location: `${IP}:${port}/status`});
 })
 
 systemApp.post('/saveToken', function (req, res) {
