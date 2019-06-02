@@ -127,7 +127,7 @@ systemApp.get('/resetPassword/:username/:token', async function (req, res) {
             await db.deleteUsers(user.counter);
             logger.info('Need To Reset Default Password Through Token')
             db.setUser(user.username, '12345678', user.userEmail, 556677);
-            //db.deleteResetToken();
+            db.deleteResetToken();
         }
     } catch (error) {
         logger.error(error)
