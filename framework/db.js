@@ -1,9 +1,10 @@
 const JsonDB = require("node-json-db");
 const bcrypt = require("bcrypt");
 const uuidv1 = require("uuid/v1");
+const { DB_PATH } = require('../config');
 const { Config } = require("node-json-db/dist/lib/JsonDBConfig");
 
-const db = new JsonDB(new Config("resource/database/jsonStore", true, false));
+const db = new JsonDB(new Config(DB_PATH || "resource/database/jsonStore", true, false));
 let instance = null;
 
 const SALT_ROUNDS = 2;
