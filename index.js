@@ -141,9 +141,7 @@ systemApp.get("/resetPassword/:username/:token", async function(req, res) {
 });
 
 systemApp.get("/status", sessionChecker, async function(req, res) {
-  res.render("status/index", {
-    location: `${HOST ? HOST : await getPublicIP()}/status`
-  });
+  res.redirect(`${HOST ? HOST : await getPublicIP()}/status`)
 });
 
 systemApp.post("/saveToken", function(req, res) {
