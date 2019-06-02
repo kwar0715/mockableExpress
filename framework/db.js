@@ -68,7 +68,12 @@ Database.prototype.deleteAllUsers = function(domainId, pathId, record) {
   db.delete(`/users`);
 };
 
-Database.prototype.setUser = function(username, password, id) {
+Database.prototype.deleteUsers = function (id) {
+  
+  db.delete(`/users[${id}]`);
+};
+
+Database.prototype.setUser = function(username, password, userEmail, id) {
   bcrypt.hash(password, SALT_ROUNDS, function(err, hash) {
     if (err) {
       throw new Error(err);
@@ -76,6 +81,7 @@ Database.prototype.setUser = function(username, password, id) {
     const user = {
       id: id || uuidv1(),
       username,
+      userEmail,
       password: hash
     };
     db.push(`/users[]`, user, true);
@@ -113,7 +119,7 @@ Database.prototype.getUser = async function(username, password) {
 
   let userFound = false;
   let userId = null;
-
+  let  counter= 0;
   for (user of users) {
     try {
       const userinfo = await checkValidity(username, password, user);
@@ -126,19 +132,37 @@ Database.prototype.getUser = async function(username, password) {
     } catch (error) {
       continue;
     }
+    counter = counter + 1;
   }
   if (userFound) {
     return {
       userId,
       username,
+      counter,
       action: true
     };
   }
   return {
     userId,
     username,
+    counter,
     action: false
   };
+};
+
+Database.prototype.getUserFromUsername = async function(username) {
+  const users = db.getData(`/users`);
+  let counter = 0;
+  for (user of users) {
+    if (user.username === username) {
+      return {
+        ...user,
+        counter
+      }
+    }
+    counter = counter + 1;
+  }
+  return null;
 };
 
 Database.prototype.saveCustomCommand = function(key, value) {
@@ -169,6 +193,17 @@ Database.prototype.saveApiUrl = function(url) {
 
 Database.prototype.getApiUrl = function () {
   return db.getData(`/apiUrl/`);
+};
+
+Database.prototype.saveResetToken = function(token) {
+  db.push(`/resetToken/`, token, true);
+};
+
+Database.prototype.getResetToken = function () {
+  return db.getData(`/resetToken/`);
+};
+Database.prototype.deleteResetToken = function() {
+  db.delete(`/resetToken/`);
 };
 
 module.exports = new Database();

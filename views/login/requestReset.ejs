@@ -14,13 +14,9 @@
     ></script>
 
     <link href="styles/login.css" rel="stylesheet" />
-    <script>
-      if(<%= message%> !== '')
-        alert(<%= message%>)
-    </script>
   </head>
   <body class="text-center">
-    <form method="POST" action="/login" class="form-signin">
+    <form method="POST" action="/requestReset" class="form-signin">
       <img
         class="mb-4"
         src="imgs/logo.png"
@@ -35,20 +31,10 @@
         placeholder="Username"
         required
       />
-
-      <label for="password" class="sr-only">Password</label>
-      <input
-        type="password"
-        name="password"
-        class="form-control"
-        placeholder="Password"
-        required
-      />
-
+      Check Your Email
       <button class="btn btn-lg btn-primary btn-block" type="submit">
-        Sign in
+        Request
       </button>
-      <a href="/requestReset">Reset Password</a>
       <p class="mt-5 mb-3 text-muted">&copy; 2019 - Open source</p>
     </form>
   </body>
