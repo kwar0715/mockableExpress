@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const _ = require("underscore");
+const cors = require('cors');
 const expressMonitor = require('express-status-monitor');
 const Database = require("./db");
 const Logger = require("./logger");
@@ -32,6 +33,7 @@ const Server = function() {
 
   this.app.use(bodyParser.urlencoded({ extended: false }));
   this.app.use(bodyParser.json());
+  this.app.use(cors());
   this.app.use(expressMonitor(swaggerConfig));
   this.status = "Initialized";
   return this;
