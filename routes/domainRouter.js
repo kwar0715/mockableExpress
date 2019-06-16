@@ -12,7 +12,7 @@ domainRouter.get("/",async function (req, res) {
   let domains = null;
   try {
     domains = Database.getAllDomains();
-    Logger.info(`Load Domains : ${JSON.stringify(domains)}`);
+    Logger.info(`Load Domains : ${domains}`);
   } catch (error) {
     Logger.error(`Retrive Domain Data {Error: ${error}}`);
   }
