@@ -1,48 +1,178 @@
 const JsonDB = require("node-json-db");
+const mysql = require('mysql');
 const bcrypt = require("bcrypt");
 const uuidv1 = require("uuid/v1");
-const { DB_PATH } = require('../config');
+const logger = require("../framework/logger");
+const { DB_PATH, MYSQL_DATABASE,MYSQL_HOST,MYSQL_PASSWORD,MYSQL_USERNAME } = require('../config');
 const { Config } = require("node-json-db/dist/lib/JsonDBConfig");
 
 const db = new JsonDB(new Config(DB_PATH || "resource/database/jsonStore", true, false));
 let instance = null;
 
 const SALT_ROUNDS = 2;
+const STATE = {
+  DISCONNECTED:'disconnected'
+}
+
+const TABLES = {
+  DOMAINS: 'domains',
+  PATHS:'paths'
+}
 
 const Database = function() {
   if (instance == null) {
     instance = this;
   }
-  return instance;
+  this.connection = mysql.createConnection({
+    host     : MYSQL_HOST,
+    user     : MYSQL_USERNAME,
+    password : MYSQL_PASSWORD,
+    database : MYSQL_DATABASE
+  })
+
+  this.createTables().then(()=>instance).catch(()=> instance);
 };
 
-Database.prototype.addDomain = function(domainName) {
+Database.prototype.connect = function () {
+  const connection = this.connection;
+  return new Promise(function(resolve, reject){
+    connection.connect(function(err) {
+      if (err) {
+        logger.error(`Mysql Connection Error ${err}`);
+        return reject(err);
+      }
+      logger.info(`Mysql Connected ${connection.threadId}`);
+      return resolve(connection.threadId)
+    });
+  })
+}
+
+Database.prototype.disconnect = function () {
+  const connection = this.connection;
+  return new Promise(function(resolve, reject){
+    connection.end(function(err) {
+      if (err) {
+        logger.error(`Mysql Disconnection Error ${err}`);
+        return reject(err);
+      }
+      logger.info(`Mysql Disconnected ${connection.threadId}`);
+      return resolve(connection.threadId)
+    });
+  })
+}
+
+Database.prototype.query = function (query) {
+  logger.info(query)
+  return new Promise(async (resolve, reject) => {
+    if (this.connection.state === STATE.DISCONNECTED) {
+      await this.connect()
+    }
+    this.connection.query(query, function (error, results, fields) {
+      if (error) {
+        logger.error(`Mysql Query Error ${error}`);
+        return reject(error);
+      };
+      resolve(results);
+    });
+  })
+  
+}
+
+Database.prototype.createTables = async function () {
+  // domain table
+  return new Promise(async (resolve, reject) => {
+    try {
+      let query = `CREATE TABLE IF NOT EXISTS domains (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        domainId VARCHAR(36) NOT NULL,
+        domainName VARCHAR(255) NOT NULL
+      )  ENGINE=INNODB;`;
+    
+      await this.query(query);
+      
+      query = `CREATE TABLE IF NOT EXISTS paths (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        domainId VARCHAR(36) NOT NULL,
+        pathId VARCHAR(36) NOT NULL,
+        pathName VARCHAR(255) NOT NULL,
+        pathUrl VARCHAR(255) NOT NULL,
+        pathMethod VARCHAR(255) NOT NULL,
+        pathStatus VARCHAR(255) NOT NULL,
+        pathDescription VARCHAR(255) NULL,
+        header VARCHAR(255) NOT NULL,
+        authentication BOOL,
+        body VARCHAR(255) NULL
+      )  ENGINE=INNODB;`
+
+      await this.query(query);
+
+      resolve(true);
+    } catch (error) {
+      logger.error(`Mysql Create tables Error ${err}`);
+      reject(false)
+    }
+  })
+}
+
+Database.prototype.rowExists = async function (tablename, filter) {
+  const results = await this.query(`SELECT * FROM ${tablename} WHERE ${filter}`);
+  return results.length > 0;
+}
+
+Database.prototype.addDomain = async function(domainName) {
   if (!domainName) {
-    db.push(`/domains[]`, [], true);
+    logger.error(`Domain Name Not Found`);
+    return false;
   }
-  const record = {
-    domain: domainName,
-    paths: []
-  };
-  db.push(`/domains[]`, record, true);
+
+  try {
+    const exists = await this.rowExists(TABLES.DOMAINS, `domainName='${domainName}'`);
+    if (!exists) {
+      await this.query(`INSERT INTO ${TABLES.DOMAINS}(domainId,domainName) VALUES ('${uuidv1()}','${domainName}')`)
+    }
+  } catch (error) {
+    logger.error(` ${error}`);
+    return false;
+  }
 };
 
-Database.prototype.getAllDomains = function() {
-  return db.getData("/domains");
+Database.prototype.getAllDomains = async function () {
+  
+  const domains = [];
+  const domainPaths = await this.query(`SELECT domainId, domainName FROM ${TABLES.DOMAINS}`);
+  for (let i = 0; i < domainPaths.length; i++){
+    const domain = domainPaths[i];
+    const pathsCount = await this.query(`SELECT COUNT(pathId) as pathCount FROM ${TABLES.PATHS} WHERE domainId='${domain.domainId}'`);
+    domains.push({
+      domainId: domain.domainId,
+      domainName: domain.domainName,
+      pathCount : pathsCount[0].pathCount
+    })
+  }  
+  return domains;
 };
 
-Database.prototype.getDomainFromId = function(domainId) {
-  return db.getData(`/domains[${domainId}]`);
+Database.prototype.getDomainFromId = async function (domainId) {
+  const domain = await this.query(`SELECT domainId, domainName FROM ${TABLES.DOMAINS} WHERE domainId='${domainId}'`)
+  if (domain.length > 0) {
+    return domain[0];
+  }
+  return null;
 };
 
-Database.prototype.updateDomaiName = function(domainId, domainName) {
-  const domain = this.getDomainFromId(domainId);
-  domain.domain = domainName;
-  db.push(`/domains[${domainId}]`, domain, true);
+Database.prototype.getPathNamesForDomain = async function (domainId) {
+  const domainNames = [];
+  const paths = await this.query(`SELECT * FROM ${TABLES.PATHS} WHERE domainId = '${domainId}'`);
+  paths.forEach(domainName => domainNames.push(domainName));
+  return domainNames;
 };
 
-Database.prototype.deleteDomain = function(domainId) {
-  db.delete(`/domains[${domainId}]`);
+Database.prototype.updateDomainName = async function(domainId, domainName) {
+  await this.query(`UPDATE ${TABLES.DOMAINS} SET domainName ='${domainName}' WHERE domainId = '${domainId}'`);
+};
+
+Database.prototype.deleteDomain = async function(domainId) {
+  await this.query(`DELETE FROM ${TABLES.DOMAINS} WHERE domainId = '${domainId}'`);
 };
 
 Database.prototype.getPathsForDomain = function(domainId) {
@@ -122,6 +252,7 @@ Database.prototype.getUser = async function(username, password) {
   let userId = null;
   let  counter= 0;
   for (user of users) {
+    counter = counter + 1;
     try {
       const userinfo = await checkValidity(username, password, user);
       if (!userinfo.action) {
@@ -133,7 +264,6 @@ Database.prototype.getUser = async function(username, password) {
     } catch (error) {
       continue;
     }
-    counter = counter + 1;
   }
   if (userFound) {
     return {

@@ -6,3 +6,7 @@ module.exports.EMAIL_AUTH = process.env.EMAIL_AUTH;
 module.exports.EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 module.exports.FROM_EMAIL = process.env.FROM_EMAIL;
 module.exports.DB_PATH = process.env.DB;
+module.exports.MYSQL_HOST = process.env.MYSQL_HOST;
+module.exports.MYSQL_USERNAME = process.env.MYSQL_USERNAME;
+module.exports.MYSQL_PASSWORD = process.env.MYSQL_PASSWORD;
+module.exports.MYSQL_DATABASE = process.env.MYSQL_DATABASE;

@@ -67,11 +67,11 @@
           type="text"
           name="domainName"
           placeholder="New Domain"
-          value="<%=  (typeof editable !== 'undefined' && editable !== null)? editable.domain : ''%>"
+          value="<%=  (typeof editable !== 'undefined' && editable !== null)? editable.domainName : ''%>"
           class="form-control"
         />
         <button class="btn btn-primary" type="submit">
-          Create
+          <%= (typeof editable !== 'undefined' && editable !== null) ? 'Edit' : 'Create'%>
         </button>
 
         <div class="dropdown pull-right">
@@ -122,20 +122,20 @@
             <tbody>
               <% domains.forEach(function(domain,index){ %>
               <tr>
-                <th scope="row"><%= domain.domain%></th>
+                <th scope="row"><%= domain.domainName%></th>
                 <td>
                   <p class="domaincount">
-                    <%= domain.paths.length%>
+                    <%= domain.pathCount%>
                 </p>
               </td>
                 <td>
-                  <button type="button" class="btn btn-primary" onClick="location.href='/domain/paths/<%=index%>'">
+                  <button type="button" class="btn btn-primary" onClick="location.href='/domain/paths/<%=domain.domainId%>'">
                     Manage
                   </button>
-                  <button type="button" class="btn btn-success" onClick="location.href='/domain/edit/<%=index%>'">
+                  <button type="button" class="btn btn-success" onClick="location.href='/domain/edit/<%=domain.domainId%>'">
                     Edit
                   </button>
-                  <button type="button" class="btn btn-danger" onClick="deleteDomain(<%=index%>)">
+                  <button type="button" class="btn btn-danger" onClick="deleteDomain('<%=domain.domainId%>')">
                     Delete
                   </button>
                 </td>
