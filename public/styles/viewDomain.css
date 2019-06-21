@@ -67,3 +67,7 @@ body {
   font-style: normal;
   font-family: monospace;
 }
+
+.toggle.btn {
+  min-width: 103px;
+}

@@ -39,9 +39,9 @@ const Server = function() {
   return this;
 };
 
-Server.prototype.init = function(port) {
+Server.prototype.init = async function(port) {
   this.port = port;
-  this.applyDomainList();
+  await this.applyDomainList();
   this.listner = this.app.listen(this.port, function() {
     Logger.info(`Mockable Server : Start Listening at ${port}`);
   });
@@ -214,12 +214,13 @@ function
   }
 }
 
-Server.prototype.createEndpoint = function(domainName, pathObject) {
-  const path = `${domainName}${pathObject.path}`;
+Server.prototype.createEndpoint = function (domainName, pathObject) {
+  const path = `${domainName}${pathObject.pathUrl}`;
+  Logger.info(`Path : ${path}`)
   try {
     const response = function (req, res, next) {
-      if (pathObject.authorization && (req.headers.authorization !== Database.getToken())) {
-        res.status(401).send("Token missmatch; check your api token");
+      if (pathObject.authentication === 1 && (req.headers.authorization !== Database.getToken())) {
+        res.status(401).send("Token miss match; check your api token");
         return;
       }
       try {
@@ -251,7 +252,7 @@ Server.prototype.createEndpoint = function(domainName, pathObject) {
         objectBody = filterCommands(IF_COMMAND, COMMAND_CODE.IF, objectBody);
         objectBody = filterCommands(FOR_COMMAND, COMMAND_CODE.FOR, objectBody);
         Logger.info(`Reached ${path}`);
-        const response = res.status(Number(pathObject.statusCode) || 200)
+        const response = res.status(Number(pathObject.pathStatus) || 200)
         const contentType = pathObject.header['Content-Type'];
         if (contentType.indexOf('application/json')) {
           response.json(objectBody);//.replace(/\s/g, ""))
@@ -265,7 +266,7 @@ Server.prototype.createEndpoint = function(domainName, pathObject) {
       }
     };
 
-    switch (pathObject.method) {
+    switch (pathObject.pathMethod) {
       case "get": {
         this.app.get(path, response);
         break;
@@ -298,22 +299,12 @@ Server.prototype.createEndpoint = function(domainName, pathObject) {
   }
 };
 
-Server.prototype.applyDomainList = function() {
+Server.prototype.applyDomainList = async function() {
   try {
-    const domains = Database.getAllDomains();
-    domains.forEach(domain => {
-      if (domain.paths.length === 0) return;
-      domain.paths.forEach(path => {
-        Logger.info(`Apply Endpoint : ${domain.domain}${path.path}`);
-        let pathObject = null;
-        try {
-          pathObject = JSON.parse(path);
-        } catch (error) {
-          pathObject = path;
-        }
-        this.createEndpoint(domain.domain, pathObject);
-      });
-    });
+    const results = await Database.getAllPaths();
+    results.forEach(result=>{
+      this.createEndpoint(result.domainName, {...result, header: JSON.parse(result.header)})
+    })
   } catch (error) {
     Logger.error(`Domain List cannot Find ${error}`);
   }

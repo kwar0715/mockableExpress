@@ -6,7 +6,6 @@ module.exports.getPublicIP = async function () {
         const result = await response.json();
         return result.ip;
     } catch (error) {
-        console.log(error);
         return undefined;
     }
 }

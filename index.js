@@ -1,5 +1,6 @@
 const Server = require("./framework/server");
 const express = require("express");
+const _ = require("lodash");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
@@ -23,11 +24,6 @@ const systemApp = express();
 systemApp.set("view engine", "ejs");
 systemApp.use(express.static("public"));
 
-try {
-  db.getAllDomains();
-} catch (error) {
-  logger.error(`Domains are empty ${error}`);
-}
 // create Admin User Default
 try {
   db.getAllUsers();
@@ -52,9 +48,7 @@ systemApp.use(
     secret: "aaaa",
     resave: false,
     saveUninitialized: false,
-    cookie: {
-      expires: COOKIE_EXPIRES
-    }
+    cookie: {}
   })
 );
 
@@ -141,7 +135,7 @@ systemApp.get("/resetPassword/:username/:token", async function(req, res) {
 });
 
 systemApp.get("/status", sessionChecker, async function(req, res) {
-  res.redirect(`${HOST ? HOST : await getPublicIP()}/status`)
+  res.redirect(`${HOST ? HOST : await getPublicIP()}/status`);
 });
 
 systemApp.post("/saveToken", function(req, res) {
@@ -172,7 +166,7 @@ systemApp.post("/login", async function(req, res) {
     if (user.action) {
       req.session.user = user;
       if (user.userId == 556677) {
-        db.deleteUsers(user.counter);
+        db.deleteUsers(user.counter-1);
         logger.info("Need To Reset Default Password");
         res.render("login/resetPassword", user);
         res.end();
@@ -187,6 +181,109 @@ systemApp.post("/login", async function(req, res) {
   res.redirect("/");
 });
 
+systemApp.post("/saveEnableUpload", function(req, res) {
+  db.setEnableUpload({
+    enable: req.body.status
+  });
+  res.end();
+});
+
+systemApp.get("/getEnableUpload", function(req, res) {
+  return res.send(db.getEnableUpload());
+});
+
+systemApp.post("/upload", async function(req, res) {
+  const isEnable = db.getEnableUpload().enable == "true";
+  if (!isEnable) {
+    return res.status(401).send("Unauthorized permission to api creation(Enable Upload function)")
+  }
+  if (!_.isArray(req.body)) {
+    return res.status(400).send("Bad Request (Body should contain an array)")
+  }
+  const result = [];
+  for (let i = 0; i < req.body.length; i++) {
+    const {
+      domainName,
+      pathName,
+      pathUrl,
+      pathDescription,
+      pathMethod,
+      pathStatus,
+      header,
+      body
+    } = req.body[i];
+    logger.info(`Preparing to upload ... ${JSON.stringify(req.body)}`);
+    if (!domainName || !pathName || !pathUrl || !pathMethod || !body) {
+      return res
+        .status(400)
+        .send(
+          "Required Parameters not found (domainName,pathName,pathUrl, pathMethod, body)"
+        );
+    }
+    if (
+      !_.isString(domainName) ||
+      !_.isString(pathName) ||
+      !_.includes(["get", "post", "put", "delete"], _.toLower(pathMethod))
+    ) {
+      return res.status(400).send("Invalid Parameter Found");
+    }
+    let headers = { "Content-Type": "application/json" };
+    if (header && _.isObject(header)) {
+      headers = Object.assign(headers, header);
+    }
+  
+    const data = {
+      domainName: domainName.startsWith("/") ? domainName : `/${domainName}`,
+      pathName: pathName.startsWith("/") ? pathName : `/${pathName}`,
+      pathUrl,
+      pathDescription: pathDescription || "",
+      pathMethod: _.toLower(pathMethod),
+      pathStatus: _.isNumber(pathStatus) ? Number.parseInt(pathStatus) : 200,
+      header: headers,
+      authentication: false,
+      body: _.isObject(body) ? JSON.stringify(body) : body
+    };
+    logger.info(`Preparing to upload record data... ${JSON.stringify(data)}`);
+    try {
+      const existedPath = await db.getExistedPathId({
+        domainName: data.domainName,
+        pathUrl: data.pathUrl,
+        pathMethod: data.pathMethod
+      });
+      let domainId = existedPath.domainId;
+      let pathId = existedPath.pathId;
+      if (_.isEmpty(existedPath)) {
+        domainId = await db.addDomain(data.domainName);
+      }
+
+      if (!pathId) {
+        pathId = await db.addPath(domainId, data);
+      } else {
+        await db.updatePath(domainId, pathId, {
+          ...data,
+          authentication: existedPath.authentication
+        });
+        // if path existed
+        Server().removeRoute(`${data.domainName}${data.pathUrl}`, data.pathMethod);
+      }
+
+      Server().createEndpoint(data.domainName, data);
+      logger.info(
+        `Api created {${data.domainName}${data.pathUrl},domainId:${domainId},pathId:${pathId}}`
+      );
+      result.push({
+        domainId,
+        pathId,
+        pathUrl: `${data.domainName}${data.pathUrl}`
+      })
+    } catch (error) {
+      logger.error(error);
+      result.push({error});
+    }
+  }
+  res.json(result)
+});
+
 systemApp.use("/domain", sessionChecker, domainRouter);
 systemApp.use("/domain/paths", sessionChecker, pathRouter);
 
@@ -195,4 +292,9 @@ server.listen(DEV_SERER_PORT, function() {
   logger.info(`Admin Server : Start Listening at ${DEV_SERER_PORT}`);
 });
 
-Server().init(port);
+(async function() {
+  await db.createTables();
+  await Server().init(port);
+})()
+  .then(() => logger.info("Successfully created api server"))
+  .catch(err => logger.error(err));

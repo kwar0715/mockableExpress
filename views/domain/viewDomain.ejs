@@ -25,6 +25,9 @@
       crossorigin="anonymous"
     ></script>
 
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
     <link href="/styles/viewDomain.css" rel="stylesheet" />
     <script src="/scripts/viewDomain.js"></script>
   </head>
@@ -67,11 +70,11 @@
           type="text"
           name="domainName"
           placeholder="New Domain"
-          value="<%=  (typeof editable !== 'undefined' && editable !== null)? editable.domain : ''%>"
+          value="<%=  (typeof editable !== 'undefined' && editable !== null)? editable.domainName : ''%>"
           class="form-control"
         />
         <button class="btn btn-primary" type="submit">
-          Create
+          <%= (typeof editable !== 'undefined' && editable !== null) ? 'Edit' : 'Create'%>
         </button>
 
         <div class="dropdown pull-right">
@@ -80,6 +83,7 @@
             </button>
             <div class="dropdown-menu dropdown-menu-right">
                 <button class="dropdown-item" type="button" data-toggle="modal" data-target="#token" onclick="createAuthKey()">Create Token</button>
+                <button class="dropdown-item" type="button" data-toggle="modal" data-target="#enableUpload" onclick="getEnableUpload()">Enable Upload</button>
                 <button class="dropdown-item" type="button" onClick='window.open("/status");'>Monitor</button>
             </div>
           </div>
@@ -108,6 +112,28 @@
   
     </div>
   </div>
+
+  <!-- Enable modal-->
+  <div id="enableUpload" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Enable Upload</h3>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-inline">
+              <input type="checkbox" style="width: 20px;" id='chk-enable-upload' data-toggle="toggle" data-on="Enabled" data-off="Disabled">
+              <h6 class="text-muted" style="margin-left: 20px;">Enable api creation from external upload call</h6>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+  
+    </div>
+  </div>
       
       <% if(domains !== null && domains.length !== 0){%>
         <div class="row">
@@ -122,20 +148,20 @@
             <tbody>
               <% domains.forEach(function(domain,index){ %>
               <tr>
-                <th scope="row"><%= domain.domain%></th>
+                <th scope="row"><%= domain.domainName%></th>
                 <td>
                   <p class="domaincount">
-                    <%= domain.paths.length%>
+                    <%= domain.pathCount%>
                 </p>
               </td>
                 <td>
-                  <button type="button" class="btn btn-primary" onClick="location.href='/domain/paths/<%=index%>'">
+                  <button type="button" class="btn btn-primary" onClick="location.href='/domain/paths/<%=domain.domainId%>'">
                     Manage
                   </button>
-                  <button type="button" class="btn btn-success" onClick="location.href='/domain/edit/<%=index%>'">
+                  <button type="button" class="btn btn-success" onClick="location.href='/domain/edit/<%=domain.domainId%>'">
                     Edit
                   </button>
-                  <button type="button" class="btn btn-danger" onClick="deleteDomain(<%=index%>)">
+                  <button type="button" class="btn btn-danger" onClick="deleteDomain('<%=domain.domainId%>')">
                     Delete
                   </button>
                 </td>
