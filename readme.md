@@ -306,6 +306,49 @@ comment string
 */
 ```
 
+## Upload API
+
+You can create endpoints from upload endpoint. so first you have to enable the upload functionality.
+goto ** Menu Bar -> Enable Upload**
+
+```
+url : <host>/upload
+method : post
+headers : Content-Type : application/json
+body :{
+  [
+    {
+      "domainName":"testDomain1",
+        "pathName":"testPath1",
+        "pathUrl":"/testPath1",
+        "pathDescription": "testPath1",
+        "pathMethod":"post",
+        "pathStatus": 200,
+        "body":"testPath1"
+    },
+    {
+      "domainName":"testDomain2",
+        "pathName":"testPath2",
+        "pathUrl":"/testPath2",
+        "pathDescription": "testPath1",
+        "pathMethod":"get",
+        "pathStatus": 200,
+        "body":"#if(\"{{id}}\",=,\"10\"){{\"value\": \"A\"}}endif{\"value\": \"B\"}"
+    },
+    {
+      "domainName":"testDomain3",
+        "pathName":"testPath3",
+        "pathUrl":"/testPath3",
+        "pathDescription": "testPath3",
+        "pathMethod":"get",
+        "pathStatus": 200,
+        "body": "{\"messsage\":\"hello\"}"
+    }
+  ]
+}
+
+```
+
 ## Technologies
 
 1. Node JS : https://nodejs.org/en/
