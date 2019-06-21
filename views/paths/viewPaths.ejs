@@ -58,27 +58,27 @@
                 <th scope="col">Actions</th>
               </thead>
               <tbody>
-                <% endpoints.forEach(function(endpoint,index){ %>
+                <% endpoints.forEach(function(endpoint){ %>
                 <tr>
-                  <th scope="row"><%= endpoint.name%></th>
+                  <th scope="row"><%= endpoint.pathName%></th>
                   <td>
                     <p class="path">
-                      <%= domainName%><%= endpoint.path%>
+                      <%= domainName%><%= endpoint.pathUrl%>
                     </p>
                   </td>
                   <td>
                     <p class="method">
-                      <%= endpoint.method%>
+                      <%= endpoint.pathMethod%>
                     </p>
                   </td>
                   <td>
-                      <button type="button" class="btn btn-success btn-sm" onClick="location.href='/domain/paths/<%=domainId%>/<%=index%>/edit'">
+                      <button type="button" class="btn btn-success btn-sm" onClick="location.href='/domain/paths/<%=domainId%>/<%=endpoint.pathId%>/edit'">
                         Edit
                       </button>
-                      <button type="button" class="btn btn-danger btn-sm" onClick="deletePath(<%=domainId%>,<%=index%>)">
+                      <button type="button" class="btn btn-danger btn-sm" onClick="deletePath('<%=domainId%>','<%=endpoint.pathId%>')">
                         Delete
                       </button>
-                      <button type="button" class="btn btn-info btn-sm" onClick="window.open('<%=apiUrl%><%=domainName%><%=endpoint.path%>','_blank')">
+                      <button type="button" class="btn btn-info btn-sm" onClick="window.open('<%=apiUrl%><%=domainName%><%=endpoint.pathUrl%>','_blank')">
                         Go
                       </button>
                   </td>

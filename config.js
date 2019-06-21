@@ -1,4 +1,4 @@
-module.exports.HOST = process.env.HOST;
+module.exports.HOST = process.env.HOST || 'localhost';
 module.exports.ADMIN_PORT = process.env.ADMIN_PORT;
 module.exports.API_PORT = process.env.API_PORT;
 module.exports.EMAIL_SERVICE = process.env.EMAIL_SERVICE;

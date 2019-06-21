@@ -11,7 +11,7 @@ let instance = null;
 
 const SALT_ROUNDS = 2;
 const STATE = {
-  DISCONNECTED:'disconnected'
+  AUTHENTICATED:'authenticated'
 }
 
 const TABLES = {
@@ -20,7 +20,7 @@ const TABLES = {
 }
 
 const Database = function() {
-  if (instance == null) {
+  if (instance === null) {
     instance = this;
   }
   this.connection = mysql.createConnection({
@@ -29,8 +29,7 @@ const Database = function() {
     password : MYSQL_PASSWORD,
     database : MYSQL_DATABASE
   })
-
-  this.createTables().then(()=>instance).catch(()=> instance);
+  return this;
 };
 
 Database.prototype.connect = function () {
@@ -64,7 +63,7 @@ Database.prototype.disconnect = function () {
 Database.prototype.query = function (query) {
   logger.info(query)
   return new Promise(async (resolve, reject) => {
-    if (this.connection.state === STATE.DISCONNECTED) {
+    if (this.connection.state !== STATE.AUTHENTICATED) {
       await this.connect()
     }
     this.connection.query(query, function (error, results, fields) {
@@ -72,7 +71,7 @@ Database.prototype.query = function (query) {
         logger.error(`Mysql Query Error ${error}`);
         return reject(error);
       };
-      resolve(results);
+      return resolve(results);
     });
   })
   
@@ -99,9 +98,9 @@ Database.prototype.createTables = async function () {
         pathMethod VARCHAR(255) NOT NULL,
         pathStatus VARCHAR(255) NOT NULL,
         pathDescription VARCHAR(255) NULL,
-        header VARCHAR(255) NOT NULL,
+        header TEXT NOT NULL,
         authentication BOOL,
-        body VARCHAR(255) NULL
+        body LONGTEXT NULL
       )  ENGINE=INNODB;`
 
       await this.query(query);
@@ -116,20 +115,22 @@ Database.prototype.createTables = async function () {
 
 Database.prototype.rowExists = async function (tablename, filter) {
   const results = await this.query(`SELECT * FROM ${tablename} WHERE ${filter}`);
-  return results.length > 0;
+  return results;
 }
 
 Database.prototype.addDomain = async function(domainName) {
   if (!domainName) {
-    logger.error(`Domain Name Not Found`);
+    logger.error(`Domain Name NotINNER Found`);
     return false;
   }
-
+  const id = uuidv1();
   try {
     const exists = await this.rowExists(TABLES.DOMAINS, `domainName='${domainName}'`);
-    if (!exists) {
-      await this.query(`INSERT INTO ${TABLES.DOMAINS}(domainId,domainName) VALUES ('${uuidv1()}','${domainName}')`)
+    if (exists.length <= 0) {
+      await this.query(`INSERT INTO ${TABLES.DOMAINS}(domainId,domainName) VALUES ('${id}','${domainName}')`)
+      return id;
     }
+    return exists[0].domainId;
   } catch (error) {
     logger.error(` ${error}`);
     return false;
@@ -152,6 +153,11 @@ Database.prototype.getAllDomains = async function () {
   return domains;
 };
 
+Database.prototype.getAllPaths = async function () {
+  const results = await this.query(`SELECT domains.domainId,domains.domainName,paths.pathId,paths.pathName,paths.pathUrl,paths.pathMethod,paths.pathStatus,paths.pathDescription,paths.header,paths.authentication,paths.body FROM ${TABLES.DOMAINS} as domains INNER JOIN ${TABLES.PATHS} as paths ON domains.domainId=paths.domainId`);
+  return results;
+};
+
 Database.prototype.getDomainFromId = async function (domainId) {
   const domain = await this.query(`SELECT domainId, domainName FROM ${TABLES.DOMAINS} WHERE domainId='${domainId}'`)
   if (domain.length > 0) {
@@ -161,10 +167,10 @@ Database.prototype.getDomainFromId = async function (domainId) {
 };
 
 Database.prototype.getPathNamesForDomain = async function (domainId) {
-  const domainNames = [];
-  const paths = await this.query(`SELECT * FROM ${TABLES.PATHS} WHERE domainId = '${domainId}'`);
-  paths.forEach(domainName => domainNames.push(domainName));
-  return domainNames;
+  const pathNames = [];
+  const results = await this.query(`SELECT * FROM ${TABLES.PATHS} WHERE domainId = '${domainId}'`);
+  results.forEach(result => pathNames.push(result));
+  return pathNames;
 };
 
 Database.prototype.updateDomainName = async function(domainId, domainName) {
@@ -175,24 +181,84 @@ Database.prototype.deleteDomain = async function(domainId) {
   await this.query(`DELETE FROM ${TABLES.DOMAINS} WHERE domainId = '${domainId}'`);
 };
 
+Database.prototype.getPathsFromDomainId = async function (domainId) {
+  const results = await this.query(`SELECT domains.domainId,domains.domainName,paths.pathId,paths.pathName,paths.pathUrl,paths.pathMethod,paths.pathStatus,paths.pathDescription,paths.header,paths.authentication,paths.body FROM ${TABLES.DOMAINS} as domains INNER JOIN ${TABLES.PATHS} as paths ON domains.domainId=paths.domainId WHERE domains.domainId='${domainId}'`);
+  if (results.length > 0) {
+    return {
+      domainName: results[0].domainName,
+      paths:results
+    }
+  }
+  const domain = await this.getDomainFromId(domainId);
+  return {
+    domainName: domain.domainName,
+    paths:[]
+  }
+}
+
+Database.prototype.addPath = async function (domainId, record) {
+  const id = uuidv1();
+  const query =`INSERT INTO ${TABLES.PATHS}(domainId,pathId,pathName,pathUrl,pathMethod,pathStatus,pathDescription,header,authentication,body) values('${domainId}','${id}','${record.pathName}','${record.pathUrl}','${record.pathMethod}','${record.pathStatus}','${record.pathDescription}','${JSON.stringify(record.header)}',${record.authentication},'${record.body}')`
+  await this.query(query)
+  return id;
+};
+
+Database.prototype.getExistedPathId = async function ({ domainName, pathUrl, pathMethod, pathStatus }) {
+  const results = await this.query(`SELECT domains.domainId,paths.pathId,paths.authentication 
+  FROM ${TABLES.DOMAINS} as domains LEFT JOIN ${TABLES.PATHS} as paths 
+  ON domains.domainId=paths.domainId 
+  WHERE domains.domainName='${domainName}' AND paths.pathUrl = '${pathUrl}' AND paths.pathMethod = '${pathMethod}'`);
+  if (results.length > 0) {
+    return {
+      domainId: results[0].domainId,
+      pathId: results[0].pathId,
+      authentication: results[0].authentication === 0 ? false :true
+    }
+  } else {
+    return {}
+  }
+}
+
+Database.prototype.getPath = async function (domainId, pathId) {
+  const results = await this.query(`SELECT domains.domainId,domains.domainName,paths.pathId,paths.pathName,paths.pathUrl,paths.pathMethod,paths.pathStatus,paths.pathDescription,paths.header,paths.authentication,paths.body FROM ${TABLES.DOMAINS} as domains INNER JOIN ${TABLES.PATHS} as paths ON domains.domainId=paths.domainId WHERE domains.domainId='${domainId}' AND paths.pathId = '${pathId}'`);
+  if (results.length > 0) {
+    return {
+      domainName: results[0].domainName,
+      paths:results
+    }
+  }
+  const domain = await this.getDomainFromId(domainId);
+  if (domain === null) {
+    return {
+      domainName: null,
+      paths:[]
+    }
+  }
+  return {
+    domainName: domain.domainName,
+    paths:[]
+  }
+}
+
+Database.prototype.updatePath = async function(domainId, pathId, record) {
+  const query = `UPDATE ${TABLES.PATHS} SET 
+  pathName='${record.pathName}',
+  pathUrl='${record.pathUrl}',
+  pathMethod='${record.pathMethod}',
+  pathStatus='${record.pathStatus}',
+  pathDescription='${record.pathDescription}',
+  header='${JSON.stringify(record.header)}',
+  authentication=${record.authentication},
+  body='${record.body}' WHERE domainId='${domainId}' AND pathId='${pathId}'`
+  await this.query(query);
+};
+
+Database.prototype.deletePath = async function(domainId, pathId) {
+  await this.query(`DELETE FROM ${TABLES.PATHS} WHERE domainId = '${domainId}' AND pathId = '${pathId}'`);
+};
+
 Database.prototype.getPathsForDomain = function(domainId) {
   return db.getData(`/domains[${domainId}]`).paths;
-};
-
-Database.prototype.addPath = function(domainId, record) {
-  db.push(`/domains[${domainId}]/paths[]`, record, true);
-};
-
-Database.prototype.getPath = function(domainId, pathId) {
-  return db.getData(`/domains[${domainId}]/paths[${pathId}]`);
-};
-
-Database.prototype.updatePath = function(domainId, pathId, record) {
-  db.push(`/domains[${domainId}]/paths[${pathId}]`, record, true);
-};
-
-Database.prototype.deletePath = function(domainId, pathId, record) {
-  db.delete(`/domains[${domainId}]/paths[${pathId}]`);
 };
 
 Database.prototype.deleteAllUsers = function(domainId, pathId, record) {
@@ -309,6 +375,14 @@ Database.prototype.delCustomCommand = function(key, value) {
   db.delete(`/userCommands/${key}/`);
   return "";
 };
+
+Database.prototype.setEnableUpload = function (data) {
+  db.push('/upload/',data,true)
+}
+
+Database.prototype.getEnableUpload = function (data) {
+  return db.getData('/upload/')
+}
 
 Database.prototype.saveToken = function(token) {
   db.push(`/authToken/`, token, true);

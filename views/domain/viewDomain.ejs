@@ -25,6 +25,9 @@
       crossorigin="anonymous"
     ></script>
 
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
     <link href="/styles/viewDomain.css" rel="stylesheet" />
     <script src="/scripts/viewDomain.js"></script>
   </head>
@@ -80,6 +83,7 @@
             </button>
             <div class="dropdown-menu dropdown-menu-right">
                 <button class="dropdown-item" type="button" data-toggle="modal" data-target="#token" onclick="createAuthKey()">Create Token</button>
+                <button class="dropdown-item" type="button" data-toggle="modal" data-target="#enableUpload" onclick="getEnableUpload()">Enable Upload</button>
                 <button class="dropdown-item" type="button" onClick='window.open("/status");'>Monitor</button>
             </div>
           </div>
@@ -100,6 +104,28 @@
         <div class="modal-body">
           <p>Add this to your header</p>
           <p class="authkey" id="authkey"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+
+  <!-- Enable modal-->
+  <div id="enableUpload" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Enable Upload</h3>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-inline">
+              <input type="checkbox" style="width: 20px;" id='chk-enable-upload' data-toggle="toggle" data-on="Enabled" data-off="Disabled">
+              <h6 class="text-muted" style="margin-left: 20px;">Enable api creation from external upload call</h6>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

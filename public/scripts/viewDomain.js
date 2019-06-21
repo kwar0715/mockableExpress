@@ -29,3 +29,34 @@ function createAuthKey() {
   });
 }
 
+$(function() {
+  $('#chk-enable-upload').bootstrapToggle({
+    on: 'Enabled',
+    off: 'Disabled'
+  });
+})
+
+$(function() {
+  $('#chk-enable-upload').change(function() {
+    $.ajax({
+      type: 'POST',
+      url: '/saveEnableUpload',
+      data: {
+        status:$(this).prop('checked')
+      }
+    });
+  })
+})
+
+function getEnableUpload() {
+  $.ajax({
+    type: 'GET',
+    url: '/getEnableUpload'
+  }).done(function (data) {
+    if(data.enable == 'true')
+      $('#chk-enable-upload').bootstrapToggle('on')
+    else
+      $('#chk-enable-upload').bootstrapToggle('off')
+  });
+}
+

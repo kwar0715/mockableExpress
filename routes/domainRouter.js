@@ -58,9 +58,9 @@ domainRouter.get("/edit/:domainId", async function(req, res) {
   }
 });
 
-domainRouter.post("/edit/:domainId", async function(req, res) {
+domainRouter.post("/edit/:domainId", async function (req, res) {
+  const domainId = req.params.domainId;
   try {
-    const domainId = req.params.domainId;
     let newDomainName = req.body.domainName;
     newDomainName = newDomainName.startsWith("/") ? newDomainName : `/${name}`;
     const domain = await Database.getDomainFromId(domainId);
@@ -68,11 +68,8 @@ domainRouter.post("/edit/:domainId", async function(req, res) {
     const pathNames = await Database.getPathNamesForDomain(domainId);
     if (pathNames.length > 0) {
       pathNames.forEach(function(pathName) {
-        Server().removeRoute(`${domainName}${pathName}`);
-      });
-
-      domain.paths.forEach(function(path) {
-        Server().createEndpoint(name, path);
+        Server().removeRoute(`${domainName}${pathName.pathUrl}`,pathName.pathMethod);
+        Server().createEndpoint(name, pathName);
       });
     }
     await Database.updateDomainName(domainId, newDomainName);
@@ -94,7 +91,7 @@ domainRouter.get("/delete/:domainId", async function(req, res) {
     const pathNames = await Database.getPathNamesForDomain(domainId);
     if (pathNames.length > 0) {
       pathNames.forEach(function(pathName) {
-        Server().removeRoute(`${domainName}${pathName}`);
+        Server().removeRoute(`${domainName}${pathName.pathUrl}`,pathName.pathMethod);
       });
     }
     await Database.deleteDomain(domainId);
