@@ -200,84 +200,91 @@ systemApp.post("/upload", async function(req, res) {
   if (!isEnable) {
     return res.status(401).send("Unauthorized permission to api creation(Enable Upload function)")
   }
-  const {
-    domainName,
-    pathName,
-    pathUrl,
-    pathDescription,
-    pathMethod,
-    pathStatus,
-    header,
-    body
-  } = req.body;
-  logger.info(`Preparing to upload ... ${JSON.stringify(req.body)}`);
-  if (!domainName || !pathName || !pathUrl || !pathMethod || !body) {
-    return res
-      .status(400)
-      .send(
-        "Required Parameters not found (domainName,pathName,pathUrl, pathMethod, body)"
-      );
+  if (!_.isArray(req.body)) {
+    return res.status(400).send("Bad Request (Body should contain an array)")
   }
-  if (
-    !_.isString(domainName) ||
-    !_.isString(pathName) ||
-    !_.includes(["get", "post", "put", "delete"], _.toLower(pathMethod))
-  ) {
-    return res.status(400).send("Invalid Parameter Found");
-  }
-  let headers = { "Content-Type": "application/json" };
-  if (header && _.isObject(header)) {
-    headers = Object.assign(headers, header);
-  }
+  const result = [];
+  for (let i = 0; i < req.body.length; i++) {
+    const {
+      domainName,
+      pathName,
+      pathUrl,
+      pathDescription,
+      pathMethod,
+      pathStatus,
+      header,
+      body
+    } = req.body[i];
+    logger.info(`Preparing to upload ... ${JSON.stringify(req.body)}`);
+    if (!domainName || !pathName || !pathUrl || !pathMethod || !body) {
+      return res
+        .status(400)
+        .send(
+          "Required Parameters not found (domainName,pathName,pathUrl, pathMethod, body)"
+        );
+    }
+    if (
+      !_.isString(domainName) ||
+      !_.isString(pathName) ||
+      !_.includes(["get", "post", "put", "delete"], _.toLower(pathMethod))
+    ) {
+      return res.status(400).send("Invalid Parameter Found");
+    }
+    let headers = { "Content-Type": "application/json" };
+    if (header && _.isObject(header)) {
+      headers = Object.assign(headers, header);
+    }
   
-  const data = {
-    domainName:domainName.startsWith("/") ? domainName : `/${domainName}`,
-    pathName: pathName.startsWith("/") ? pathName : `/${pathName}`,
-    pathUrl,
-    pathDescription: pathDescription || "",
-    pathMethod: _.toLower(pathMethod),
-    pathStatus: _.isNumber(pathStatus)? Number.parseInt(pathStatus) : 200,
-    header: headers,
-    authentication: false,
-    body: _.isObject(body)? JSON.stringify(body): body
-  };
-  logger.info(`Preparing to upload record data... ${JSON.stringify(data)}`);
-  try {
-    const existedPath = await db.getExistedPathId({
-      domainName: data.domainName,
-      pathUrl:data.pathUrl,
-      pathMethod:data.pathMethod
-    });
-    let domainId = existedPath.domainId;
-    let pathId = existedPath.pathId;
-    if (_.isEmpty(existedPath)) {
-      domainId = await db.addDomain(data.domainName);
-    }
-
-    if (!pathId) {
-      pathId = await db.addPath(domainId, data);
-    } else {
-      await db.updatePath(domainId, pathId, {
-        ...data,
-        authentication: existedPath.authentication
+    const data = {
+      domainName: domainName.startsWith("/") ? domainName : `/${domainName}`,
+      pathName: pathName.startsWith("/") ? pathName : `/${pathName}`,
+      pathUrl,
+      pathDescription: pathDescription || "",
+      pathMethod: _.toLower(pathMethod),
+      pathStatus: _.isNumber(pathStatus) ? Number.parseInt(pathStatus) : 200,
+      header: headers,
+      authentication: false,
+      body: _.isObject(body) ? JSON.stringify(body) : body
+    };
+    logger.info(`Preparing to upload record data... ${JSON.stringify(data)}`);
+    try {
+      const existedPath = await db.getExistedPathId({
+        domainName: data.domainName,
+        pathUrl: data.pathUrl,
+        pathMethod: data.pathMethod
       });
-      // if path existed
-      Server().removeRoute(`${data.domainName}${data.pathUrl}`, data.pathMethod);
-    }
+      let domainId = existedPath.domainId;
+      let pathId = existedPath.pathId;
+      if (_.isEmpty(existedPath)) {
+        domainId = await db.addDomain(data.domainName);
+      }
 
-    Server().createEndpoint(data.domainName, data);
-    logger.info(
-      `Api created {${data.domainName}${data.pathUrl},domainId:${domainId},pathId:${pathId}}`
-    );
-    return res.json({
-      domainId,
-      pathId,
-      pathUrl: `${data.domainName}${data.pathUrl}`
-    });
-  } catch (error) {
-    logger.error(error);
-    return res.json(error);
+      if (!pathId) {
+        pathId = await db.addPath(domainId, data);
+      } else {
+        await db.updatePath(domainId, pathId, {
+          ...data,
+          authentication: existedPath.authentication
+        });
+        // if path existed
+        Server().removeRoute(`${data.domainName}${data.pathUrl}`, data.pathMethod);
+      }
+
+      Server().createEndpoint(data.domainName, data);
+      logger.info(
+        `Api created {${data.domainName}${data.pathUrl},domainId:${domainId},pathId:${pathId}}`
+      );
+      result.push({
+        domainId,
+        pathId,
+        pathUrl: `${data.domainName}${data.pathUrl}`
+      })
+    } catch (error) {
+      logger.error(error);
+      result.push({error});
+    }
   }
+  res.json(result)
 });
 
 systemApp.use("/domain", sessionChecker, domainRouter);

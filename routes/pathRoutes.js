@@ -93,8 +93,7 @@ pathRouter.get("/:domainId/:pathId/edit",async function(req, res) {
     });
 
     const selected = "selected";
-
-    switch (pathInfo.pathMethod) {
+    switch (pathInfo.paths[0].pathMethod) {
       case "get":
         assignedData.get = selected;
         break;
