@@ -48,9 +48,7 @@ systemApp.use(
     secret: "aaaa",
     resave: false,
     saveUninitialized: false,
-    cookie: {
-      expires: COOKIE_EXPIRES
-    }
+    cookie: {}
   })
 );
 
@@ -62,7 +60,6 @@ systemApp.use((req, res, next) => {
 });
 
 const sessionChecker = (req, res, next) => {
-  return next();
   if (req.session.user && req.cookies.userId) {
     next();
   } else {
@@ -169,7 +166,7 @@ systemApp.post("/login", async function(req, res) {
     if (user.action) {
       req.session.user = user;
       if (user.userId == 556677) {
-        db.deleteUsers(user.counter);
+        db.deleteUsers(user.counter-1);
         logger.info("Need To Reset Default Password");
         res.render("login/resetPassword", user);
         res.end();
