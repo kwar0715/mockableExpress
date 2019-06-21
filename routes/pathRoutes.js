@@ -130,11 +130,22 @@ pathRouter.post("/:domainId/:pathId/edit", async function (req, res) {
   const previousDomainName = pathResult.domainName;
   const previousPathUrl = pathResult.paths[0].pathUrl;
   const previousPathMethod = pathResult.paths[0].pathMethod;
+  let path = req.body.path;
+  path = path.startsWith("/") ? path : `/${path}`;
 
-  
+  const existedPath = await Database.getExistedPathId({
+    domainName: previousDomainName,
+    pathUrl: path,
+    pathMethod: req.body.method
+  });
+  if (!_.isEmpty(existedPath)) {
+    Logger.info(
+      `Domain New Path can not be Edited {Id: ${domainId},pathId${pathId}}`
+    );
+    return res.redirect(`/domain/paths/${domainId}`);
+  }
   try {
-    let path = req.body.path;
-    path = path.startsWith("/") ? path : `/${path}`;
+    
     const record = {
       pathName: req.body.name,
       pathUrl: path,
