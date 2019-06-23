@@ -4,6 +4,7 @@ const _ = require("lodash");
 const Database = require("../framework/db");
 const Logger = require("../framework/logger");
 const Server = require("../framework/server");
+const {  ADMIN_PREFIX } = require("../config");
 
 pathRouter.get("/:domainId",async function(req, res) {
   const domainId = req.params.domainId;
@@ -22,11 +23,12 @@ pathRouter.get("/:domainId",async function(req, res) {
     res.render("paths/viewPaths", params);
   } catch (error) {
     Logger.error(`Domain Paths View Error {id : ${domainId}, error:${error}}`);
-    res.redirect(`/domain/paths/${domainId}`);
+    res.redirect(`${ADMIN_PREFIX}/domain/paths/${domainId}`);
   }
 });
 
-pathRouter.get("/:domainId/new", async function(req, res) {
+pathRouter.get("/:domainId/new", async function (req, res) {
+  
   const domainId = req.params.domainId;
   try {
     const domain = await Database.getDomainFromId(domainId);
@@ -42,7 +44,7 @@ pathRouter.get("/:domainId/new", async function(req, res) {
     Logger.error(
       `Domain New Path View Error {id : ${domainId}, error:${error}}`
     );
-    res.redirect(`/domain/paths/${domainId}`);
+    res.redirect(`${ADMIN_PREFIX}/domain/paths/${domainId}`);
   }
 });
 
@@ -76,7 +78,7 @@ pathRouter.post("/:domainId/new", async function(req, res) {
       `Domain New Path Added Error {id : ${domainId}, error:${error}}`
     );
   }
-  res.redirect(`/domain/paths/${domainId}`);
+  res.redirect(`${ADMIN_PREFIX}/domain/paths/${domainId}`);
 });
 
 pathRouter.get("/:domainId/:pathId/edit",async function(req, res) {
@@ -119,7 +121,7 @@ pathRouter.get("/:domainId/:pathId/edit",async function(req, res) {
     Logger.error(
       `Domain Edit Path Error {id : ${domainId}/${pathId}, error:${error}}`
     );
-    res.redirect(`/domain/paths/${domainId}`);
+    res.redirect(`${ADMIN_PREFIX}/domain/paths/${domainId}`);
   }
 });
 
@@ -139,11 +141,11 @@ pathRouter.post("/:domainId/:pathId/edit", async function (req, res) {
     pathUrl: path,
     pathMethod: req.body.method
   });
-  if (!_.isEmpty(existedPath)) {
+  if (_.isEmpty(existedPath)) {
     Logger.info(
       `Domain New Path can not be Edited {Id: ${domainId},pathId${pathId}}`
     );
-    return res.redirect(`/domain/paths/${domainId}`);
+    return res.redirect(`${ADMIN_PREFIX}/domain/paths/${domainId}`);
   }
   try {
     
@@ -172,7 +174,7 @@ pathRouter.post("/:domainId/:pathId/edit", async function (req, res) {
       `Domain New Path Edited Error {id : ${domainId}, error:${error}}`
     );
   }
-  res.redirect(`/domain/paths/${domainId}`);
+  res.redirect(`/admin/domain/paths/${domainId}`);
 });
 
 pathRouter.get("/:domainId/:pathId/delete",async function(req, res) {
@@ -191,7 +193,7 @@ pathRouter.get("/:domainId/:pathId/delete",async function(req, res) {
       `Domain Path Deleted Error {id : ${domainId}:${pathId}, error:${error}}`
     );
   }
-  res.redirect(`/domain/paths/${domainId}`);
+  res.redirect(`${ADMIN_PREFIX}/domain/paths/${domainId}`);
 });
 
 module.exports = pathRouter;

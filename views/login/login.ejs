@@ -13,14 +13,14 @@
       crossorigin="anonymous"
     ></script>
 
-    <link href="styles/login.css" rel="stylesheet" />
+    <link href="/admin/styles/login.css" rel="stylesheet" />
     <script>
       if(<%= message%> !== '')
         alert(<%= message%>)
     </script>
   </head>
   <body class="text-center">
-    <form method="POST" action="/login" class="form-signin">
+    <form method="POST" action="/admin/login" class="form-signin">
       <img
         class="mb-4"
         src="imgs/logo.png"
@@ -48,7 +48,7 @@
       <button class="btn btn-lg btn-primary btn-block" type="submit">
         Sign in
       </button>
-      <a href="/requestReset">Reset Password</a>
+      <a href="admin/requestReset">Reset Password</a>
       <p class="mt-5 mb-3 text-muted">&copy; 2019 - Open source</p>
     </form>
   </body>

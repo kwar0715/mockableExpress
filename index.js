@@ -12,12 +12,9 @@ const uuidv1 = require("uuid/v1");
 const db = require("./framework/db");
 const { getPublicIP } = require("./framework/utils");
 const { send } = require("./framework/emailsender");
-const { HOST, ADMIN_PORT, API_PORT, FROM_EMAIL } = require("./config");
+const { HOST, ADMIN_PORT, API_PORT, FROM_EMAIL, ADMIN_PREFIX } = require("./config");
 
 const port = Number(process.argv[2]) || API_PORT || 3000;
-const DEV_SERER_PORT = ADMIN_PORT || 9000;
-
-const COOKIE_EXPIRES = 600000;
 
 const systemApp = express();
 
@@ -63,7 +60,7 @@ const sessionChecker = (req, res, next) => {
   if (req.session.user && req.cookies.userId) {
     next();
   } else {
-    res.redirect("/");
+    res.redirect(`${ADMIN_PREFIX}`);
   }
 };
 
@@ -80,18 +77,18 @@ systemApp.post("/requestReset", async function(req, res) {
     req.session.user = null;
     if (!req.body.username) {
       logger.error("Required Params not found");
-      res.redirect("/");
+      res.redirect(`${ADMIN_PREFIX}`);
     }
     const user = await db.getUserFromUsername(req.body.username);
     const userEmail = user.userEmail;
     if (!userEmail) {
       logger.error(`User email not found ${req.body.username}`);
-      res.redirect("/");
+      res.redirect(`${ADMIN_PREFIX}`);
     }
     const uuid = uuidv1();
     const resetLink = `http://${
       HOST ? HOST : await getPublicIP()
-    }:${DEV_SERER_PORT}/resetPassword/${req.body.username}/${uuid}`;
+    }/${ADMIN_PREFIX}resetPassword/${req.body.username}/${uuid}`;
     db.saveResetToken(uuid);
     logger.info(`Email Is Sending to ${userEmail}`);
     const subject = "Reset Your Password (MockableExpress)";
@@ -109,7 +106,7 @@ systemApp.post("/requestReset", async function(req, res) {
       message: `Password Reset Link sent to ${userEmail}`
     });
   } catch (error) {
-    res.redirect("/");
+    res.redirect(`${ADMIN_PREFIX}/`);
   }
 });
 
@@ -119,7 +116,7 @@ systemApp.get("/resetPassword/:username/:token", async function(req, res) {
     const user = await db.getUserFromUsername(req.params.username);
     if (!user) {
       req.session.user = null;
-      res.redirect("/");
+      res.redirect(`${ADMIN_PREFIX}/`);
     }
     if (req.params.token === token) {
       logger.info("Token matched");
@@ -131,7 +128,7 @@ systemApp.get("/resetPassword/:username/:token", async function(req, res) {
   } catch (error) {
     logger.error(error);
   }
-  res.redirect("/");
+  res.redirect(`${ADMIN_PREFIX}/`);
 });
 
 systemApp.get("/status", sessionChecker, async function(req, res) {
@@ -146,16 +143,16 @@ systemApp.post("/saveToken", function(req, res) {
 systemApp.get("/logout", function(req, res) {
   req.session.user = null;
   logger.error(`Logging out`);
-  res.redirect("/");
+  res.redirect(`${ADMIN_PREFIX}/`);
 });
 
 systemApp.post("/passChange", sessionChecker, async function(req, res) {
   try {
     db.setUser(req.body.username, req.body.password, req.body.userEmail);
-    res.redirect("/domain");
+    res.redirect(`${ADMIN_PREFIX}/domain`);
   } catch (error) {
     logger.error(`Update Password Error : ${error}}`);
-    res.redirect("/");
+    res.redirect(`${ADMIN_PREFIX}/`);
   }
 });
 
@@ -168,17 +165,17 @@ systemApp.post("/login", async function(req, res) {
       if (user.userId == 556677) {
         db.deleteUsers(user.counter-1);
         logger.info("Need To Reset Default Password");
-        res.render("login/resetPassword", user);
+        res.render(`${ADMIN_PREFIX}login/resetPassword`, user);
         res.end();
       }
       logger.info(`Logged In : ${user.username}`);
-      res.redirect("/domain");
+      res.redirect(`${ADMIN_PREFIX}/domain`);
     }
     logger.info(`Not Valid User : ${JSON.stringify(user)}`);
   } catch (error) {
     logger.error(error);
   }
-  res.redirect("/");
+  res.redirect(`${ADMIN_PREFIX}/`);
 });
 
 systemApp.post("/saveEnableUpload", function(req, res) {
@@ -287,13 +284,9 @@ systemApp.post("/upload", async function(req, res) {
 systemApp.use("/domain", sessionChecker, domainRouter);
 systemApp.use("/domain/paths", sessionChecker, pathRouter);
 
-const server = http.createServer(systemApp);
-server.listen(DEV_SERER_PORT, function() {
-  logger.info(`Admin Server : Start Listening at ${DEV_SERER_PORT}`);
-});
-
 (async function() {
   await db.createTables();
+  Server().app.use(ADMIN_PREFIX, systemApp);
   await Server().init(port);
 })()
   .then(() => logger.info("Successfully created api server"))

@@ -23,7 +23,7 @@
           crossorigin="anonymous"
         ></script>
     
-        <link href="/styles/addpath.css" rel="stylesheet" />
+        <link href="/admin/styles/addpath.css" rel="stylesheet" />
       </head>
   <body>
 
@@ -31,19 +31,19 @@
         <header>
             <div class="row flex-nowrap justify-content-between align-items-center">
               <div class="col-2">
-                <img class="mb-4" src="/imgs/logo.png" alt="" height="75" />
+                <img class="mb-4" src="/admin/imgs/logo.png" alt="" height="75" />
               </div>
               <div class="col-8 text-center">
                 <h4>Add End Point</h4>
               </div>
               <div class="col-2 d-flex justify-content-end align-items-center">
-                <a class="btn btn-sm btn-outline-secondary" href="/logout"
+                <a class="btn btn-sm btn-outline-secondary" href="/admin/logout"
                   >Sign out</a
                 >
               </div>
             </div>
           </header>
-        <form method="POST" action="/domain/paths/<%=domainId%>/new/" class="form">
+        <form method="POST" action="/admin/domain/paths/<%=domainId%>/new/" class="form">
           <div class="form-group row">
               Name
               <label for="name" class="sr-only">Name</label>

@@ -1,7 +1,7 @@
 function deleteDomain(index) {
   var result = confirm("Do You Want to delete?");
   if (result) {
-    window.location.href = `/domain/delete/${index}`;
+    window.location.href = `/admin/domain/delete/${index}`;
   }
 }
 
@@ -22,7 +22,7 @@ function createAuthKey() {
   document.getElementById("authkey").innerHTML = ` Authorization: Bearer ${id} `;
   $.ajax({
     type: 'POST',
-    url: '/saveToken',
+    url: '/admin/saveToken',
     data: {
       id:id
     }
@@ -40,7 +40,7 @@ $(function() {
   $('#chk-enable-upload').change(function() {
     $.ajax({
       type: 'POST',
-      url: '/saveEnableUpload',
+      url: '/admin/saveEnableUpload',
       data: {
         status:$(this).prop('checked')
       }
@@ -51,7 +51,7 @@ $(function() {
 function getEnableUpload() {
   $.ajax({
     type: 'GET',
-    url: '/getEnableUpload'
+    url: '/admin/getEnableUpload'
   }).done(function (data) {
     if(data.enable == 'true')
       $('#chk-enable-upload').bootstrapToggle('on')

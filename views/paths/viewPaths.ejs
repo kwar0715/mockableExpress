@@ -23,20 +23,20 @@
           crossorigin="anonymous"
         ></script>
     
-        <link href="/styles/viewPath.css" rel="stylesheet" />
-        <script src="/scripts/viewPath.js"></script>
+        <link href="/admin/styles/viewPath.css" rel="stylesheet" />
+        <script src="/admin/scripts/viewPath.js"></script>
       </head>
   <body>
     <div class="container">
         <header>
             <div class="row flex-nowrap justify-content-between align-items-center">
               <div class="col-2">
-                <img class="mb-4" src="/imgs/logo.png" alt="" height="75" />
+                <img class="mb-4" src="/admin/imgs/logo.png" alt="" height="75" />
               </div>
               <div class="col-8 text-center">
               </div>
               <div class="col-2 d-flex justify-content-end align-items-center">
-                <a class="btn btn-sm btn-outline-secondary" href="/logout"
+                <a class="btn btn-sm btn-outline-secondary" href="/admin/logout"
                   >Sign out</a
                 >
               </div>
@@ -45,8 +45,8 @@
 
           <h1><%= domainName%></h1>
           <div class="row buttonlist">
-              <button type="button" class="btn btn-dark" onClick="location.href='/domain'">Domains</button>
-              <button type="button" class="btn btn-success" onClick="location.href='/domain/paths/<%=domainId%>/new'">New Path</button>
+              <button type="button" class="btn btn-dark" onClick="location.href='/admin/domain'">Domains</button>
+              <button type="button" class="btn btn-success" onClick="location.href='/admin/domain/paths/<%=domainId%>/new'">New Path</button>
           </div>
 
           <% if(endpoints !== null && endpoints.length !== 0){ %>
@@ -72,7 +72,7 @@
                     </p>
                   </td>
                   <td>
-                      <button type="button" class="btn btn-success btn-sm" onClick="location.href='/domain/paths/<%=domainId%>/<%=endpoint.pathId%>/edit'">
+                      <button type="button" class="btn btn-success btn-sm" onClick="location.href='/admin/domain/paths/<%=domainId%>/<%=endpoint.pathId%>/edit'">
                         Edit
                       </button>
                       <button type="button" class="btn btn-danger btn-sm" onClick="deletePath('<%=domainId%>','<%=endpoint.pathId%>')">

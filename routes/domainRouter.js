@@ -4,7 +4,7 @@ const Database = require("../framework/db");
 const Server = require("../framework/server");
 const Logger = require("../framework/logger");
 const { getPublicIP } = require("../framework/utils");
-const { HOST } = require("../config");
+const { HOST, ADMIN_PREFIX } = require("../config");
 
 // view domains
 domainRouter.get("/", async function(req, res) {
@@ -33,7 +33,7 @@ domainRouter.post("/add", async function(req, res) {
   } catch (error) {
     Logger.error(`Domain Registration Error ${error}`);
   }
-  res.redirect("/domain");
+  res.redirect(`${ADMIN_PREFIX}/domain`);
 });
 
 domainRouter.get("/edit/:domainId", async function(req, res) {
@@ -54,7 +54,7 @@ domainRouter.get("/edit/:domainId", async function(req, res) {
     Logger.info(`Domain Edit View Loaded {name: ${JSON.stringify(params)}}`);
   } catch (error) {
     Logger.error(`Domain Edit View Loaded Error ${error}`);
-    res.redirect("/domain");
+    res.redirect(`${ADMIN_PREFIX}/domain`);
   }
 });
 
@@ -80,7 +80,7 @@ domainRouter.post("/edit/:domainId", async function (req, res) {
   } catch (error) {
     Logger.error(`Domain Edited Error {id : ${domainId}, error ${error}}`);
   }
-  res.redirect("/domain");
+  res.redirect(`${ADMIN_PREFIX}/domain`);
 });
 
 domainRouter.get("/delete/:domainId", async function(req, res) {
@@ -99,17 +99,17 @@ domainRouter.get("/delete/:domainId", async function(req, res) {
   } catch (error) {
     Logger.error(`Domain Deleted Error {id : ${domainId}}, error:${error}`);
   }
-  res.redirect("/domain");
+  res.redirect(`${ADMIN_PREFIX}/domain`);
 });
 
 domainRouter.get("/restart", async function(req, res) {
   await Server().restart();
-  res.redirect("/domain");
+  res.redirect(`${ADMIN_PREFIX}/domain`);
 });
 
 domainRouter.get("/stop", async function(req, res) {
   await Server().stop();
-  res.redirect("/domain");
+  res.redirect(`${ADMIN_PREFIX}/domain`);
 });
 
 module.exports = domainRouter;
