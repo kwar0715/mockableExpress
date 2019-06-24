@@ -283,6 +283,7 @@ systemApp.use("/domain/paths", sessionChecker, pathRouter);
 (async function() {
   await db.createTables();
   Server().app.use(ADMIN_PREFIX, systemApp);
+  Server().app.get('/',(req,res)=>res.redirect(`${ADMIN_PREFIX}/`))
   await Server().init(port);
 })()
   .then(() => logger.info("Successfully created api server"))
