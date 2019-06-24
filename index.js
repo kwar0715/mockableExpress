@@ -185,7 +185,7 @@ systemApp.get("/getEnableUpload", function(req, res) {
   return res.send(db.getEnableUpload());
 });
 
-systemApp.put("/upload", async function(req, res) {
+systemApp.post("/upload", async function(req, res) {
   const isEnable = db.getEnableUpload().enable == "true";
   if (!isEnable) {
     return res.status(401).send("Unauthorized permission to api creation(Enable Upload function)")
