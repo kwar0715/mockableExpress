@@ -36,6 +36,28 @@ module.exports.API_PORT = '3000';         // api running port
 5. reset password
 6. enjoy :-)
 
+## Run on the detached mode
+
+we use [forever](https://www.npmjs.com/package/forever) to run mockableExpress in detached mode.
+
+1. install 
+
+  ``` 
+  npm install forever -g 
+  ```
+
+2. start mockable express
+
+``` 
+#goto mockable express root
+forever start index.js 
+```
+
+3. stop mockable express server
+```
+forever stop index.js
+```
+
 ## Authorization
 
 Mockable express is providing token based authentication for endpoints, 
