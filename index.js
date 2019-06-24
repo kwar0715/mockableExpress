@@ -4,7 +4,6 @@ const _ = require("lodash");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
-const http = require("http");
 const logger = require("./framework/logger");
 const domainRouter = require("./routes/domainRouter");
 const pathRouter = require("./routes/pathRoutes");
@@ -53,6 +52,7 @@ systemApp.use((req, res, next) => {
 });
 
 const sessionChecker = (req, res, next) => {
+  return next();
   if (req.session.user && req.cookies.userId) {
     next();
   } else {
@@ -203,6 +203,7 @@ systemApp.post("/upload", async function(req, res) {
       pathMethod,
       pathStatus,
       header,
+      queries,
       body
     } = req.body[i];
     logger.info(`Preparing to upload ... ${JSON.stringify(req.body)}`);
@@ -234,6 +235,7 @@ systemApp.post("/upload", async function(req, res) {
       pathStatus: _.isNumber(pathStatus) ? Number.parseInt(pathStatus) : 200,
       header: headers,
       authentication: false,
+      queries,
       body: _.isObject(body) ? JSON.stringify(body) : body
     };
     logger.info(`Preparing to upload record data... ${JSON.stringify(data)}`);
@@ -258,6 +260,18 @@ systemApp.post("/upload", async function(req, res) {
         });
         // if path existed
         Server().removeRoute(`${data.domainName}${data.pathUrl}`, data.pathMethod);
+      }
+
+      if (data.queries) {
+        for (let i = 0; i < data.queries.length; i++){
+          const query = data.queries[i];
+          let url = `${data.domainName}${data.pathUrl}?`;
+          query.parameters.forEach(parameter => {
+            url = url.concat(`${parameter.condition}=${parameter.value}&`);
+          })
+          url = url.slice(0, -1);
+          await db.addQuery(url, query.body);
+        }
       }
 
       Server().createEndpoint(data.domainName, data);
