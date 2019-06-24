@@ -16,7 +16,8 @@ const STATE = {
 
 const TABLES = {
   DOMAINS: 'domains',
-  PATHS:'paths'
+  PATHS: 'paths',
+  TEMP_DB:'tempDatabase'
 }
 
 const Database = function() {
@@ -103,6 +104,14 @@ Database.prototype.createTables = async function () {
         body LONGTEXT NULL
       )  ENGINE=INNODB;`
 
+      await this.query(query);
+
+      query = `CREATE TABLE IF NOT EXISTS tempDatabase (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        url VARCHAR(255) NOT NULL,
+        body LONGTEXT NOT NULL
+      )  ENGINE=INNODB;
+      `
       await this.query(query);
 
       resolve(true);
@@ -198,10 +207,27 @@ Database.prototype.getPathsFromDomainId = async function (domainId) {
 
 Database.prototype.addPath = async function (domainId, record) {
   const id = uuidv1();
-  const query =`INSERT INTO ${TABLES.PATHS}(domainId,pathId,pathName,pathUrl,pathMethod,pathStatus,pathDescription,header,authentication,body) values('${domainId}','${id}','${record.pathName}','${record.pathUrl}','${record.pathMethod}','${record.pathStatus}','${record.pathDescription}','${JSON.stringify(record.header)}',${record.authentication},'${record.body}')`
+  let query =`INSERT INTO ${TABLES.PATHS}(domainId,pathId,pathName,pathUrl,pathMethod,pathStatus,pathDescription,header,authentication,body) values('${domainId}','${id}','${record.pathName}','${record.pathUrl}','${record.pathMethod}','${record.pathStatus}','${record.pathDescription}','${JSON.stringify(record.header)}',${record.authentication},'${record.body}')`
   await this.query(query)
   return id;
 };
+
+Database.prototype.addQuery = async function (url, body) {
+  let query = `INSERT INTO ${TABLES.TEMP_DB}(url,body) VALUES('${url}','${JSON.stringify(body)}')`;
+  const result = await this.rowExists(TABLES.TEMP_DB, `url='${url}'`)
+  if (result.length>0){
+    query = `UPDATE ${TABLES.TEMP_DB} SET body='${JSON.stringify(body)}' WHERE url='${url}'`;
+  }
+  await this.query(query);
+}
+
+Database.prototype.getQuery = async function (queryUrl) {
+  const query = `SELECT body FROM ${TABLES.TEMP_DB} WHERE url='${queryUrl}'`;
+  const result = await this.query(query)
+  if (result.length === 0)
+    return '';
+  return result[0].body;
+}
 
 Database.prototype.getExistedPathId = async function ({ domainName, pathUrl, pathMethod, pathStatus }) {
   const results = await this.query(`SELECT domains.domainId,paths.pathId,paths.authentication 

@@ -15,7 +15,8 @@ const DEL_COMMAND = /#del\(\"+\w+\"+\)#/;
 const IF_COMMAND = /#if\(\"\{*.+\}*\",[=<>!]+,\"\{*.+\}*\"\)([\n\s]*)\{(\w|\W(?!#if))+\}endif/
 const FOR_COMMAND = /#for\(\"\d+\"\)([\n\s]*){((?!for)\w|\W)+}endfor/
 const FOR_EACH_COMMAND = /#foreach\(\"+\[?[\w,]+\]?\"+,\"\w+\"\)([\n\s]*){((?!foreach)\w|\W)+}endforeach/
-const VARIABLES =/!\w+=\w*!/
+const VARIABLES = /!\w+=\w*!/
+const QUERY = /#Query/
 
 const COMMAND_CODE = {
   SAVE: "SAVE",
@@ -24,7 +25,8 @@ const COMMAND_CODE = {
   IF: "IF",
   FOR: "FOR",
   FOREACH:"FOREACH",
-  VARIABLE: "VARIABLE"
+  VARIABLE: "VARIABLE",
+  QUERY:"QUERY"
 };
 
 const Server = function() {
@@ -51,10 +53,13 @@ Server.prototype.init = async function(port) {
 function changeResponseBody(params, body) {
   const values = Object.values(params);
   let objectBody = body;
-
   Object.keys(params).forEach(function(key, index) {
     const value = Number(values[index]) || `"${values[index]}"`;
-    objectBody = objectBody.replace(new RegExp(`{{${key}}}`, 'g'), value);
+    try {
+      objectBody = objectBody.replace(new RegExp(`{{${key}}}`, 'g'), value);
+    } catch (error) {
+      
+    }
   });
 
   return objectBody;
@@ -167,8 +172,11 @@ function execVariables(match, response) {
   return response.replace(match[0],"").replace(new RegExp(`!${params[0]}`, 'g'),params[1])
 }
 
-function
-  filterCommands(pattern, commandType, str) {
+function getQuery(queryUrl) {
+  return Database.getQuery(queryUrl);
+}
+
+async function filterCommands(pattern, commandType, str, url) {
   try {
     const regExp = RegExp(pattern, "g");
     const modifiedStr = str;//.replace(/\s/g, "").replace(/#/g, '#\n').replace(/\/\//g, '\/\/\n');
@@ -206,6 +214,11 @@ function
           response = execVariables(match,response)
           break;
         }
+        case COMMAND_CODE.QUERY: {
+          const result = await getQuery(url);
+          response =  response.replace(match[0], result);
+          break;
+        }
       }
     }
     return response;
@@ -214,11 +227,12 @@ function
   }
 }
 
-Server.prototype.createEndpoint = function (domainName, pathObject) {
+
+Server.prototype.createEndpoint = async function (domainName, pathObject) {
   const path = `${domainName}${pathObject.pathUrl}`;
   Logger.info(`Path : ${path}`)
   try {
-    const response = function (req, res, next) {
+    const response = async function (req, res, next) {
       if (pathObject.authentication === 1 && (req.headers.authorization !== Database.getToken())) {
         res.status(401).send("Token miss match; check your api token");
         return;
@@ -229,28 +243,28 @@ Server.prototype.createEndpoint = function (domainName, pathObject) {
         let objectBody = pathObject.body;
 
         objectBody = removeComments(objectBody);
-        objectBody = filterCommands(VARIABLES, COMMAND_CODE.VARIABLE, objectBody);
+        objectBody = await filterCommands(VARIABLES, COMMAND_CODE.VARIABLE, objectBody);
         objectBody = changeResponseBody(req.params, objectBody);
         objectBody = changeResponseBody(req.query, objectBody);
         objectBody = changeResponseBody(req.body, objectBody);
-        objectBody = filterCommands(FOR_EACH_COMMAND, COMMAND_CODE.FOREACH, objectBody);
-        
+        objectBody = await filterCommands(FOR_EACH_COMMAND, COMMAND_CODE.FOREACH, objectBody);
 
-        objectBody = filterCommands(
+        objectBody = await filterCommands(
           SAVE_COMMAND,
           COMMAND_CODE.SAVE,
           objectBody
         );
 
-        objectBody = filterCommands(GET_COMMAND, COMMAND_CODE.GET, objectBody);
-        objectBody = filterCommands(
+        objectBody = await filterCommands(GET_COMMAND, COMMAND_CODE.GET, objectBody);
+        objectBody = await filterCommands(
           DEL_COMMAND,
           COMMAND_CODE.DELETE,
           objectBody
         );
         
-        objectBody = filterCommands(IF_COMMAND, COMMAND_CODE.IF, objectBody);
-        objectBody = filterCommands(FOR_COMMAND, COMMAND_CODE.FOR, objectBody);
+        objectBody = await filterCommands(IF_COMMAND, COMMAND_CODE.IF, objectBody);
+        objectBody = await filterCommands(FOR_COMMAND, COMMAND_CODE.FOR, objectBody);
+        objectBody = await filterCommands(QUERY, COMMAND_CODE.QUERY, objectBody, req.originalUrl);
         Logger.info(`Reached ${path}`);
         const response = res.status(Number(pathObject.pathStatus) || 200)
         const contentType = pathObject.header['Content-Type'];

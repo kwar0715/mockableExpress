@@ -27,7 +27,6 @@ Open Source Express Server for mocked services. Mock your services and test as y
 
 ```
 module.exports.HOST = 'http://localhost'; // Application host
-module.exports.ADMIN_PORT = '9000';       // administration port
 module.exports.API_PORT = '3000';         // api running port
 ```
 
@@ -36,6 +35,28 @@ module.exports.API_PORT = '3000';         // api running port
 4. when you run the server first, You should change the default password. type username as ```user``` and password as ```12345678```
 5. reset password
 6. enjoy :-)
+
+## Run on the detached mode
+
+we use [forever](https://www.npmjs.com/package/forever) to run mockableExpress in detached mode.
+
+1. install 
+
+  ``` 
+  npm install forever -g 
+  ```
+
+2. start mockable express
+
+``` 
+#goto mockable express root
+forever start index.js 
+```
+
+3. stop mockable express server
+```
+forever stop index.js
+```
 
 ## Authorization
 
@@ -348,6 +369,60 @@ body :{
 }
 
 ```
+
+## Dynamic Responses from Query Parameter
+
+You can change your response by query parameter without do any if else syntax. this is enabled only for upload method.
+
+```
+[
+  {
+    "domainName": "testDomain1",
+    "pathName": "testPath1",
+    "pathUrl": "/testPath1",
+    "pathDescription": "testDiscripion",
+    "pathMethod": "GET",
+    "pathStatus": 200,
+    "queries": [{
+      "parameters": [
+        {
+          "condition": "templete",
+          "value": "templete1"
+        }
+      ],
+      "body": {
+      	"value":"templete1"
+      }
+    },
+    {
+      "parameters": [
+        {
+          "condition": "templete",
+          "value": "templete2"
+        }
+      ],
+      "body": {
+      	"value":"templete2"
+      }
+    }
+    ],
+    "body": "#Query"
+  }
+]
+```
+
+#Query segment will replaced by the filtered query.
+
+```
+"parameters": [ // one query parameter
+  {
+    "condition": "templete", // parameter condition 
+    "value": "templete2"   // parameter value that will pass from the above parameter to show
+  }
+]
+```
+Templete 1 will received for testDomain1/testPath1?templete=templete1
+Templete 2 will received for testDomain1/testPath1?templete=templete2
 
 ## Technologies
 
