@@ -177,7 +177,6 @@ function getQuery(queryUrl) {
 }
 
 async function filterCommands(pattern, commandType, str, url) {
-  console.log(pattern, commandType, str, url)
   try {
     const regExp = RegExp(pattern, "g");
     const modifiedStr = str;//.replace(/\s/g, "").replace(/#/g, '#\n').replace(/\/\//g, '\/\/\n');
@@ -216,9 +215,7 @@ async function filterCommands(pattern, commandType, str, url) {
           break;
         }
         case COMMAND_CODE.QUERY: {
-          console.log('====================')
           const result = await getQuery(url);
-          console.log(result);
           response =  response.replace(match[0], result);
           break;
         }

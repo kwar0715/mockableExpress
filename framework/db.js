@@ -215,7 +215,6 @@ Database.prototype.addPath = async function (domainId, record) {
 Database.prototype.addQuery = async function (url, body) {
   let query = `INSERT INTO ${TABLES.TEMP_DB}(url,body) VALUES('${url}','${JSON.stringify(body)}')`;
   const result = await this.rowExists(TABLES.TEMP_DB, `url='${url}'`)
-  console.log(result)
   if (result.length>0){
     query = `UPDATE ${TABLES.TEMP_DB} SET body='${JSON.stringify(body)}' WHERE url='${url}'`;
   }
@@ -224,9 +223,7 @@ Database.prototype.addQuery = async function (url, body) {
 
 Database.prototype.getQuery = async function (queryUrl) {
   const query = `SELECT body FROM ${TABLES.TEMP_DB} WHERE url='${queryUrl}'`;
-  console.log(query)
   const result = await this.query(query)
-  console.log(result)
   if (result.length === 0)
     return '';
   return result[0].body;
