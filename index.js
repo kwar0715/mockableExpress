@@ -22,11 +22,7 @@ systemApp.set("view engine", "ejs");
 systemApp.use(express.static("public"));
 
 // create Admin User Default
-try {
-  db.getAllUsers();
-} catch (error) {
-  db.setUser("user", "12345678", "", 556677);
-}
+db.setUser("user", "12345678", "", 556677);
 
 // save api url
 let apiUrl;
@@ -88,7 +84,7 @@ systemApp.post("/requestReset", async function(req, res) {
     const uuid = uuidv1();
     const resetLink = `http://${
       HOST ? HOST : await getPublicIP()
-    }/${ADMIN_PREFIX}resetPassword/${req.body.username}/${uuid}`;
+    }/${ADMIN_PREFIX}/resetPassword/${req.body.username}/${uuid}`;
     db.saveResetToken(uuid);
     logger.info(`Email Is Sending to ${userEmail}`);
     const subject = "Reset Your Password (MockableExpress)";
@@ -165,7 +161,7 @@ systemApp.post("/login", async function(req, res) {
       if (user.userId == 556677) {
         db.deleteUsers(user.counter-1);
         logger.info("Need To Reset Default Password");
-        res.render(`${ADMIN_PREFIX}login/resetPassword`, user);
+        res.render(`login/resetPassword`, user);
         res.end();
       }
       logger.info(`Logged In : ${user.username}`);
