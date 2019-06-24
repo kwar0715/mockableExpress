@@ -23,7 +23,7 @@
           crossorigin="anonymous"
         ></script>
     
-        <link href="/styles/addpath.css" rel="stylesheet" />
+        <link href="/admin/styles/addpath.css" rel="stylesheet" />
       </head>
   <body>
 
@@ -31,7 +31,7 @@
         <header>
             <div class="row flex-nowrap justify-content-between align-items-center">
               <div class="col-2">
-                <img class="mb-4" src="/imgs/logo.png" alt="" height="75" />
+                <img class="mb-4" src="/admin/imgs/logo.png" alt="" height="75" />
               </div>
               <div class="col-8 text-center">
                 Edit End Point
@@ -43,7 +43,7 @@
               </div>
             </div>
           </header>
-        <form method="POST" action="/domain/paths/<%=domainId%>/<%=pathId%>/edit" class="form">
+        <form method="POST" action="/admin/domain/paths/<%=domainId%>/<%=pathId%>/edit" class="form">
           <div class="form-group row">
               Name
               <label for="name" class="sr-only">Name</label>
@@ -127,7 +127,7 @@
                 rows="15"><%=body%></textarea>
         </div>
         <button type="submit" class="btn btn-success">Save</button>
-        <button type="button" class="btn btn-dark" onClick="location.href='/domain'">Cancel</button>
+        <button type="button" class="btn btn-dark" onClick="location.href='/admin/domain'">Cancel</button>
         </form>
   </body>
 </html>
