@@ -52,7 +52,6 @@ systemApp.use((req, res, next) => {
 });
 
 const sessionChecker = (req, res, next) => {
-  return next();
   if (req.session.user && req.cookies.userId) {
     next();
   } else {
