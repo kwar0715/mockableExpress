@@ -222,7 +222,7 @@ Database.prototype.addQuery = async function (url, body) {
 }
 
 Database.prototype.getQuery = async function (queryUrl) {
-  const query = `SELECT body FROM ${TABLES.TEMP_DB} WHERE url='${queryUrl}'`;
+  const query = `SELECT body FROM ${TABLES.TEMP_DB} WHERE url LIKE '${queryUrl}%'`;
   const result = await this.query(query)
   if (result.length === 0)
     return '';
