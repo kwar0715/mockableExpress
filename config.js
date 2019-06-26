@@ -10,4 +10,5 @@ module.exports.MYSQL_HOST = process.env.MYSQL_HOST;
 module.exports.MYSQL_USERNAME = process.env.MYSQL_USERNAME;
 module.exports.MYSQL_PASSWORD = process.env.MYSQL_PASSWORD;
 module.exports.MYSQL_DATABASE = process.env.MYSQL_DATABASE;
+module.exports.DB_SELECT = process.env.DB_SELECT || 'json'
 module.exports.ADMIN_PREFIX ='/admin';
