@@ -1,7 +1,7 @@
 const {DB_SELECT} = require('../config');
 
 if(DB_SELECT === 'json'){
-  return require('./jsondb');
+  module.exports = require('./jsondb');
 }else{
-  return require('./mysqldb')
+  module.exports = require('./mysqldb')
 }

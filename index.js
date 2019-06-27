@@ -45,6 +45,7 @@ systemApp.use(
 );
 
 systemApp.use((req, res, next) => {
+  return next();
   if (req.cookies.userId && !req.session.user) {
     res.clearCookie("userId");
   }

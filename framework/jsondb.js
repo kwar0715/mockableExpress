@@ -16,9 +16,13 @@ const Database = function() {
   return instance;
 };
 
+Database.prototype.createTables = async function () {
+  db.push(`/domains`, [], true);
+}
+
 Database.prototype.addDomain = function(domainName) {
   if (!domainName) {
-    db.push(`/domains[]`, [], true);
+    return;
   }
   const record = {
     domain: domainName,
