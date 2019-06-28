@@ -33,14 +33,18 @@ Database.prototype.getAllDomains = async function() {
 };
 
 Database.prototype.domainExists = async function(domainName) {
-    const domains = await db.getData(`/domains`) || [];
-    return domains.filter(domain => domainName === domain.domainName)
+    try {
+        const domains = await db.getData(`/domains`) || [];
+        return domains.filter(domain => domainName === domain.domainName)
+    } catch (error) {
+        await db.push(`/domains`, [], true);
+        return [];
+    }
 }
 
 Database.prototype.addDomain = async function(domainName) {
 
     if (!domainName) {
-        logger.error(`Domain Name NotINNER Found`);
         return false;
     }
     const id = uuidv1();
@@ -57,7 +61,6 @@ Database.prototype.addDomain = async function(domainName) {
         }
         return exists[0].domainId;
     } catch (error) {
-        logger.error(` ${error}`);
         return false;
     }
 
@@ -220,8 +223,20 @@ Database.prototype.updatePath = async function(domainId, pathId, record) {
 
 };
 
-Database.prototype.deletePath = function(domainId, pathId, record) {
-    db.delete(`/domains[${domainId}]/paths[${pathId}]`);
+Database.prototype.deletePath = async function(domainId, pathId, record) {
+    const domains = await db.getData("/domains") || []
+    if (domains.length > 0) {
+        for (let i = 0; i < domains.length; i++) {
+            if (domains[i].domainId === domainId) {
+                const paths = domains[i].paths;
+                for (let j = 0; j < paths.length; j++) {
+                    if (paths[j].pathId === pathId) {
+                        await db.delete(`/domains[${i}]/paths[${j}]`);
+                    }
+                }
+            }
+        }
+    }
 };
 
 Database.prototype.deleteAllUsers = function(domainId, pathId, record) {

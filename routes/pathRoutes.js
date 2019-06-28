@@ -142,7 +142,6 @@ pathRouter.post("/:domainId/:pathId/edit", async function(req, res) {
         pathMethod: req.body.method,
         pathStatus: req.body.statusCode
     });
-    console.log(req.body);
     if (_.isEmpty(existedPath)) {
         Logger.info(
             `Domain New Path can not be Edited {Id: ${domainId},pathId${pathId}}`

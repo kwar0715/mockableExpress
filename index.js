@@ -21,11 +21,6 @@ systemApp.set("view engine", "ejs");
 systemApp.use(express.static("public"));
 
 
-try {
-    db.getAllDomains();
-} catch (error) {
-    logger.error(`Domains are empty ${error}`);
-}
 // create Admin User Default
 try {
     db.getAllUsers();
