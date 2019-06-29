@@ -89,8 +89,8 @@ systemApp.post("/requestReset", async function(req, res) {
         }
         const uuid = uuidv1();
         const resetLink = `http://${
-      HOST ? HOST : await getPublicIP()
-    }/${ADMIN_PREFIX}/resetPassword/${req.body.username}/${uuid}`;
+            HOST ? HOST : await getPublicIP()
+            }/${ADMIN_PREFIX}/resetPassword/${req.body.username}/${uuid}`;
         db.saveResetToken(uuid);
         logger.info(`Email Is Sending to ${userEmail}`);
         const subject = "Reset Your Password (MockableExpress)";
@@ -191,6 +191,15 @@ systemApp.get("/getEnableUpload", function(req, res) {
     return res.send(db.getEnableUpload());
 });
 
+systemApp.post("/flushAll", function(req, res) {
+    try {
+        db.flushAllUserData();
+        res.send({ success: true });
+    } catch (error) {
+        res.send({ success: false });
+    }
+});
+
 systemApp.post("/upload", async function(req, res) {
     const isEnable = db.getEnableUpload().enable == "true";
     if (!isEnable) {
@@ -209,7 +218,7 @@ systemApp.post("/upload", async function(req, res) {
             pathMethod,
             pathStatus,
             header,
-            queries,
+            query,
             body
         } = req.body[i];
         logger.info(`Preparing to upload ... ${JSON.stringify(req.body)}`);
@@ -231,7 +240,7 @@ systemApp.post("/upload", async function(req, res) {
             headers = Object.assign(headers, header);
         }
 
-        const data = {
+        let data = {
             domainName: domainName.startsWith("/") ? domainName : `/${domainName}`,
             pathName: pathName.startsWith("/") ? pathName : `/${pathName}`,
             pathUrl,
@@ -240,7 +249,7 @@ systemApp.post("/upload", async function(req, res) {
             pathStatus: _.isNumber(pathStatus) ? Number.parseInt(pathStatus) : 200,
             header: headers,
             authentication: false,
-            queries,
+            query,
             body: _.isObject(body) ? JSON.stringify(body) : body
         };
         logger.info(`Preparing to upload record data... ${JSON.stringify(data)}`);
@@ -248,35 +257,56 @@ systemApp.post("/upload", async function(req, res) {
             const existedPath = await db.getExistedPathId({
                 domainName: data.domainName,
                 pathUrl: data.pathUrl,
-                pathMethod: data.pathMethod
+                pathMethod: data.pathMethod,
+                pathStatus: data.pathStatus
             });
-            let domainId = existedPath.domainId;
-            let pathId = existedPath.pathId;
+            let domainId = existedPath.domainId || "";
+            let pathId = existedPath.pathId || "";
             if (_.isEmpty(existedPath)) {
                 domainId = await db.addDomain(data.domainName);
             }
+            /**
+             * query:{
+             *  parameter:
+             *  value:
+             *  body
+             * }
+             */
 
             if (!pathId) {
+                pathId = uuidv1();
+                if (data.query) {
+                    const commandName = `${pathId}-${data.query.value}`
+
+                    data = {
+                        ...data,
+                        body: `#if({{${data.query.parameter}}},=,"${data.query.value}"){#get("${commandName}")#}endif`
+                    }
+                    await db.saveCustomCommand(commandName, JSON.stringify(data.query.body));
+                }
                 pathId = await db.addPath(domainId, data);
             } else {
+                if (data.query) {
+                    let body = existedPath.path.body;
+                    const commandName = `${pathId}-${data.query.value}`
+                    const command = db.getCustomCommand(commandName);
+                    if (command !== null) {
+                        await db.delCustomCommand(commandName);
+                    } else {
+                        body = body.concat(`\n#if({{${data.query.parameter}}},=,"${data.query.value}"){#get("${commandName}")#}endif`)
+                    }
+                    data = {
+                        ...data,
+                        body
+                    }
+                    await db.saveCustomCommand(commandName, JSON.stringify(data.query.body));
+                }
                 await db.updatePath(domainId, pathId, {
                     ...data,
                     authentication: existedPath.authentication
                 });
                 // if path existed
                 Server().removeRoute(`${data.domainName}${data.pathUrl}`, data.pathMethod);
-            }
-
-            if (data.queries) {
-                for (let i = 0; i < data.queries.length; i++) {
-                    const query = data.queries[i];
-                    let url = `${data.domainName}${data.pathUrl}?`;
-                    query.parameters.forEach(parameter => {
-                        url = url.concat(`${parameter.condition}=${parameter.value}&`);
-                    })
-                    url = url.slice(0, -1);
-                    await db.addQuery(url, query.body);
-                }
             }
 
             Server().createEndpoint(data.domainName, data);

@@ -16,7 +16,9 @@ const Database = function() {
     return instance;
 };
 
-Database.prototype.createTables = async function() {}
+Database.prototype.createTables = async function() {
+
+}
 
 Database.prototype.getAllDomains = async function() {
     const domains = [];
@@ -119,8 +121,29 @@ Database.prototype.getPathsForDomain = function(domainId) {
     return domains;
 };
 
-Database.prototype.addPath = async function(domainId, record) {
-    const id = uuidv1();
+Database.prototype.getAllPaths = async function() {
+    const result = [];
+    try {
+        const domains = await db.getData("/domains") || []
+        for (let i = 0; i < domains.length; i++) {
+            const domain = domains[i];
+            for (let j = 0; j < domain.paths.length; j++) {
+                result.push({
+                    domainId: domain.domainId,
+                    domainName: domain.domainName,
+                    ...domain.paths[j]
+                })
+            }
+        }
+        const results = await this.query(`SELECT domains.domainId,domains.domainName,paths.pathId,paths.pathName,paths.pathUrl,paths.pathMethod,paths.pathStatus,paths.pathDescription,paths.header,paths.authentication,paths.body FROM ${TABLES.DOMAINS} as domains INNER JOIN ${TABLES.PATHS} as paths ON domains.domainId=paths.domainId`);
+        return results;
+    } catch (error) {
+
+    }
+    return result;
+};
+
+Database.prototype.addPath = async function(domainId, record, id = uuidv1()) {
     const domains = await db.getData("/domains") || []
     if (domains.length > 0) {
         for (let i = 0; i < domains.length; i++) {
@@ -173,24 +196,28 @@ Database.prototype.getPath = async function(domainId, pathId) {
 };
 
 Database.prototype.getExistedPathId = async function({ domainName, pathUrl, pathMethod, pathStatus }) {
-
-    const domains = await db.getData("/domains") || []
-    if (domains.length > 0) {
-        for (let i = 0; i < domains.length; i++) {
-            if (domains[i].domainName === domainName) {
-                const paths = domains[i].paths;
-                for (let j = 0; j < paths.length; j++) {
-                    const path = paths[i];
-                    if (path.pathUrl === pathUrl && path.pathMethod === pathMethod.toLowerCase() && path.pathStatus === pathStatus) {
-                        return {
-                            domainId: domains[i].domainId,
-                            pathId: path.pathId,
-                            authentication: path.authentication
+    try {
+        const domains = await db.getData("/domains") || []
+        if (domains.length > 0) {
+            for (let i = 0; i < domains.length; i++) {
+                if (domains[i].domainName === domainName) {
+                    const paths = domains[i].paths;
+                    for (let j = 0; j < paths.length; j++) {
+                        const path = paths[j];
+                        if (path.pathUrl === pathUrl && path.pathMethod === pathMethod.toLowerCase()) {
+                            return {
+                                domainId: domains[i].domainId,
+                                pathId: path.pathId,
+                                authentication: path.authentication,
+                                path
+                            }
                         }
                     }
                 }
             }
         }
+    } catch (error) {
+
     }
     return {}
 }
@@ -340,19 +367,39 @@ Database.prototype.getUserFromUsername = async function(username) {
     return null;
 };
 
-Database.prototype.saveCustomCommand = function(key, value) {
-    db.push(`/userCommands/${key}/`, value, true);
+Database.prototype.saveCustomCommand = async function(key, value) {
+    await db.push(`/userCommands/${key}/`, value, true);
     return "";
 };
 
 Database.prototype.getCustomCommand = function(key, value) {
-    return db.getData(`/userCommands/${key}/`);
+    try {
+        return db.getData(`/userCommands/${key}/`);
+    } catch (error) {
+        return null;
+    }
 };
 
-Database.prototype.delCustomCommand = function(key, value) {
+Database.prototype.delCustomCommand = async function(key, value) {
     db.delete(`/userCommands/${key}/`);
     return "";
 };
+
+Database.prototype.flushAllUserData = function(data) {
+    db.delete(`/userCommands/`);
+}
+
+Database.prototype.setEnableUpload = function(data) {
+    db.push('/upload/', data, true)
+}
+
+Database.prototype.getEnableUpload = function(data) {
+    try {
+        return db.getData('/upload/')
+    } catch (error) {
+        return false;
+    }
+}
 
 Database.prototype.saveToken = function(token) {
     db.push(`/authToken/`, token, true);
@@ -380,5 +427,4 @@ Database.prototype.getResetToken = function() {
 Database.prototype.deleteResetToken = function() {
     db.delete(`/resetToken/`);
 };
-
 module.exports = new Database();
