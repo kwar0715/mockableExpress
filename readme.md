@@ -383,29 +383,13 @@ You can change your response by query parameter without do any if else syntax. t
     "pathDescription": "testDiscripion",
     "pathMethod": "GET",
     "pathStatus": 200,
-    "queries": [{
-      "parameters": [
-        {
-          "condition": "templete",
-          "value": "templete1"
-        }
-      ],
-      "body": {
-      	"value":"templete1"
-      }
+    "query": {
+ 	    "parameter":"status",
+ 	    "value":"test1",
+ 	    "body":{
+ 		    "message":"hello"
+ 	    }
     },
-    {
-      "parameters": [
-        {
-          "condition": "templete",
-          "value": "templete2"
-        }
-      ],
-      "body": {
-      	"value":"templete2"
-      }
-    }
-    ],
     "body": "#Query"
   }
 ]
