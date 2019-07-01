@@ -275,31 +275,35 @@ systemApp.post("/upload", async function(req, res) {
             if (!pathId) {
                 pathId = uuidv1();
                 if (data.query) {
-                    const commandName = `${pathId}-${data.query.value}`
-
                     data = {
-                        ...data,
-                        body: `#if({{${data.query.parameter}}},=,"${data.query.value}"){#get("${commandName}")#}endif`
+                       ...data,
+                        body: `#if({{${data.query.parameter}}},=,"${data.query.value}"){${JSON.stringify(data.query.body)}}endif\n`
                     }
-                    await db.saveCustomCommand(commandName, JSON.stringify(data.query.body));
                 }
                 pathId = await db.addPath(domainId, data);
             } else {
+                let body="";
                 if (data.query) {
-                    let body = existedPath.path.body;
-                    const commandName = `${pathId}-${data.query.value}`
-                    const command = db.getCustomCommand(commandName);
-                    if (command !== null) {
-                        await db.delCustomCommand(commandName);
-                    } else {
-                        body = body.concat(`\n#if({{${data.query.parameter}}},=,"${data.query.value}"){#get("${commandName}")#}endif`)
+                    const conditions = existedPath.path.body.split('endif');  
+                    if(conditions.length<=1){
+                        body= body.concat(`#if({{${data.query.parameter}}},=,"${data.query.value}"){${JSON.stringify(data.query.body)}}endif\n`)
                     }
-                    data = {
-                        ...data,
-                        body
+                    let isUpdated=false;
+                    for(let i=0;i<conditions.length-1;i++){
+                        const condition = conditions[i];
+                        console.log(condition)
+                        if(condition.split(')')[0].includes(data.query.value)){
+                            body= body.concat(`#if({{${data.query.parameter}}},=,"${data.query.value}"){${JSON.stringify(data.query.body)}}endif\n`)
+                            isUpdated=true;
+                        }else{
+                            body = body.concat(`${conditions[i]}endif\n`)
+                        }
                     }
-                    await db.saveCustomCommand(commandName, JSON.stringify(data.query.body));
+                    if(!isUpdated){
+                       body= body.concat(`#if({{${data.query.parameter}}},=,"${data.query.value}"){${JSON.stringify(data.query.body)}}endif\n`)  
+                    }
                 }
+                data.body=body;
                 await db.updatePath(domainId, pathId, {
                     ...data,
                     authentication: existedPath.authentication
