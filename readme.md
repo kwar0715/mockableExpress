@@ -177,6 +177,15 @@ Ex:- suppose you need to send A if userId equals to 10, unless you need to send 
 
 *url : <your host>/users/:id*
 ```
+  // if ID is a string
+  
+#if({{id}},=,"10"){
+  A
+}endif
+B
+
+// if ID is a number
+  
 #if("{{id}}",=,"10"){
   A
 }endif
