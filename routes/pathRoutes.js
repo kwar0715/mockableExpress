@@ -138,9 +138,8 @@ pathRouter.post("/:domainId/:pathId/edit", async function(req, res) {
 
     const existedPath = await Database.getExistedPathId({
         domainName: previousDomainName,
-        pathUrl: path,
-        pathMethod: req.body.method,
-        pathStatus: req.body.statusCode
+        pathUrl: previousPathUrl,
+        pathMethod: previousPathMethod
     });
     if (_.isEmpty(existedPath)) {
         Logger.info(
