@@ -17,24 +17,14 @@ Open Source Express Server for mocked services. Mock your services and test as y
   - yarn ``` yarn start ``` or on custom port ``` yarn start 80 ```
 5. docker command 
   - build ``` docker build . -t <name>```
-  - run ```docker run -p 9000:9000 -p 80:80 <name>``` (if run in detached mode use ```-d```)
+  - run ```docker run -p 80:80 <name>``` (if run in detached mode use ```-d```)
 
 ## Usage 
 
-1. goto the administration server using ``` <YOUR_IP>:9000 ```
-2. generated mockable endpoints must be run on ``` <YOUR_IP>:<PORT> ```
-3. edit config.js
-
-```
-module.exports.HOST = 'http://localhost'; // Application host
-module.exports.API_PORT = '3000';         // api running port
-```
-
-*Default Port is 3000*
-
-4. when you run the server first, You should change the default password. type username as ```user``` and password as ```12345678```
-5. reset password
-6. enjoy :-)
+1. goto mocakble express url ``` Default Port is 3000 ```
+2. when you run the server first, You should change the default password. type username as ```user``` and password as ```12345678```
+3. reset password
+4. enjoy :-)
 
 ## Run on the detached mode
 
@@ -124,6 +114,8 @@ you are passing a value as URL, Query, Body parameter. you can add you parameter
 ```
 { 
   value: #get("<your key >")# 
+}{
+
 }
 ```
 
@@ -177,15 +169,6 @@ Ex:- suppose you need to send A if userId equals to 10, unless you need to send 
 
 *url : <your host>/users/:id*
 ```
-  // if ID is a string
-  
-#if({{id}},=,"10"){
-  A
-}endif
-B
-
-// if ID is a number
-  
 #if("{{id}}",=,"10"){
   A
 }endif
