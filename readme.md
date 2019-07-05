@@ -325,7 +325,7 @@ You can create endpoints from upload endpoint. so first you have to enable the u
 goto ** Menu Bar -> Enable Upload**
 
 ```
-url : <host>/upload
+url : <host>/admin/upload
 method : post
 headers : Content-Type : application/json
 body :{
