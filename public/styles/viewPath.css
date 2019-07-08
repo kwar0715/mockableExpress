@@ -37,6 +37,8 @@ td{
 
 .path {
   color: blue;
+  word-break: break-all;
+  font-size: 12px;
 }
 
 .method {
