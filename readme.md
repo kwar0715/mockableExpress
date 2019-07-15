@@ -319,9 +319,9 @@ comment string
 */
 ```
 
-## Upload API
+## Create Your Endpoints Programmatically
 
-You can create endpoints from upload endpoint. so first you have to enable the upload functionality.
+You can create endpoints programmatically from upload endpoint. so first you have to enable the upload functionality.
 goto ** Menu Bar -> Enable Upload**
 
 ```
@@ -362,7 +362,7 @@ body :{
 
 ```
 
-## Dynamic Responses from Query Parameter
+## Create Your Endpoints Programmatically - Dynamic Responses from Query Parameter
 
 You can change your response by query parameter without do any if else syntax. this is enabled only for upload method.
 
