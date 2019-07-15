@@ -256,8 +256,7 @@ systemApp.post("/upload", async function(req, res) {
             const existedPath = await db.getExistedPathId({
                 domainName: data.domainName,
                 pathUrl: data.pathUrl,
-                pathMethod: data.pathMethod,
-                pathStatus: data.pathStatus
+                pathMethod: data.pathMethod
             });
             let domainId = existedPath.domainId || "";
             let pathId = existedPath.pathId || "";
@@ -301,6 +300,8 @@ systemApp.post("/upload", async function(req, res) {
                     if(!isUpdated){
                        body= body.concat(`#if({{${data.query.parameter}}},=,"${data.query.value}"){${JSON.stringify(data.query.body,null,4)}}endif\n`)  
                     }
+                }else{
+                    body = data.body;
                 }
                 data.body=body;
                 await db.updatePath(domainId, pathId, {

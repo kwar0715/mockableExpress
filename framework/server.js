@@ -12,8 +12,8 @@ var instance = null;
 const SAVE_COMMAND = /#save\(\"+\w+\"+,\"+\w+\"+\)#/;
 const GET_COMMAND = /#get\(\"+([0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}|\-*\w)+\"+\)#/;
 const DEL_COMMAND = /#del\(\"+\w+\"+\)#/;
-const IF_COMMAND = /#if\(\"\{*.+\}*\",[=<>!]+,\"\{*.+\}*\"\)([\n\s]*)\{(\w|\W(?!#if))+\}endif/
-const FOR_COMMAND = /#for\(\"\d+\"\)([\n\s]*){((?!for)\w|\W)+}endfor/
+const IF_COMMAND = /#if\(\"+\{*.+\}*\"+,[=<>!]+,\"\{*.+\}*\"\)([\n\s]*)\{(\w|\W(?!#if))+\}endif/
+const FOR_COMMAND = /#for\(\"+\d+\"+\)([\n\s]*){((?!for)\w|\W)+}endfor/
 const FOR_EACH_COMMAND = /#foreach\(\"+\[?[\w,]+\]?\"+,\"\w+\"\)([\n\s]*){((?!foreach)\w|\W)+}endforeach/
 const VARIABLES = /!\w+=\w*!/
 const QUERY = /#Query/
@@ -110,9 +110,9 @@ function execDelCommand(match) {
 function execIfCommand(match, response) {
     //exatract parameters
     const params = match[0]
-        .replace(`#if("`, "")
-        .replace(`",`, ",")
-        .replace(`,"`, ",")
+        .replace(/#if\(\"+/, "")
+        .replace(/\"+,/, ",")
+        .replace(/,\"+/, ",")
         .replace(/\"\)([\n\s]*)\{(\w|\W(?!#if))+\}endif/, "").split(',');
 
     const isCompaired = compaire(params[0], params[1], params[2]);
@@ -121,17 +121,17 @@ function execIfCommand(match, response) {
         return y;
     }
 
-    return match[0].replace(/#if\(\"\{*.+\}*\",[=<>!]+,\"\{*.+\}*\"\)([\n\s]*)\{/, "").replace(/\}endif/, "");
+    return match[0].replace(/#if\(\"+\{*.+\}*\"+,[=<>!]+,\"+\{*.+\}*\"\)([\n\s]*)\{/, "").replace(/\}endif/, "");
 }
 
 function execForCommand(match) {
     //exatract parameters
     const params = match[0]
-        .replace('#for("', "")
-        .replace(/\"\)([\n\s]*){((?!for)\w|\W)+}endfor/, "")
+        .replace(/#for\(\"+/, "")
+        .replace(/\"+\)([\n\s]*){((?!for)\w|\W)+}endfor/, "")
     const count = Number(params);
 
-    const body = match[0].replace(/#for\(\"\d+\"\)([\n\s]*){/, "").replace(/}endfor/, "");
+    const body = match[0].replace(/#for\(\"+\d+\"+\)([\n\s]*){/, "").replace(/}endfor/, "");
 
     let response = "";
 
