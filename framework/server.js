@@ -190,8 +190,6 @@ async function filterCommands(pattern, commandType, str, url) {
         let response = modifiedStr;
         while ((match = regExp.exec(modifiedStr))) {
             if (match === null) break;
-
-            Logger.info(`filterCommands: filtering {match: ${match[0]},${commandType}}`)
             switch (commandType) {
                 case COMMAND_CODE.SAVE:
                     {
@@ -280,7 +278,7 @@ Server.prototype.createEndpoint = async function(domainName, pathObject) {
                 objectBody = await filterCommands(IF_COMMAND, COMMAND_CODE.IF, objectBody);
                 objectBody = await filterCommands(FOR_COMMAND, COMMAND_CODE.FOR, objectBody);
                 objectBody = await filterCommands(QUERY, COMMAND_CODE.QUERY, objectBody, req.originalUrl);
-                Logger.info(`Reached ${path}`);
+                //Logger.info(`Reached ${path}`);
                 const response = res.status(Number(pathObject.pathStatus) || 200)
                 const contentType = pathObject.header['Content-Type'];
                 if (contentType.indexOf('application/json')) {
@@ -319,9 +317,7 @@ Server.prototype.createEndpoint = async function(domainName, pathObject) {
         }
 
         Logger.info(
-            `Endpoint Created {Domain: ${domainName},Endpoint info: ${JSON.stringify(
-        pathObject
-      )}}`
+            `Endpoint Created {Domain: ${domainName}}`
         );
     } catch (error) {
         Logger.error(
