@@ -11,7 +11,7 @@ const uuidv1 = require("uuid/v1");
 const db = require("./framework/db");
 const { getPublicIP } = require("./framework/utils");
 const { send } = require("./framework/emailsender");
-const { HOST, ADMIN_PORT, API_PORT, FROM_EMAIL, ADMIN_PREFIX } = require("./config");
+const { HOST, API_PORT, FROM_EMAIL, ADMIN_PREFIX } = require("./config");
 
 const port = Number(process.argv[2]) || API_PORT || 3000;
 
@@ -20,6 +20,23 @@ const systemApp = express();
 systemApp.set("view engine", "ejs");
 systemApp.use(express.static("public"));
 
+systemApp.use(cookieParser());
+systemApp.use(
+    session({
+        key: "userId",
+        secret: "aaaa",
+        resave: false,
+        saveUninitialized: false,
+        cookie: {}
+    })
+);
+
+systemApp.use(bodyParser.json({limit: '50mb'}));
+systemApp.use(bodyParser.urlencoded({
+  limit: '50mb',
+  extended: true,
+  parameterLimit:50000
+}));
 
 // create Admin User Default
 try {
@@ -35,22 +52,7 @@ let apiUrl;
     db.saveApiUrl(apiUrl);
 })();
 
-systemApp.use(bodyParser.urlencoded({ extended: false }));
-systemApp.use(bodyParser.json());
-
-systemApp.use(cookieParser());
-systemApp.use(
-    session({
-        key: "userId",
-        secret: "aaaa",
-        resave: false,
-        saveUninitialized: false,
-        cookie: {}
-    })
-);
-
 systemApp.use((req, res, next) => {
-    return next();
     if (req.cookies.userId && !req.session.user) {
         res.clearCookie("userId");
     }
