@@ -244,7 +244,7 @@ async function filterCommands(pattern, commandType, str, url) {
 }
 
 
-Server.prototype.createEndpoint = async function(domainName, pathObject,domainId, pathId) {
+Server.prototype.createEndpoint = async function(domainName, pathObject) {
     const path = `${domainName}${pathObject.pathUrl}`;
     Logger.info(`Path : ${path}`)
     try {
@@ -294,7 +294,7 @@ Server.prototype.createEndpoint = async function(domainName, pathObject,domainId
                     response.send(new Buffer(objectBody)); //.replace(/\s/g, ""))
                     return;
                 }
-                return response.send("S") //.replace(/\s/g, ""));
+                return response.send(objectBody) //.replace(/\s/g, ""));
             } catch (error) {
                 Logger.info(`Reached Error {${path},error:${error}}`);
                 next(error);
