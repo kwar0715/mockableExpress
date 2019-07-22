@@ -335,7 +335,7 @@ body :{
         "pathName":"testPath1",
         "pathUrl":"/testPath1",
         "pathDescription": "testPath1",
-        "headers":{},
+        "header":{},
         "pathMethod":"post",
         "pathStatus": 200,
         "body":"testPath1"
@@ -345,7 +345,7 @@ body :{
         "pathName":"testPath2",
         "pathUrl":"/testPath2",
         "pathDescription": "testPath1",
-        "headers":{},
+        "header":{},
         "pathMethod":"get",
         "pathStatus": 200,
         "body":"#if(\"{{id}}\",=,\"10\"){{\"value\": \"A\"}}endif{\"value\": \"B\"}"
@@ -355,7 +355,7 @@ body :{
         "pathName":"testPath3",
         "pathUrl":"/testPath3",
         "pathDescription": "testPath3",
-        "headers":{},
+        "header":{},
         "pathMethod":"get",
         "pathStatus": 200,
         "body": "{\"messsage\":\"hello\"}"
@@ -376,7 +376,7 @@ You can change your response by query parameter without do any if else syntax. t
     "pathName": "testPath1",
     "pathUrl": "/testPath1",
     "pathDescription": "testDiscripion",
-    "headers":{},
+    "header":{},
     "pathMethod": "GET",
     "pathStatus": 200,
     "query": {
