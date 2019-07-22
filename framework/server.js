@@ -249,11 +249,13 @@ Server.prototype.createEndpoint = async function(domainName, pathObject) {
     Logger.info(`Path : ${path}`)
     try {
         const response = async function(req, res, next) {
+            
             if (pathObject.authentication === 1 && (req.headers.authorization !== Database.getToken())) {
                 res.status(401).send("Token miss match; check your api token");
                 return;
             }
             try {
+                
                 res.set(pathObject.header);
 
                 let objectBody = pathObject.body;
@@ -284,11 +286,15 @@ Server.prototype.createEndpoint = async function(domainName, pathObject) {
                 //Logger.info(`Reached ${path}`);
                 const response = res.status(Number(pathObject.pathStatus) || 200)
                 const contentType = pathObject.header['Content-Type'];
-                if (contentType.indexOf('application/json')) {
+                if (contentType.indexOf('application/json') !== -1) {
                     response.json(objectBody); //.replace(/\s/g, ""))
                     return;
                 }
-                response.send(objectBody) //.replace(/\s/g, ""));
+                if (contentType.indexOf('text/html') !== -1) {
+                    response.send(new Buffer(objectBody)); //.replace(/\s/g, ""))
+                    return;
+                }
+                return response.send(objectBody) //.replace(/\s/g, ""));
             } catch (error) {
                 Logger.info(`Reached Error {${path},error:${error}}`);
                 next(error);
