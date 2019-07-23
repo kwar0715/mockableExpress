@@ -287,7 +287,11 @@ Server.prototype.createEndpoint = async function(domainName, pathObject) {
                 const response = res.status(Number(pathObject.pathStatus) || 200)
                 const contentType = pathObject.header['Content-Type'];
                 if (contentType.indexOf('application/json') !== -1) {
-                    response.json(objectBody); //.replace(/\s/g, ""))
+                    try {
+                        response.json(JSON.parse(objectBody)); //.replace(/\s/g, ""))
+                    } catch (error) {
+                        response.json(objectBody); //.replace(/\s/g, ""))
+                    }
                     return;
                 }
                 if (contentType.indexOf('text/html') !== -1) {
