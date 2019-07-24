@@ -1,6 +1,7 @@
 const express = require("express");
 const pathRouter = express.Router();
 const _ = require("lodash");
+const uuidv1 = require("uuid/v1");
 const Database = require("../framework/db");
 const Logger = require("../framework/logger");
 const Server = require("../framework/server");
@@ -55,6 +56,17 @@ pathRouter.post("/:domainId/new", async function(req, res) {
         const header = JSON.parse(req.body.header);
         let path = req.body.path;
         path = path.startsWith("/") ? path : `/${path}`;
+        const pathId = uuidv1();
+
+        const existedApi = _.filter(domain.paths, p =>
+            p.pathUrl === path && p.pathMethod === req.body.method
+        )
+
+        if (!_.isEmpty(existedApi)) {
+            path += `/${pathId}`
+            req.body.desc += `\n(Trying to copy ${path}, Please Use Edit)`
+        }
+
         const record = {
             pathName: req.body.name,
             pathUrl: path,
@@ -66,12 +78,12 @@ pathRouter.post("/:domainId/new", async function(req, res) {
             body: req.body.body
         };
 
-        await Database.addPath(domainId, record);
+        await Database.addPath(domainId, record, pathId);
         Server().createEndpoint(domain.domainName, record);
         Logger.info(
             `Domain New Path Added {Id: ${domainId},domains:${JSON.stringify(
-        record
-      )}}`
+                record
+            )}}`
         );
     } catch (error) {
         Logger.error(
@@ -113,8 +125,8 @@ pathRouter.get("/:domainId/:pathId/edit", async function(req, res) {
 
         Logger.info(
             `Domain Edit Path {id : ${domainId}/${pathId}, pathInfo:${JSON.stringify(
-        assignedData
-      )}}`
+                assignedData
+            )}}`
         );
         res.render(`paths/editPath`, assignedData);
     } catch (error) {
@@ -166,8 +178,8 @@ pathRouter.post("/:domainId/:pathId/edit", async function(req, res) {
 
         Logger.info(
             `Domain New Path Edited {Id: ${domainId},domains:${JSON.stringify(
-        record
-      )}}`
+                record
+            )}}`
         );
     } catch (error) {
         Logger.error(

@@ -68,9 +68,14 @@ domainRouter.post("/edit/:domainId", async function(req, res) {
         const pathNames = await Database.getPathNamesForDomain(domainId);
         if (pathNames.length > 0) {
             pathNames.forEach(function(pathName) {
+                const editableDate ={
+                    ...pathName,
+                    header: JSON.parse(pathName.header)
+                }
                 Server().removeRoute(`${domainName}${pathName.pathUrl}`, pathName.pathMethod);
-                Server().createEndpoint(name, pathName);
+                Server().createEndpoint(newDomainName, editableDate);
             });
+            
         }
         await Database.updateDomainName(domainId, newDomainName);
 
