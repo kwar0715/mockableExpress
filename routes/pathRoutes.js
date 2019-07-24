@@ -159,15 +159,6 @@ pathRouter.post("/:domainId/:pathId/edit", async function(req, res) {
         );
         return res.redirect(`${ADMIN_PREFIX}/domain/paths/${domainId}`);
     }
-    const existedNewPath = await Database.getExistedPathId({
-        domainName: previousDomainName,
-        pathUrl: path,
-        pathMethod: req.body.method
-    });
-    if (!_.isEmpty(existedPath)) {
-        path += `/${pathId}`,
-        req.body.desc += `\n Duplication of ${path}`
-    }
     try {
 
         const record = {
