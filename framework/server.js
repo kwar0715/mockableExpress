@@ -74,17 +74,17 @@ function removeComments(body) {
 
 function compaire(value1, operator, value2) {
     switch (operator) {
-        case '=':
+        case ',=,':
             return value1 === value2;
-        case '!=':
+        case ',!=,':
             return value1 !== value2;
-        case '>':
+        case ',>,':
             return Number(value1) > Number(value2);
-        case '<':
+        case ',<,':
             return Number(value1) < Number(value2);
-        case '>=':
+        case ',>=,':
             return Number(value1) >= Number(value2);
-        case '<=':
+        case ',<=,':
             return Number(value1) <= Number(value2);
         default:
             return false;
@@ -116,8 +116,8 @@ function execIfCommand(match, response) {
         .replace(/#if\(\"+/, "")
         .replace(/\"+,/, ",")
         .replace(/,\"+/, ",")
-        .replace(/\"\)([\n\s]*)\{(\w|\W(?!#if))+\}endif/, "").split(',');
-
+        .replace(/\"\)([\n\s]*)\{(\w|\W(?!#if))+\}endif/, "").split(/(\,=\,|\,!=\,|\,>\,|\,>=\,|\,<=\,|\,<\,)/);
+   
     const isCompaired = compaire(params[0], params[1], params[2]);
     if (!isCompaired) {
         const y = response.replace(match[0], "");
