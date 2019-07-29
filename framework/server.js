@@ -12,7 +12,7 @@ var instance = null;
 const SAVE_COMMAND = /#save\(\"+\w+\"+,\"+\w+\"+\)#/;
 const GET_COMMAND = /#get\(\"+([0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}|\-*\w)+\"+\)#/;
 const DEL_COMMAND = /#del\(\"+\w+\"+\)#/;
-const IF_COMMAND = /#if\(\"+\{*.+\}*\"+,[=<>!]+,\"\{*.+\}*\"\)([\n\s]*)\{(\w|\W(?!#if))+\}endif/
+const IF_COMMAND = /#if\(\"+\{*.+\}*\"+,[=<>!*]+,\"\{*.+\}*\"\)([\n\s]*)\{(\w|\W(?!#if))+\}endif/
 const FOR_COMMAND = /#for\(\"+\d+\"+\)([\n\s]*){((?!for)\w|\W)+}endfor/
 const FOR_EACH_COMMAND = /#foreach\(\"+\[?[\w,]+\]?\"+,\"\w+\"\)([\n\s]*){((?!foreach)\w|\W)+}endforeach/
 const VARIABLES = /!\w+=\w*!/
@@ -86,6 +86,10 @@ function compaire(value1, operator, value2) {
             return Number(value1) >= Number(value2);
         case ',<=,':
             return Number(value1) <= Number(value2);
+        case ',*<,':
+            return String(value1).startsWith(String(value2));
+        case ',*>,':
+            return String(value1).endsWith(String(value2));
         default:
             return false;
     }
@@ -115,16 +119,16 @@ function execIfCommand(match, response) {
     const params = match[0]
         .replace(/#if\(\"+/, "")
         .replace(/\"+,/, ",")
-        .replace(/,\"+/, ",")
-        .replace(/\"\)([\n\s]*)\{(\w|\W(?!#if))+\}endif/, "").split(/(\,=\,|\,!=\,|\,>\,|\,>=\,|\,<=\,|\,<\,)/);
-   
+        .replace(/,\"/, ",")
+        .replace(/\"\)([\n\s]*)\{(\w|\W(?!#if))+\}endif/, "").split(/(\,=\,|\,!=\,|\,>\,|\,>=\,|\,<=\,|\,<\,|\,\*<\,|\,\*>\,)/);
+
     const isCompaired = compaire(params[0], params[1], params[2]);
     if (!isCompaired) {
         const y = response.replace(match[0], "");
         return y;
     }
 
-    return match[0].replace(/#if\(\"+\{*.+\}*\"+,[=<>!]+,\"+\{*.+\}*\"\)([\n\s]*)\{/, "").replace(/\}endif/, "");
+    return match[0].replace(/#if\(\"?\{*.+\}*\"?,[=<>!*]+,\"+\{*.+\}*\"\)([\n\s]*)\{/, "").replace(/\}endif/, "");
 }
 
 function execForCommand(match) {

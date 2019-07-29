@@ -164,6 +164,8 @@ value1 and value2 are compaired by the operator what you are using, if the value
 |   <	    |   less than               |
 |   >=	  | greater than or equal to  |
 |   <=    |	less than or equal to     |
+|   *<    |	starts With               |
+|   *>    |	ends With                 |
 
 Ex:- suppose you need to send A if userId equals to 10, unless you need to send B as the response
 
