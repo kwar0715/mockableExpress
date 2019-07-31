@@ -10,8 +10,10 @@ const { HOST, ADMIN_PREFIX } = require("../config");
 domainRouter.get("/", async function(req, res) {
     const IP = HOST ? HOST : await getPublicIP();
     let domains = null;
+    let numberOfRunningShedulers = 0;
     try {
         domains = await Database.getAllDomains();
+        numberOfRunningShedulers = Database.getRunnungSchedulers();
     } catch (error) {
         Logger.error(`Retrive Domain Data {Error: ${error}}`);
     }
@@ -21,6 +23,7 @@ domainRouter.get("/", async function(req, res) {
         domains,
         status,
         ip: IP,
+        runs: numberOfRunningShedulers,
         port: Server().port
     });
 });

@@ -1,0 +1,125 @@
+<html>
+    <head>
+        <title>Schedulers</title>
+        <link
+          rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+          integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+          crossorigin="anonymous"
+        ></script>
+        <script
+          src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+          integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+          crossorigin="anonymous"
+        ></script>
+        <script
+          src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+          integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+          crossorigin="anonymous"
+        ></script>
+    
+        <link href="/admin/styles/addpath.css" rel="stylesheet" />
+      </head>
+  <body>
+
+    <div class="container">
+        <header>
+            <div class="row flex-nowrap justify-content-between align-items-center">
+              <div class="col-2">
+                <img class="mb-4" src="/admin/imgs/logo.png" alt="" height="75" />
+              </div>
+              <div class="col-8 text-center">
+                <h4>Add Scheduler</h4>
+              </div>
+              <div class="col-2 d-flex justify-content-end align-items-center">
+                <a class="btn btn-sm btn-outline-secondary" href="/admin/logout"
+                  >Sign out</a
+                >
+              </div>
+            </div>
+          </header>
+        <form method="POST" action="/admin/schedulers/new/" class="form">
+          <div class="form-group row">
+              Name
+              <label for="name" class="sr-only">Name</label>
+              <input
+                  type="text"
+                  name="name"
+                  placeholder="Name"
+                  class="form-control"
+                  required
+              />
+          </div>
+
+        <div class="form-group row">
+          Description
+          <label for="desc" class="sr-only">Description</label>
+          <input
+              type="text"
+              name="desc"
+              placeholder="Description"
+              class="form-control"
+          />
+        </div>
+
+        <div class="form-group row">
+          Interval (Sec)
+          <label for="interval" class="sr-only">Interval (Sec)</label>
+          <input
+              type="text"
+              name="interval"
+              placeholder="Interval inseconds"
+              class="form-control"
+          />
+        </div>
+
+
+        <div class="form-group row">
+          Request Endpoint
+          <label for="path" class="sr-only">Path</label>
+          <input
+              type="text"
+              name="path"
+              placeholder="Path"
+              class="form-control"
+              required
+          />
+          </div>  
+          <div class="form-group row">
+          Method
+          <label for="method" class="sr-only">Method</label>
+          <select name="method" class="form-control">
+              <option value="get"> Get</option>
+              <option value="post">Post</option>
+              <option value="put">Put</option>
+              <option value="delete">Delete</option>
+            </select>
+        </div>
+          
+        <div class="form-group row">
+            Header (Shoud use JSON format)
+            <label for="header" class="sr-only">Header</label>
+            <textarea
+                type="text"
+                name="header"
+                class="form-control" rows="5" required>{"Content-Type":"application/json"}</textarea>
+        </div>
+        <div class="form-group row">
+            Body
+            <label for="body" class="sr-only">Body</label>
+            <textarea
+                type="text"
+                name="body"
+                placeholder=''
+                class="form-control" rows="15"></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Save</button>
+        <button type="button" class="btn btn-dark" onClick="location.href='/schedulers'">Cancel</button>
+        </form>
+  </body>
+</html>

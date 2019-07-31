@@ -13,6 +13,15 @@ const Database = function() {
     if (instance == null) {
         instance = this;
     }
+    const schedulers = db.getData("/schedulers") || []
+    
+    for (let i = 0; i < schedulers.length; i++) {
+        const newScheduler = {
+            ...schedulers[i],
+            status: 'OFF'
+        }
+        db.push(`/schedulers[${i}]`, newScheduler, true)
+    }
     return instance;
 };
 
@@ -141,6 +150,57 @@ Database.prototype.getAllPaths = async function() {
 
     }
     return result;
+};
+
+Database.prototype.getAllSchedulers = async function() {
+    try {
+        return db.getData("/schedulers") || [];
+    } catch (error) {
+        
+    }
+    return [];
+};
+
+Database.prototype.addScheduler = async function(data) {
+    return db.push(`/schedulers[]`, data, true);
+};
+
+Database.prototype.updateSchedulerStatus = function(data) {
+    const schedulers = db.getData("/schedulers") || []
+    
+    for (let i = 0; i < schedulers.length; i++) {
+        if (schedulers[i].id === data.id) {
+            const newScheduler = {
+                ...schedulers[i],
+                status:data.status
+            }
+            db.push(`/schedulers[${i}]`, newScheduler, true);
+            return newScheduler;
+        }
+    }
+};
+
+Database.prototype.getRunnungSchedulers = function(){
+    const schedulers = db.getData("/schedulers") || []
+    let runs=0;
+    for (let i = 0; i < schedulers.length; i++) {
+        if(schedulers[i].status==='RUN'){
+            runs+=1;
+        }
+    }
+    return runs;
+}
+
+Database.prototype.removeScheduler = async function(id) {
+
+    const schedulers = db.getData("/schedulers") || []
+    
+    for (let i = 0; i < schedulers.length; i++) {
+        if (schedulers[i].id === id) {
+            await db.delete(`/schedulers[${i}]`);
+            return;
+        }
+    }
 };
 
 Database.prototype.addPath = async function(domainId, record, id = uuidv1()) {

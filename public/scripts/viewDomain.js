@@ -5,6 +5,10 @@ function deleteDomain(index) {
     }
 }
 
+function onSchedulerClick(){
+    window.location.href = `/admin/schdulers`;
+}
+
 function generateUUID() {
     var d = new Date().getTime();
     if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
