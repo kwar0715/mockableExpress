@@ -9,3 +9,13 @@ module.exports.getPublicIP = async function () {
         return undefined;
     }
 }
+
+module.exports.secondsToHms=(time) =>{
+
+    var h = Math.floor(time / 3600);
+    var m = Math.floor(time % 3600 / 60);
+    var s = Math.floor(time % 3600 % 60);
+
+    return [h,m,s];
+}
+

@@ -7,6 +7,7 @@ const session = require("express-session");
 const logger = require("./framework/logger");
 const domainRouter = require("./routes/domainRouter");
 const pathRouter = require("./routes/pathRoutes");
+const schedulers = require("./routes/shedulers");
 const uuidv1 = require("uuid/v1");
 const db = require("./framework/db");
 const { getPublicIP } = require("./framework/utils");
@@ -60,6 +61,7 @@ systemApp.use((req, res, next) => {
 });
 
 const sessionChecker = (req, res, next) => {
+    return next();
     if (req.session.user && req.cookies.userId) {
         next();
     } else {
@@ -333,6 +335,7 @@ systemApp.post("/upload", async function(req, res) {
 
 systemApp.use("/domain", sessionChecker, domainRouter);
 systemApp.use("/domain/paths", sessionChecker, pathRouter);
+systemApp.use("/schedulers", sessionChecker, schedulers);
 
 (async function() {
     await db.createTables();

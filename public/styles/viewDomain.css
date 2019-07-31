@@ -3,6 +3,11 @@ body {
   height: 100%;
 }
 
+.btn-outline-primary{
+  margin-left: 6px;
+  margin-bottom: 6px
+}
+
 td{
   max-width: 264px;
 }
