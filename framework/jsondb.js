@@ -13,7 +13,8 @@ const Database = function() {
     if (instance == null) {
         instance = this;
     }
-    const schedulers = db.getData("/schedulers") || []
+    
+    const schedulers = this.getAllSchedulers();
     
     for (let i = 0; i < schedulers.length; i++) {
         const newScheduler = {
