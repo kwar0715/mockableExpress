@@ -45,11 +45,13 @@ domainRouter.get("/edit/:domainId", async function(req, res) {
         const domainId = req.params.domainId;
         const domain = await Database.getDomainFromId(domainId);
         const domains = await Database.getAllDomains();
+        numberOfRunningShedulers = Database.getRunnungSchedulers();
         const params = {
             domains,
             editable: domain,
             id: `${domainId}`,
             ip: IP,
+            runs: numberOfRunningShedulers,
             status: Server().status,
             port: Server().port
         };
