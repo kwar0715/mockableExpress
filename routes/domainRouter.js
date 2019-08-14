@@ -32,6 +32,10 @@ domainRouter.post("/add", async function(req, res) {
     try {
         let name = req.body.domainName;
         name = name.startsWith("/") ? name : `/${name}`;
+
+        if(name === '/admin'){
+            return;
+        }
         await Database.addDomain(name);
     } catch (error) {
         Logger.error(`Domain Registration Error ${error}`);
@@ -68,6 +72,9 @@ domainRouter.post("/edit/:domainId", async function(req, res) {
     try {
         let newDomainName = req.body.domainName;
         newDomainName = newDomainName.startsWith("/") ? newDomainName : `/${name}`;
+        if(name === '/admin'){
+            return;
+        }
         const domain = await Database.getDomainFromId(domainId);
         const domainName = domain.domainName;
         const pathNames = await Database.getPathNamesForDomain(domainId);
