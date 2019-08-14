@@ -186,7 +186,7 @@ pathRouter.post("/:domainId/:pathId/edit", async function(req, res) {
             `Domain New Path Edited Error {id : ${domainId}, error:${error}}`
         );
     }
-    res.redirect(`/admin/domain/paths/${domainId}`);
+    res.redirect(`/admin/domain/paths/${domainId}/${pathId}/edit`);
 });
 
 pathRouter.get("/:domainId/:pathId/delete", async function(req, res) {
