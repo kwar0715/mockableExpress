@@ -31,12 +31,32 @@ pathRouter.get("/:domainId", async function(req, res) {
 pathRouter.get("/:domainId/new", async function(req, res) {
 
     const domainId = req.params.domainId;
+    const duplicationPathId = req.query.pathId;
     try {
         const domain = await Database.getDomainFromId(domainId);
-        const params = {
+        let params = {
             domainName: domain.domainName,
-            domainId
+            domainId,
+            pathName: "",
+            pathDescription: "",
+            pathUrl: "",
+            pathMethod:'post',
+            authentication:false,
+            pathStatus:200,
+            header: {"Content-Type":"application/json"},
+            body: ""
         };
+        if(duplicationPathId){
+            const duplicationPath = await Database.getPath(domainId,duplicationPathId);
+            console.log()
+            params = {
+                ...params,
+                ...duplicationPath.paths[0],
+                pathName: `${duplicationPath.paths[0].pathName} [Copy]`,
+                header: JSON.parse(duplicationPath.paths[0].header),
+                pathUrl:""
+            }
+        }
         Logger.info(
             `Domain New Path View {Id: ${domainId},domains:${JSON.stringify(params)}}`
         );
@@ -186,7 +206,7 @@ pathRouter.post("/:domainId/:pathId/edit", async function(req, res) {
             `Domain New Path Edited Error {id : ${domainId}, error:${error}}`
         );
     }
-    res.redirect(`/admin/domain/paths/${domainId}`);
+    res.redirect(`/admin/domain/paths/${domainId}/${pathId}/edit`);
 });
 
 pathRouter.get("/:domainId/:pathId/delete", async function(req, res) {

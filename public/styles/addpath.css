@@ -15,6 +15,14 @@ body {
   background-color: #91c0dc1a;
 }
 
+.body-text{
+  padding-left: 32px;
+}
+
+.body-text textarea{
+  overflow-x: auto;
+  white-space: nowrap;
+}
 
 .container {
     width: 100%;

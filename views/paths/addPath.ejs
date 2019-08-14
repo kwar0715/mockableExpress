@@ -42,6 +42,9 @@
                 >
               </div>
             </div>
+            <div class="row buttonlist">
+              <button type="button" class="btn btn-dark" onClick="location.href='/admin/domain/paths/<%=domainId%>'">Back</button>  
+            </div>
           </header>
         <form method="POST" action="/admin/domain/paths/<%=domainId%>/new/" class="form">
           <div class="form-group row">
@@ -52,6 +55,7 @@
                   name="name"
                   placeholder="Name"
                   class="form-control"
+                  value="<%= pathName%>"
                   required
               />
           </div>
@@ -64,6 +68,7 @@
               name="desc"
               placeholder="Description"
               class="form-control"
+              value="<%= pathDescription%>"
           />
         </div>
         <div class="form-group row">
@@ -74,54 +79,63 @@
               name="path"
               placeholder="Path"
               class="form-control"
+              value="<%= pathUrl%>"
               required
           />
           </div>  
-          <div class="form-group row">
-          Method
-          <label for="method" class="sr-only">Method</label>
-          <select name="method" class="form-control">
-              <option value="get"> Get</option>
-              <option value="post">Post</option>
-              <option value="put">Put</option>
-              <option value="delete">Delete</option>
-            </select>
-        </div>
-        <div class="form-group row">
-            Status Code
-            <label for="statusCode" class="sr-only">Status Code</label>
-            <input
-                type="text"
-                name="statusCode"
-                placeholder="Status Code"
-                value="200"
-                class="form-control"
-                required
-            />
-        </div>
-        <div class="form-check row">          
-          <input type="checkbox" class="form-check-input" name="authentication">
-          <label class="form-check-label" for="authentication" > Authorization</label>
-        </div>            
-        <div class="form-group row">
-            Header (Shoud use JSON format)
-            <label for="header" class="sr-only">Header</label>
-            <textarea
-                type="text"
-                name="header"
-                class="form-control" rows="5" required>{"Content-Type":"application/json"}</textarea>
-        </div>
-        <div class="form-group row">
-            Body
-            <label for="body" class="sr-only">Body</label>
-            <textarea
-                type="text"
-                name="body"
-                placeholder=''
-                class="form-control" rows="15"></textarea>
-        </div>
-        <button type="submit" class="btn btn-success">Save</button>
-        <button type="button" class="btn btn-dark" onClick="location.href='/domain'">Cancel</button>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="form-group row">
+                Method
+                <label for="method" class="sr-only">Method</label>
+                <select name="method" class="form-control" value="Post">
+                    <option value="get" <%=pathMethod === 'get'? 'selected' : ''%>> Get</option>
+                    <option value="post" <%=pathMethod === 'post'? 'selected' : ''%>>Post</option>
+                    <option value="put" <%=pathMethod === 'put'? 'selected' : ''%>>Put</option>
+                    <option value="delete" <%=pathMethod === 'delete'? 'selected' : ''%>>Delete</option>
+                  </select>
+              </div>
+              <div class="form-group row">
+                  Status Code
+                  <label for="statusCode" class="sr-only">Status Code</label>
+                  <input
+                      type="number"
+                      name="statusCode"
+                      placeholder="Status Code"
+                      value="200"
+                      class="form-control"
+                      value="<%= pathStatus%>"
+                      required
+                  />
+              </div>
+              <div class="form-check row">          
+                <input type="checkbox" class="form-check-input" <%= (authentication || false)? 'checked':null%> name="authentication">
+                <label class="form-check-label" for="authentication" > Authorization</label>
+              </div>            
+              <div class="form-group row">
+                  Header (Shoud use JSON format)
+                  <label for="header" class="sr-only">Header</label>
+                  <textarea
+                      type="text"
+                      name="header"
+                      class="form-control" rows="5" required><%=JSON.stringify(header)%></textarea>
+              </div>
+              <button type="submit" class="btn btn-success">Save</button>
+              <button type="button" class="btn btn-dark" onClick="location.href='/admin/domain/paths/<%=domainId%>'">Cancel</button>    
+            </div>
+
+            <div class="col-md-9 body-text">
+              <div class="form-group row">
+                Body
+                <label for="body" class="sr-only">Body</label>
+                <textarea
+                    type="text"
+                    name="body"
+                    placeholder=''
+                    class="form-control" rows="15"><%=body%></textarea>
+            </div>
+            </div>
+            </div>
         </form>
   </body>
 </html>
