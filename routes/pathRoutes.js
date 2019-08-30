@@ -48,7 +48,6 @@ pathRouter.get("/:domainId/new", async function(req, res) {
         };
         if(duplicationPathId){
             const duplicationPath = await Database.getPath(domainId,duplicationPathId);
-            console.log()
             params = {
                 ...params,
                 ...duplicationPath.paths[0],
