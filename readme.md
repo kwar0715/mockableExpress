@@ -406,6 +406,21 @@ You can change your response by query parameter without do any if else syntax. t
 Templete 1 will received for testDomain1/testPath1?templete=templete1
 Templete 2 will received for testDomain1/testPath1?templete=templete2
 
+## Limitations
+
+1. Query params should not contain '+' charactor. is it is necessary, it should be changed in the conditions as ' '
+
+Ex:- 
+```
+Url: /test?count = 10+10
+
+#if("{{count}}",=,"10 10"){
+  {
+    value: "Query params are 10+10"
+  }
+}endif
+```
+
 ## Technologies
 
 1. Node JS : https://nodejs.org/en/
