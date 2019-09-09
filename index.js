@@ -255,6 +255,11 @@ systemApp.post("/upload", async function(req, res) {
             body: _.isObject(body) ? JSON.stringify(body) : body
         };
         logger.info(`Preparing to upload record data... ${JSON.stringify(data)}`);
+
+
+        if( !data.query.operator || _.indexOf(['=','!=','>','<','>=','<=','*<','*>'], data.query.operator) === -1){
+            data.query.operator = '='
+        }
         try {
             const existedPath = await db.getExistedPathId({
                 domainName: data.domainName,
@@ -288,20 +293,20 @@ systemApp.post("/upload", async function(req, res) {
                 if (data.query) {
                     const conditions = existedPath.path.body.split('endif');  
                     if(conditions.length<=1){
-                        body= body.concat(`#if({{${data.query.parameter}}},=,"${data.query.value}"){${JSON.stringify(data.query.body,null,4)}}endif\n`)
+                        body= body.concat(`#if({{${data.query.parameter}}},${data.query.operator},"${data.query.value}"){${JSON.stringify(data.query.body,null,4)}}endif\n`)
                     }
                     let isUpdated=false;
                     for(let i=0;i<conditions.length-1;i++){
                         const condition = conditions[i];
                         if(condition.split(')')[0].includes(data.query.value)){
-                            body= body.concat(`#if({{${data.query.parameter}}},=,"${data.query.value}"){${JSON.stringify(data.query.body,null,4)}}endif\n`)
+                            body= body.concat(`#if({{${data.query.parameter}}},${data.query.operator},"${data.query.value}"){${JSON.stringify(data.query.body,null,4)}}endif\n`)
                             isUpdated=true;
                         }else{
                             body = body.concat(`${conditions[i]}endif\n`)
                         }
                     }
                     if(!isUpdated){
-                       body= body.concat(`#if({{${data.query.parameter}}},=,"${data.query.value}"){${JSON.stringify(data.query.body,null,4)}}endif\n`)  
+                       body= body.concat(`#if({{${data.query.parameter}}},${data.query.operator},"${data.query.value}"){${JSON.stringify(data.query.body,null,4)}}endif\n`)
                     }
                 }else{
                     body = data.body;
