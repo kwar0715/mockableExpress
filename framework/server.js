@@ -264,6 +264,10 @@ Server.prototype.createEndpoint = async function(domainName, pathObject) {
 
                 let objectBody = pathObject.body;
 
+                Object.keys(req.query).forEach(key=>{
+                    req.query[key] = req.query[key].replace(/\r?\n|\r/g, "");
+                })
+
                 objectBody = removeComments(objectBody);
                 objectBody = await filterCommands(VARIABLES, COMMAND_CODE.VARIABLE, objectBody);
                 objectBody = changeResponseBody(req.params, objectBody);
