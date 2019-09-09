@@ -384,7 +384,7 @@ You can change your response by query parameter without do any if else syntax. t
     "query": {
  	    "parameter":"status",
  	    "value":"test1",
-              "operator":"!=",  // default is =. this is optional
+            "operator":"!=",  // default is =. this is optional
  	    "body":{
  		    "message":"hello"
  	    }
