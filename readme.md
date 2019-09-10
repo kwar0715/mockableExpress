@@ -128,6 +128,17 @@ you are passing a value as URL, Query, Body parameter. you can retrieve your dat
   value: #get("{{id}}")#
 }
 ```
+
+### create a random number
+
+```
+#random(minimum,maximum,number of decimal points)#
+```
+you can create a random number between 0 and 10 and round off to 2 digits.
+```
+#random(0,10,2)#
+```
+
 ### delete your data from database
 
 ```
