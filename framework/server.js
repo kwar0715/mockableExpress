@@ -17,6 +17,7 @@ const FOR_COMMAND = /#for\(\"+\d+\"+\)([\n\s]*){((?!for)\w|\W)+}endfor/
 const FOR_EACH_COMMAND = /#foreach\(\"+\[?[\w,]+\]?\"+,\"\w+\"\)([\n\s]*){((?!foreach)\w|\W)+}endforeach/
 const VARIABLES = /!\w+=\w*!/
 const QUERY = /#Query/
+const RANDOM = /#random\((\d+)\,(\d+)\,(\d+)\)#/
 
 const COMMAND_CODE = {
     SAVE: "SAVE",
@@ -26,7 +27,8 @@ const COMMAND_CODE = {
     FOR: "FOR",
     FOREACH: "FOREACH",
     VARIABLE: "VARIABLE",
-    QUERY: "QUERY"
+    QUERY: "QUERY",
+    RANDOM: 'RANDOM'
 };
 
 const Server = function() {
@@ -107,6 +109,14 @@ function execSaveCommand(match) {
 function execGetCommand(match) {
     const params = match[0].replace('#get("', "").replace('")#', "");
     return Database.getCustomCommand(params);
+}
+
+function execRandCommand(match) {
+    const params = match[0]
+        .replace('#random(', "")
+        .replace(')#', "")
+        .split(",");
+    return Number(Math.random() * (params[1] - params[0]) + params[0], params[2]).toFixed(params[2]);
 }
 
 function execDelCommand(match) {
@@ -208,6 +218,11 @@ async function filterCommands(pattern, commandType, str, url) {
                         response = response.replace(match[0], execGetCommand(match));
                         break;
                     }
+                case COMMAND_CODE.RANDOM:
+                {
+                    response = response.replace(match[0], execRandCommand(match));
+                    break;
+                }
                 case COMMAND_CODE.DELETE:
                     {
                         response = response.replace(match[0], execDelCommand(match));
@@ -284,9 +299,11 @@ Server.prototype.createEndpoint = async function(domainName, pathObject) {
                     objectBody
                 );
 
+
                 objectBody = await filterCommands(IF_COMMAND, COMMAND_CODE.IF, objectBody);
                 objectBody = await filterCommands(FOR_COMMAND, COMMAND_CODE.FOR, objectBody);
                 objectBody = await filterCommands(QUERY, COMMAND_CODE.QUERY, objectBody, req.originalUrl);
+                objectBody = await filterCommands(RANDOM, COMMAND_CODE.RANDOM, objectBody);
                 //Logger.info(`Reached ${path}`);
                 const response = res.status(Number(pathObject.pathStatus) || 200)
                 const contentType = pathObject.header['Content-Type'];
