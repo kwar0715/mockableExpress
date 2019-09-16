@@ -256,10 +256,6 @@ systemApp.post("/upload", async function(req, res) {
         };
         logger.info(`Preparing to upload record data... ${JSON.stringify(data)}`);
 
-
-        if( !data.query.operator || _.indexOf(['=','!=','>','<','>=','<=','*<','*>'], data.query.operator) === -1){
-            data.query.operator = '='
-        }
         try {
             const existedPath = await db.getExistedPathId({
                 domainName: data.domainName,
@@ -291,6 +287,9 @@ systemApp.post("/upload", async function(req, res) {
             } else {
                 let body="";
                 if (data.query) {
+                    if( !data.query.operator || _.indexOf(['=','!=','>','<','>=','<=','*<','*>'], data.query.operator) === -1){
+                        data.query.operator = '='
+                    }
                     const conditions = existedPath.path.body.split('endif');  
                     if(conditions.length<=1){
                         body= body.concat(`#if({{${data.query.parameter}}},${data.query.operator},"${data.query.value}"){${JSON.stringify(data.query.body,null,4)}}endif\n`)
