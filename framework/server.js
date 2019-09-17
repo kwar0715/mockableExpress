@@ -18,6 +18,7 @@ const FOR_EACH_COMMAND = /#foreach\(\"+\[?[\w,]+\]?\"+,\"\w+\"\)([\n\s]*){((?!fo
 const VARIABLES = /!\w+=\w*!/
 const QUERY = /#Query/
 const RANDOM = /#random\((\d+)\,(\d+)\,(\d+)\)#/
+const SET_STATUS = /#setStatus\((\d+)\)#/
 
 const COMMAND_CODE = {
     SAVE: "SAVE",
@@ -28,7 +29,9 @@ const COMMAND_CODE = {
     FOREACH: "FOREACH",
     VARIABLE: "VARIABLE",
     QUERY: "QUERY",
-    RANDOM: 'RANDOM'
+    RANDOM: 'RANDOM',
+    QUERY_STATUS:'QUERY_STATUS',
+    GET_STATUS_CODE:'GET_STATUS_CODE'
 };
 
 const Server = function() {
@@ -200,6 +203,17 @@ function getQuery(queryUrl) {
     return Database.getQuery(queryUrl);
 }
 
+function getStatusCode(match) {
+    const params = match[0]
+        .replace('#setStatus(', "")
+        .replace(')#', "");
+    return params !== undefined ? Number(params) : undefined;
+}
+
+function filterQueryStatus(response) {
+    return response.replace(/#setStatus\((\d+)\)#/g, "");
+}
+
 async function filterCommands(pattern, commandType, str, url) {
     try {
         const regExp = RegExp(pattern, "g");
@@ -254,7 +268,19 @@ async function filterCommands(pattern, commandType, str, url) {
                         response = response.replace(match[0], result);
                         break;
                     }
+                case COMMAND_CODE.GET_STATUS_CODE:
+                    {
+                        return getStatusCode(match);
+                    }
+                case COMMAND_CODE.QUERY_STATUS:
+                    {
+                        response = filterQueryStatus(response)
+                        break;
+                    }
             }
+        }
+        if(commandType == COMMAND_CODE.GET_STATUS_CODE){
+            return undefined;
         }
         return response;
     } catch (error) {
@@ -308,8 +334,10 @@ Server.prototype.createEndpoint = async function(domainName, pathObject) {
                 objectBody = await filterCommands(FOR_COMMAND, COMMAND_CODE.FOR, objectBody);
                 objectBody = await filterCommands(QUERY, COMMAND_CODE.QUERY, objectBody, req.originalUrl);
                 objectBody = await filterCommands(RANDOM, COMMAND_CODE.RANDOM, objectBody);
+                const statusCode = await filterCommands(SET_STATUS, COMMAND_CODE.GET_STATUS_CODE, objectBody );
+                objectBody = await filterCommands(SET_STATUS, COMMAND_CODE.QUERY_STATUS, objectBody );
                 //Logger.info(`Reached ${path}`);
-                const response = res.status(Number(pathObject.pathStatus) || 200)
+                const response = res.status(statusCode || Number(pathObject.pathStatus) || 200)
                 const contentType = pathObject.header['Content-Type'];
                 if (contentType.indexOf('application/json') !== -1) {
                     try {
