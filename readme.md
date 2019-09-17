@@ -294,8 +294,25 @@ so the response can be,
 }
 ```
 
+## Set Customized Status Code
 
+You can set your response status in your code.
 
+``` #setStatus(400)#```
+
+You can use this in <b>if</b> conditions.
+
+```
+#if("{{id}}",=,"10"){
+  #setStatus(400)#
+  A
+}endif
+B
+```
+
+If you send id=10 so you will receive status 400 `A` Response.
+unless you will get the common status you saved by the UI.
+ 
 ## Constants allocation
 
 You can define a constants in the response body. you can only pass strings and digits for the constant.
