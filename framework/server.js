@@ -1,6 +1,5 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const _ = require("underscore");
 const cors = require('cors');
 const expressMonitor = require('express-status-monitor');
 const Database = require("./db");
@@ -146,15 +145,33 @@ function execIfCommand(match, response) {
     return match[0].replace(/#if\(\"?\{*.+\}*\"?,[=<>!*]+,\"+\{*.+\}*\"\)([\n\s]*)\{/, "").replace(/\}endif/, "");
 }
 
-function execProgCommand(match, response) {
+async function execProgCommand(match, response) {
     //exatract parameters
-    const params = match[0]
+    let params = match[0]
         .replace(/#prog([\n\s]*)\{/, "")
         .replace(/}([\n\s]*)endprog/, "")
 
     const returnResponse = response.replace(match[0], "");
+    if(params.indexOf('require(') > 0){
+        return returnResponse.replace(/#prog_value#/g, 'require is not a valid command here ')
+    }
 
-    const value = new Function (params)();
+    params = `const lodash = require('lodash');
+    const fetch = require('node-fetch');
+    const moment = require('moment');
+    const nodemailer = require('nodemailer');
+    const path = require('path');
+    const underscore = require('underscore');
+    const faker = require('faker');
+    ${params}`
+
+    const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+
+    function createAsync(){
+        return new AsyncFunction('require',params)(require);
+    }
+
+    const value = await new AsyncFunction('exports','require', 'module','__filename','__dirname',params)(exports, require, module,__filename,__dirname);
     return returnResponse.replace(/#prog_value#/g,value);
 }
 
@@ -263,7 +280,7 @@ async function filterCommands(pattern, commandType, str, url) {
                     }
                 case COMMAND_CODE.PROG:
                 {
-                    response = execProgCommand(match, response);
+                    response = await execProgCommand(match, response);
                     break;
                 }
                 case COMMAND_CODE.FOR:

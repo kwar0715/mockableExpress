@@ -349,6 +349,63 @@ comment string
 */
 ```
 
+## JS programming console
+
+You can use javascript language for dynamic programming. Write your logic and run it.
+
+```
+#prog{
+    var count = {{count}}
+    return JSON.stringify({
+        "returnValue": count + 1
+    });
+}endprog
+
+{
+"hello": #prog_value#
+}
+```
+
+### Http requests
+
+Mockable express is using node-fetch library for execute http communication.
+
+```
+#prog{
+    await fetch('https://httpbin.org/post', {
+            method: 'post',
+            body:    JSON.stringify(body),
+            headers: { 'Content-Type': 'application/json' },
+        })
+    return 'OK';
+}endprog
+
+{
+"hello": #prog_value#
+}
+
+```
+
+### Other useful libraries
+
+We use below libraries for extend usability of code.
+
+1. lodash = https://lodash.com/
+2. moment = https://momentjs.com/
+3. path = https://nodejs.org/docs/latest/api/path.html
+4. underscore = https://underscorejs.org/
+5. faker = https://www.npmjs.com/package/Faker
+
+```
+#prog{
+    
+    const value = lodash.add(1,2);
+    const time = moment()
+    const underscore = underscore.find([1, 2, 3, 4, 5, 6], function(num){ return num % 2 == 0; })
+    const data =  faker.name.findName()
+}endprog
+```
+
 ## Create Your Endpoints Programmatically
 
 You can create endpoints programmatically from upload endpoint. so first you have to enable the upload functionality.
