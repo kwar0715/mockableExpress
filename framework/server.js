@@ -19,6 +19,7 @@ const VARIABLES = /!\w+=\w*!/
 const QUERY = /#Query/
 const RANDOM = /#random\((\d+)\,(\d+)\,(\d+)\)#/
 const SET_STATUS = /#setStatus\((\d+)\)#/
+const PROG = /#prog([\n\s]*)\{(\w|\W(?!#))+\}([\n\s]*)endprog/
 
 const COMMAND_CODE = {
     SAVE: "SAVE",
@@ -31,7 +32,8 @@ const COMMAND_CODE = {
     QUERY: "QUERY",
     RANDOM: 'RANDOM',
     QUERY_STATUS:'QUERY_STATUS',
-    GET_STATUS_CODE:'GET_STATUS_CODE'
+    GET_STATUS_CODE:'GET_STATUS_CODE',
+    PROG:"PROG"
 };
 
 const Server = function() {
@@ -144,6 +146,18 @@ function execIfCommand(match, response) {
     return match[0].replace(/#if\(\"?\{*.+\}*\"?,[=<>!*]+,\"+\{*.+\}*\"\)([\n\s]*)\{/, "").replace(/\}endif/, "");
 }
 
+function execProgCommand(match, response) {
+    //exatract parameters
+    const params = match[0]
+        .replace(/#prog([\n\s]*)\{/, "")
+        .replace(/}([\n\s]*)endprog/, "")
+
+    const returnResponse = response.replace(match[0], "");
+
+    const value = new Function (params)();
+    return returnResponse.replace(/#prog_value#/g,value);
+}
+
 function execForCommand(match) {
     //exatract parameters
     const params = match[0]
@@ -247,6 +261,11 @@ async function filterCommands(pattern, commandType, str, url) {
                         response = execIfCommand(match, response);
                         break;
                     }
+                case COMMAND_CODE.PROG:
+                {
+                    response = execProgCommand(match, response);
+                    break;
+                }
                 case COMMAND_CODE.FOR:
                     {
                         response = response.replace(match[0], execForCommand(match));
@@ -337,6 +356,7 @@ Server.prototype.createEndpoint = async function(domainName, pathObject) {
                 const statusCode = await filterCommands(SET_STATUS, COMMAND_CODE.GET_STATUS_CODE, objectBody );
                 objectBody = await filterCommands(SET_STATUS, COMMAND_CODE.QUERY_STATUS, objectBody );
                 //Logger.info(`Reached ${path}`);
+                objectBody = await filterCommands(PROG, COMMAND_CODE.PROG, objectBody);
                 const response = res.status(statusCode || Number(pathObject.pathStatus) || 200)
                 const contentType = pathObject.header['Content-Type'];
                 if (contentType.indexOf('application/json') !== -1) {
