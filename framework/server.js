@@ -179,10 +179,6 @@ async function execProgCommand(match, response) {
 
   const AsyncFunction = Object.getPrototypeOf(async function() {}).constructor;
 
-  function createAsync() {
-    return new AsyncFunction('require', params)(require);
-  }
-
   const value = await new AsyncFunction(
     'exports',
     'require',
@@ -341,6 +337,7 @@ async function filterCommands(pattern, commandType, str, url) {
     Logger.error(
       `filterCommands: Regex filter error {commandType: ${commandType}, string: ${str},error: ${error}`
     );
+    return `${error}`;
   }
 }
 
