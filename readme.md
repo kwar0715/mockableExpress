@@ -351,7 +351,7 @@ comment string
 
 ## JS programming console
 
-You can use javascript language for dynamic programming. Write your logic and run it.
+You can use javascript language for logic development. Write your logic and run it.
 
 ```
 #prog{

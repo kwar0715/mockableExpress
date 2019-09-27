@@ -9,6 +9,10 @@ function onSchedulerClick(){
     window.location.href = `/admin/schdulers`;
 }
 
+function onEnvironmentClick(){
+    window.location.href = `/admin/variables`;
+}
+
 function generateUUID() {
     var d = new Date().getTime();
     if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
