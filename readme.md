@@ -349,6 +349,14 @@ comment string
 */
 ```
 
+## Environment Variables
+
+You can set environment variables here. click on more button.
+
+```
+#env("VARIABLE_NAME")#
+```
+
 ## JS programming console
 
 You can use javascript language for logic development. Write your logic and run it.
@@ -385,6 +393,20 @@ Mockable express is using node-fetch library for execute http communication.
 }
 
 ```
+### Use of environment variables
+
+```
+#prog{
+    const variableValue = "#env("ENV")#"
+    return 'OK';
+}endprog
+
+{
+"hello": #prog_value#
+}
+
+```
+
 
 ### Other useful libraries
 
