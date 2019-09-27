@@ -229,6 +229,17 @@ Database.prototype.removeVariable = async function(name) {
     }
 };
 
+Database.prototype.getVariable = async function(name) {
+
+    const variables = db.getData("/variables") || []
+
+    for (let i = 0; i < variables.length; i++) {
+        if (variables[i].name === name) {
+            return variables[i].value.replace('"',"");
+        }
+    }
+};
+
 
 Database.prototype.addPath = async function(domainId, record, id = uuidv1()) {
     const domains = await db.getData("/domains") || []

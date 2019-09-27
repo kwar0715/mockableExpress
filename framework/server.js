@@ -19,6 +19,7 @@ const QUERY = /#Query/;
 const RANDOM = /#random\((\d+)\,(\d+)\,(\d+)\)#/;
 const SET_STATUS = /#setStatus\((\d+)\)#/;
 const PROG = /#prog([\n\s]*)\{(\w|\W(?!#))+\}([\n\s]*)endprog/;
+const ENV_VARIABLE_COMMAND = /#env\(\"+\w+\"+\)#/;
 
 const COMMAND_CODE = {
   SAVE: 'SAVE',
@@ -32,7 +33,8 @@ const COMMAND_CODE = {
   RANDOM: 'RANDOM',
   QUERY_STATUS: 'QUERY_STATUS',
   GET_STATUS_CODE: 'GET_STATUS_CODE',
-  PROG: 'PROG'
+  PROG: 'PROG',
+  ENV_VARIABLE: 'ENV_VARIABLE'
 };
 
 const Server = function() {
@@ -132,6 +134,11 @@ function execRandCommand(match) {
 function execDelCommand(match) {
   const params = match[0].replace('#del("', '').replace('")#', '');
   return Database.delCustomCommand(params);
+}
+
+async function execEnvVariables(match) {
+  const params = match[0].replace('#env("', '').replace('")#', '');
+  return await Database.getVariable(params);
 }
 
 function execIfCommand(match, response) {
@@ -315,6 +322,10 @@ async function filterCommands(pattern, commandType, str, url) {
           response = execVariables(match, response);
           break;
         }
+        case COMMAND_CODE.ENV_VARIABLE: {
+          response = response.replace(match[0], await execEnvVariables(match));
+          break;
+        }
         case COMMAND_CODE.QUERY: {
           const result = await getQuery(url);
           response = response.replace(match[0], result);
@@ -371,6 +382,11 @@ Server.prototype.createEndpoint = async function(domainName, pathObject) {
         objectBody = changeResponseBody(req.params, objectBody);
         objectBody = changeResponseBody(req.query, objectBody);
         objectBody = changeResponseBody(req.body, objectBody);
+        objectBody = await filterCommands(
+            ENV_VARIABLE_COMMAND,
+            COMMAND_CODE.ENV_VARIABLE,
+            objectBody
+        );
         objectBody = await filterCommands(
           FOR_EACH_COMMAND,
           COMMAND_CODE.FOREACH,
