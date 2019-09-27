@@ -204,6 +204,43 @@ Database.prototype.removeScheduler = async function(id) {
     }
 };
 
+Database.prototype.getAllVariables = async function() {
+    try {
+        return db.getData("/variables") || [];
+    } catch (error) {
+
+    }
+    return [];
+};
+
+Database.prototype.addVariable = async function(data) {
+    return db.push(`/variables[]`, data, true);
+};
+
+Database.prototype.removeVariable = async function(name) {
+
+    const variables = db.getData("/variables") || []
+
+    for (let i = 0; i < variables.length; i++) {
+        if (variables[i].name === name) {
+            await db.delete(`/variables[${i}]`);
+            return;
+        }
+    }
+};
+
+Database.prototype.getVariable = async function(name) {
+
+    const variables = db.getData("/variables") || []
+
+    for (let i = 0; i < variables.length; i++) {
+        if (variables[i].name === name) {
+            return variables[i].value.replace('"',"");
+        }
+    }
+};
+
+
 Database.prototype.addPath = async function(domainId, record, id = uuidv1()) {
     const domains = await db.getData("/domains") || []
     if (domains.length > 0) {
