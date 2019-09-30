@@ -1,0 +1,75 @@
+<html>
+<head>
+    <title>Socket Trigger</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+
+    <link href="/admin/styles/addpath.css" rel="stylesheet" />
+    <script src="/admin/scripts/socket.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="row flex-nowrap justify-content-between align-items-center">
+            <div class="col-2">
+                <img class="mb-4" src="/admin/imgs/logo.png" alt="" height="75" />
+            </div>
+            <div class="col-8 text-center">
+                <h4>Send WS Socket Data</h4>
+            </div>
+            <div class="col-2 d-flex justify-content-end align-items-center">
+                <a class="btn btn-sm btn-outline-secondary" href="/admin/logout"
+                >Sign out</a
+                >
+            </div>
+        </div>
+    </header>
+    <div class="row buttonlist">
+        <button type="button" class="btn btn-dark" onClick="location.href='/admin/domain'">Back</button>
+    </div>
+    <form method="POST" class="form">
+        <div class="row">
+           Socket Url : <%=url%>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group row">
+                    Message
+                    <label for="body" class="sr-only">Message</label>
+                    <textarea
+                            type="text"
+                            name="txtmessage"
+                            id="txtmessage"
+                            placeholder=''
+                            class="form-control" rows="10"></textarea>
+                </div>
+                <button type="button" class="btn btn-success" onclick="sendData()">Send</button>
+                <button type="button" class="btn btn-dark" onClick="location.href='/admin/schedulers'">Cancel</button>
+            </div>
+
+            <div class="col-md-6 body-text">
+                <div class="form-group row">
+                    Console
+                    <label for="body" class="sr-only">Console</label>
+                    <textarea
+                            type="text"
+                            name="txtConsole",
+                            id="txtConsole"
+                            placeholder=''
+
+                            class="form-control" rows="10"></textarea>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

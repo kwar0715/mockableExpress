@@ -529,6 +529,11 @@ Url: /test?count = 10+10
 }endif
 ```
 
+## Mocked WebSocket
+
+You can use mockable express serer as mocked web socket server. go to socket tab and connect your web socket client to 
+<b>Socket URL</b>. Send your message to connected client
+
 ## Technologies
 
 1. Node JS : https://nodejs.org/en/

@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const expressWs = require('express-ws');
 const expressMonitor = require('express-status-monitor');
 const Database = require('./db');
 const Logger = require('./logger');
@@ -37,6 +38,8 @@ const COMMAND_CODE = {
   ENV_VARIABLE: 'ENV_VARIABLE'
 };
 
+var socket =null;
+
 const Server = function() {
   this.app = express();
   this.app.set('view engine', 'ejs');
@@ -53,6 +56,7 @@ const Server = function() {
     })
   );
 
+  this.wsInstance = expressWs(this.app);
   this.status = 'Initialized';
   return this;
 };
@@ -60,11 +64,23 @@ const Server = function() {
 Server.prototype.init = async function(port) {
   this.port = port;
   await this.applyDomainList();
+  this.app.ws('/', function(ws, req) {
+    ws.on('message');
+  });
   this.listner = this.app.listen(this.port, function() {
     Logger.info(`Mockable Server : Start Listening at ${port}`);
   });
   this.status = 'Started';
 };
+
+Server.prototype.sendData = function (data) {
+  try {
+    this.wsInstance.getWss().clients.forEach(function each(ws) {
+      if (ws.isAlive === false) return ws.terminate();
+      ws.send(data)
+    });
+  }catch (e) {}
+}
 
 function changeResponseBody(params, body) {
   const values = Object.values(params);
