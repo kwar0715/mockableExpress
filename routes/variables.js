@@ -1,10 +1,8 @@
 const express = require("express");
 const variableRoute = express.Router();
 const _ = require("lodash");
-const uuidv1 = require("uuid/v1");
 const Database = require("../framework/db");
 const Logger = require("../framework/logger");
-const Scheduler = require("../framework/scheduler");
 const { ADMIN_PREFIX } = require("../config");
 
 variableRoute.get("/", async function(req, res) {
