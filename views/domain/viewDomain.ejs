@@ -48,8 +48,13 @@
           action=<%= (typeof editable !== 'undefined' && editable !== null) ? id : 'domain/add'%>
           class="form-inline"
       >
-      <div class="form-group row">
-        <a class="btn btn-sm btn-outline-primary" href="/admin/schedulers">Schedulers <%= runs %></a>
+      <div class="row">
+          <div class="col-sd-6">
+              <a class="btn btn-sm btn-outline-primary" href="/admin/schedulers">Schedulers <%= runs %></a>
+          </div>
+          <div class="col-sd-6">
+              <a class="btn btn-sm btn-outline-primary" href="/admin/sockets">Sockets</a>
+          </div>
       </div>
       <div class="form-group row">
         <label for="domainName" class="sr-only">New Domain</label>
