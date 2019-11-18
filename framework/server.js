@@ -198,6 +198,7 @@ async function execProgCommand(match, response) {
     const path = require('path');
     const underscore = require('underscore');
     const faker = require('faker');
+    const uuidv4 = require('uuid/v4');
     ${params}`;
 
   const AsyncFunction = Object.getPrototypeOf(async function() {}).constructor;
