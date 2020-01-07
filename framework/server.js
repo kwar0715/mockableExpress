@@ -206,13 +206,14 @@ async function execProgCommand(match, response) {
     const mysql = require('./mysqldb');
     try{
       ${params}
-    }catch(){}`;
+    }catch(e){
+      return JSON.stringify(e);
+    }`;
 
   const AsyncFunction = Object.getPrototypeOf(async function() {}).constructor;
 
-  const value = "";
   try {
-    await new AsyncFunction(
+    const value = await new AsyncFunction(
       'exports',
       'require',
       'module',
@@ -220,9 +221,10 @@ async function execProgCommand(match, response) {
       '__dirname',
       params
     )(exports, require, module, __filename, __dirname);
+    return returnResponse.replace(/#prog_value#/g, value);
   } catch (error) {
+    return returnResponse.replace(/#prog_value#/g, JSON.stringify(error));
   }
-  return returnResponse.replace(/#prog_value#/g, value);
 }
 
 function execForCommand(match) {
