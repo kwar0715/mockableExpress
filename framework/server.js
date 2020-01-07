@@ -64,6 +64,10 @@ Server.prototype.init = async function(port) {
   this.status = 'Started';
 };
 
+Server.prototype.getPort = function(){
+  return this.port;
+}
+
 function changeResponseBody(params, body) {
   const values = Object.values(params);
   let objectBody = body;
@@ -175,18 +179,25 @@ async function execProgCommand(match, response) {
     const path = require('path');
     const underscore = require('underscore');
     const faker = require('faker');
-    ${params}`;
+    const mysql = require('./mysqldb');
+    try{
+      ${params}
+    }catch(){}`;
 
   const AsyncFunction = Object.getPrototypeOf(async function() {}).constructor;
 
-  const value = await new AsyncFunction(
-    'exports',
-    'require',
-    'module',
-    '__filename',
-    '__dirname',
-    params
-  )(exports, require, module, __filename, __dirname);
+  const value = "";
+  try {
+    await new AsyncFunction(
+      'exports',
+      'require',
+      'module',
+      '__filename',
+      '__dirname',
+      params
+    )(exports, require, module, __filename, __dirname);
+  } catch (error) {
+  }
   return returnResponse.replace(/#prog_value#/g, value);
 }
 

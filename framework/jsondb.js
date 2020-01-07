@@ -30,6 +30,22 @@ Database.prototype.createTables = async function() {
 
 }
 
+Database.prototype.getMysqlConfigs = async function() {
+    try {
+        return await db.getData(`/mysqlConfig/`);
+    } catch (error) {
+        return null;
+    }
+};
+
+Database.prototype.setMysqlConfigs = async function(value) {
+    try {
+        await db.push(`/mysqlConfig/`, value, true);
+    } catch (error) {
+        return null;
+    }
+};
+
 Database.prototype.getAllDomains = async function() {
     const domains = [];
     const domainPaths = await db.getData("/domains") || [];

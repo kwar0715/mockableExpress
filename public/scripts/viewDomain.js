@@ -9,6 +9,37 @@ function onSchedulerClick(){
     window.location.href = `/admin/schdulers`;
 }
 
+function configureMysql(){
+    const data = {
+        host: document.getElementById("host").value || "localhost:3306",
+        username: document.getElementById("username").value || "root",
+        password: document.getElementById("password").value || "password"
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: '/admin/saveMysqlConfig',
+        data
+    });
+}
+
+function handleOnNodeAdmin(){
+    $.ajax({
+        type: 'GET',
+        url: '/admin/other/nodeAdmin',
+        success: function(data) {
+            window.localStorage.setItem('nodeadmin', data.token);
+            var win = window.open(data.reload, '_blank');
+            win.focus();
+        },
+        error: function(data) {
+            var win = window.open(data.reload, '_blank');
+            win.focus();
+        }
+    });
+    
+}
+
 function generateUUID() {
     var d = new Date().getTime();
     if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
