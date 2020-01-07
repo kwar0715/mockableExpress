@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const expressWs = require('express-ws');
 const expressMonitor = require('express-status-monitor');
 const Database = require('./db');
 const Logger = require('./logger');
@@ -19,6 +20,7 @@ const QUERY = /#Query/;
 const RANDOM = /#random\((\d+)\,(\d+)\,(\d+)\)#/;
 const SET_STATUS = /#setStatus\((\d+)\)#/;
 const PROG = /#prog([\n\s]*)\{(\w|\W(?!#))+\}([\n\s]*)endprog/;
+const ENV_VARIABLE_COMMAND = /#env\(\"+\w+\"+\)#/;
 
 const COMMAND_CODE = {
   SAVE: 'SAVE',
@@ -32,8 +34,11 @@ const COMMAND_CODE = {
   RANDOM: 'RANDOM',
   QUERY_STATUS: 'QUERY_STATUS',
   GET_STATUS_CODE: 'GET_STATUS_CODE',
-  PROG: 'PROG'
+  PROG: 'PROG',
+  ENV_VARIABLE: 'ENV_VARIABLE'
 };
+
+var socket =null;
 
 const Server = function() {
   this.app = express();
@@ -51,6 +56,7 @@ const Server = function() {
     })
   );
 
+  this.wsInstance = expressWs(this.app);
   this.status = 'Initialized';
   return this;
 };
@@ -58,6 +64,9 @@ const Server = function() {
 Server.prototype.init = async function(port) {
   this.port = port;
   await this.applyDomainList();
+  this.app.ws('/', function(ws, req) {
+    ws.on('message');
+  });
   this.listner = this.app.listen(this.port, function() {
     Logger.info(`Mockable Server : Start Listening at ${port}`);
   });
@@ -66,6 +75,15 @@ Server.prototype.init = async function(port) {
 
 Server.prototype.getPort = function(){
   return this.port;
+}
+
+Server.prototype.sendData = function (data) {
+  try {
+    this.wsInstance.getWss().clients.forEach(function each(ws) {
+      if (ws.isAlive === false) return ws.terminate();
+      ws.send(data)
+    });
+  }catch (e) {}
 }
 
 function changeResponseBody(params, body) {
@@ -138,6 +156,11 @@ function execDelCommand(match) {
   return Database.delCustomCommand(params);
 }
 
+async function execEnvVariables(match) {
+  const params = match[0].replace('#env("', '').replace('")#', '');
+  return await Database.getVariable(params);
+}
+
 function execIfCommand(match, response) {
   // exatract parameters
   const params = match[0]
@@ -179,6 +202,7 @@ async function execProgCommand(match, response) {
     const path = require('path');
     const underscore = require('underscore');
     const faker = require('faker');
+    const uuidv4 = require('uuid/v4');
     const mysql = require('./mysqldb');
     try{
       ${params}
@@ -326,6 +350,10 @@ async function filterCommands(pattern, commandType, str, url) {
           response = execVariables(match, response);
           break;
         }
+        case COMMAND_CODE.ENV_VARIABLE: {
+          response = response.replace(match[0], await execEnvVariables(match));
+          break;
+        }
         case COMMAND_CODE.QUERY: {
           const result = await getQuery(url);
           response = response.replace(match[0], result);
@@ -382,6 +410,11 @@ Server.prototype.createEndpoint = async function(domainName, pathObject) {
         objectBody = changeResponseBody(req.params, objectBody);
         objectBody = changeResponseBody(req.query, objectBody);
         objectBody = changeResponseBody(req.body, objectBody);
+        objectBody = await filterCommands(
+            ENV_VARIABLE_COMMAND,
+            COMMAND_CODE.ENV_VARIABLE,
+            objectBody
+        );
         objectBody = await filterCommands(
           FOR_EACH_COMMAND,
           COMMAND_CODE.FOREACH,

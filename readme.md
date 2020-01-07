@@ -28,24 +28,25 @@ Open Source Express Server for mocked services. Mock your services and test as y
 
 ## Run on the detached mode
 
-we use [forever](https://www.npmjs.com/package/forever) to run mockableExpress in detached mode.
+we use [pm2](http://pm2.keymetrics.io/) process manager to run mockableExpress in detached mode.
 
 1. install 
 
   ``` 
-  npm install forever -g 
+  npm install pm2 -g 
   ```
+2. Export Variables
 
-2. start mockable express
+```
+export HOST='your host'
+export API_PORT='your port'
+```
+
+3. start mockable express
 
 ``` 
 #goto mockable express root
-forever start index.js 
-```
-
-3. stop mockable express server
-```
-forever stop index.js
+pm2 start index.js 
 ```
 
 ## Authorization
@@ -349,9 +350,17 @@ comment string
 */
 ```
 
+## Environment Variables
+
+You can set environment variables here. click on more button.
+
+```
+#env("VARIABLE_NAME")#
+```
+
 ## JS programming console
 
-You can use javascript language for dynamic programming. Write your logic and run it.
+You can use javascript language for logic development. Write your logic and run it.
 
 ```
 #prog{
@@ -385,6 +394,20 @@ Mockable express is using node-fetch library for execute http communication.
 }
 
 ```
+### Use of environment variables
+
+```
+#prog{
+    const variableValue = "#env("ENV")#"
+    return 'OK';
+}endprog
+
+{
+"hello": #prog_value#
+}
+
+```
+
 
 ### Other useful libraries
 
@@ -506,6 +529,11 @@ Url: /test?count = 10+10
   }
 }endif
 ```
+
+## Mocked WebSocket
+
+You can use mockable express serer as mocked web socket server. go to socket tab and connect your web socket client to 
+<b>Socket URL</b>. Send your message to connected client
 
 ## Technologies
 

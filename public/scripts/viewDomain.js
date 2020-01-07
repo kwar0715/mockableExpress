@@ -37,7 +37,10 @@ function handleOnNodeAdmin(){
             win.focus();
         }
     });
-    
+}
+
+function onEnvironmentClick(){
+    window.location.href = `/admin/variables`;
 }
 
 function generateUUID() {

@@ -10,13 +10,15 @@ const domainRouter = require("./routes/domainRouter");
 const pathRouter = require("./routes/pathRoutes");
 const schedulers = require("./routes/shedulers");
 const otherRoutes = require("./routes/other");
+const variables = require("./routes/variables");
+const socketRouter = require("./routes/socket");
 const uuidv1 = require("uuid/v1");
 const db = require("./framework/db");
 const { getPublicIP } = require("./framework/utils");
 const { send } = require("./framework/emailsender");
 const { HOST, API_PORT, FROM_EMAIL, ADMIN_PREFIX } = require("./config");
 
-const port = Number(process.argv[2]) || API_PORT || 3000;
+const port = API_PORT;
 
 const systemApp = express();
 
@@ -351,6 +353,8 @@ systemApp.use("/domain", sessionChecker, domainRouter);
 systemApp.use("/domain/paths", sessionChecker, pathRouter);
 systemApp.use("/schedulers", sessionChecker, schedulers);
 systemApp.use("/other",sessionChecker,otherRoutes);
+systemApp.use("/variables", sessionChecker, variables);
+systemApp.use("/sockets",sessionChecker,socketRouter);
 
 (async function() {
     await db.createTables();
