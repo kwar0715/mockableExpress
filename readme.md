@@ -6,16 +6,20 @@
 
 Open Source Express Server for mocked services. Mock your services and test as you wish
 
+## Before install
+
+You have to have node js installed in your computer.
+'https://github.com/nodesource/distributions/blob/master/README.md'
+
 ## installation
 
 1. download or clone from the https://github.com/kwar0715/mockableExpress
-
 2. open the project
-3. run ``` yarn install ``` or ``` npm install ```
-4. run the project by using below commands
-  - npm ``` npm run-script start ``` or on custom port  ``` npm run-script start --port 80 ```
+3. Install yarn 'https://linuxize.com/post/how-to-install-yarn-on-ubuntu-18-04/'
+4. run ``` yarn install ```
+5. run the project by using below commands
   - yarn ``` yarn start ``` or on custom port ``` yarn start 80 ```
-5. docker command 
+6. docker command 
   - build ``` docker build . -t <name>```
   - run ```docker run -p 80:80 <name>``` (if run in detached mode use ```-d```)
 
