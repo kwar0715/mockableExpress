@@ -24,7 +24,7 @@
     "express-status-monitor": "^1.2.5",
     "express-ws": "^4.0.0",
     "faker": "^4.1.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "mysql": "^2.17.1",
     "node-fetch": "^2.4.1",
