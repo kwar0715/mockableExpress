@@ -122,6 +122,7 @@ pathRouter.get("/:domainId/:pathId/edit", async function(req, res) {
             post: null,
             put: null,
             del: null,
+            head: null,
             header: JSON.parse(pathInfo.paths[0].header),
             domainName: pathInfo.domainName
         });
@@ -139,6 +140,9 @@ pathRouter.get("/:domainId/:pathId/edit", async function(req, res) {
                 break;
             case "delete":
                 assignedData.del = selected;
+                break;
+            case "head":
+                assignedData.head = selected;
                 break;
         }
 
