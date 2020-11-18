@@ -500,6 +500,10 @@ Server.prototype.createEndpoint = async function(domainName, pathObject) {
         this.app.delete(path, response);
         break;
       }
+      case 'head': {
+        this.app.head(path, response);
+        break;
+      }
     }
 
     Logger.info(`Endpoint Created {Domain: ${domainName}}`);
