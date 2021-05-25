@@ -84,7 +84,8 @@ function flushAllUserCommands() {
 }
 
 $(function() {
-    $('#chk-domain-active').change(function() {
+    $('[type="checkbox"]').change(function(e) {
+        console.log(e)
         $.ajax({
             type: 'POST',
             url: '/admin/domain/active',
