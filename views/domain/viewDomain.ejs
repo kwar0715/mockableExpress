@@ -134,6 +134,7 @@
           <table class="table table-hover">
             <thead>
               <tr>
+                  <th scope="col">Active</th>
                   <th scope="col">Name</th>
                   <th scope="col">Mocks Count</th>
                   <th scope="col">Actions</th>
@@ -142,12 +143,25 @@
             <tbody>
               <% domains.forEach(function(domain,index){ %>
               <tr>
+                <td>
+                  <input
+                  id='chk-domain-active'
+                  domain-id="<%=domain.domainId%>"
+                   type="checkbox" 
+                   style="width: 20px;"
+                   <%= (domain.active || false)? 'checked':null%> 
+                  data-toggle="toggle" data-size="xs" 
+                  data-onstyle="success" data-on="Active" 
+                  data-off="Deactive" 
+                  data-offstyle="outline-danger"
+                  >
+                </td>
                 <th scope="row"><%= domain.domainName%></th>
                 <td>
                   <p class="domaincount">
                     <%= domain.pathCount%>
-                </p>
-              </td>
+                  </p>
+                </td>
                 <td>
                   <button type="button" class="btn btn-primary" onClick="location.href='/admin/domain/paths/<%=domain.domainId%>'">
                     Manage

@@ -38,6 +38,7 @@ Database.prototype.getAllDomains = async function() {
         domains.push({
             domainId: domain.domainId,
             domainName: domain.domainName,
+            active: domain.active,
             pathCount: domain.paths.length
         })
     }
@@ -63,6 +64,7 @@ Database.prototype.addDomain = async function(domainName) {
     const record = {
         domainName: domainName,
         domainId: id,
+        active: true,
         paths: []
     };
     try {
@@ -97,6 +99,19 @@ Database.prototype.updateDomainName = async function(domainId, domainName) {
     }
 };
 
+Database.prototype.updateDomainActive = async function(domainId, active) {
+    const domains = await db.getData("/domains") || []
+    for (let i = 0; i < domains.length; i++) {
+        if (domains[i].domainId === domainId) {
+            const domain = {
+                ...domains[i],
+                active
+            }
+            db.push(`/domains[${i}]`, domain, true);
+        }
+    }
+};
+
 Database.prototype.deleteDomain = async function(domainId) {
     const domains = await db.getData(`/domains`) || [];
     for (let i = 0; i < domains.length; i++) {
@@ -116,9 +131,10 @@ Database.prototype.getPathsFromDomainId = async function(domainId) {
     if (domains.length > 0) {
         for (let i = 0; i < domains.length; i++) {
             if (domains[i].domainId === domainId) {
-                const { domainName, paths } = domains[i];
+                const { domainName, paths, active } = domains[i];
                 return {
                     domainName,
+                    active,
                     paths
                 }
             }
@@ -141,6 +157,7 @@ Database.prototype.getAllPaths = async function() {
                 result.push({
                     domainId: domain.domainId,
                     domainName: domain.domainName,
+                    active: domain.active,
                     ...domain.paths[j]
                 })
             }
@@ -275,6 +292,7 @@ Database.prototype.getPath = async function(domainId, pathId) {
                         return {
                             domainId,
                             domainName: domains[i].domainName,
+                            active: domains[i].active,
                             paths: [{...domains[i].paths[j], domainId }]
                         }
                     }
@@ -282,6 +300,7 @@ Database.prototype.getPath = async function(domainId, pathId) {
                 return {
                     domainId,
                     domainName: domains[i].domainName,
+                    active: domains[i].active,
                     paths: []
                 }
             }
@@ -289,6 +308,7 @@ Database.prototype.getPath = async function(domainId, pathId) {
     }
     return {
         domainName: null,
+        active: true,
         paths: []
     }
 };

@@ -322,7 +322,7 @@ systemApp.post("/upload", async function(req, res) {
                 Server().removeRoute(`${data.domainName}${data.pathUrl}`, data.pathMethod);
             }
 
-            Server().createEndpoint(data.domainName, data);
+            Server().createEndpoint(data.domainName, true, data);
             logger.info(
                 `Api created {${data.domainName}${data.pathUrl},domainId:${domainId},pathId:${pathId}}`
             );

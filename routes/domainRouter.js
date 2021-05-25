@@ -85,7 +85,7 @@ domainRouter.post("/edit/:domainId", async function(req, res) {
                     header: JSON.parse(pathName.header)
                 }
                 Server().removeRoute(`${domainName}${pathName.pathUrl}`, pathName.pathMethod);
-                Server().createEndpoint(newDomainName, editableDate);
+                Server().createEndpoint(newDomainName, domain.active, editableDate);
             });
             
         }
@@ -117,6 +117,37 @@ domainRouter.get("/delete/:domainId", async function(req, res) {
         Logger.error(`Domain Deleted Error {id : ${domainId}}, error:${error}`);
     }
     res.redirect(`${ADMIN_PREFIX}/domain`);
+});
+
+domainRouter.post("/active", async function(req, res) {
+    
+    const {id, status} = req.body;
+    const active = status === 'true' ? true :false;
+    const domainId = id;
+
+    const domain = await Database.getDomainFromId(domainId);
+    const domainName = domain.domainName;
+    const pathNames = await Database.getPathNamesForDomain(domainId);
+
+    if (pathNames.length > 0){
+        if(!active){
+            pathNames.forEach(function(pathName) {
+                Server().removeRoute(`${domainName}${pathName.pathUrl}`, pathName.pathMethod);
+            });
+        }else{
+            pathNames.forEach(function(pathName) {
+                const editableDate ={
+                    ...pathName,
+                    header: JSON.parse(pathName.header)
+                }
+                Server().createEndpoint(domainName, true, editableDate);
+            });
+        }
+    }
+
+    // update database
+    await Database.updateDomainActive(domainId, active);
+
 });
 
 domainRouter.get("/restart", async function(req, res) {
