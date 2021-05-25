@@ -373,6 +373,7 @@ Server.prototype.createEndpoint = async function(domainName, active, pathObject)
 
   if(!active){
     Logger.info(`Domain : ${domainName} Deactivated`);
+    return;
   }
 
   const path = `${domainName}${pathObject.pathUrl}`;
