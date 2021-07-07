@@ -73,6 +73,10 @@ Server.prototype.init = async function(port) {
   this.status = 'Started';
 };
 
+Server.prototype.getPort = function(){
+  return this.port;
+}
+
 Server.prototype.sendData = function (data) {
   try {
     this.wsInstance.getWss().clients.forEach(function each(ws) {
@@ -199,19 +203,28 @@ async function execProgCommand(match, response) {
     const underscore = require('underscore');
     const faker = require('faker');
     const uuidv4 = require('uuid/v4');
-    ${params}`;
+    const mysql = require('./mysqldb');
+    try{
+      ${params}
+    }catch(e){
+      return JSON.stringify(e);
+    }`;
 
   const AsyncFunction = Object.getPrototypeOf(async function() {}).constructor;
 
-  const value = await new AsyncFunction(
-    'exports',
-    'require',
-    'module',
-    '__filename',
-    '__dirname',
-    params
-  )(exports, require, module, __filename, __dirname);
-  return returnResponse.replace(/#prog_value#/g, value);
+  try {
+    const value = await new AsyncFunction(
+      'exports',
+      'require',
+      'module',
+      '__filename',
+      '__dirname',
+      params
+    )(exports, require, module, __filename, __dirname);
+    return returnResponse.replace(/#prog_value#/g, value);
+  } catch (error) {
+    return returnResponse.replace(/#prog_value#/g, JSON.stringify(error));
+  }
 }
 
 function execForCommand(match) {

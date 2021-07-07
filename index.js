@@ -4,10 +4,12 @@ const _ = require("lodash");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const nodeadmin = require('nodeadmin');
 const logger = require("./framework/logger");
 const domainRouter = require("./routes/domainRouter");
 const pathRouter = require("./routes/pathRoutes");
 const schedulers = require("./routes/shedulers");
+const otherRoutes = require("./routes/other");
 const variables = require("./routes/variables");
 const socketRouter = require("./routes/socket");
 const uuidv1 = require("uuid/v1");
@@ -22,7 +24,6 @@ const systemApp = express();
 
 systemApp.set("view engine", "ejs");
 systemApp.use(express.static("public"));
-
 systemApp.use(cookieParser());
 systemApp.use(
     session({
@@ -63,7 +64,6 @@ systemApp.use((req, res, next) => {
 });
 
 const sessionChecker = (req, res, next) => {
-    return next();
     if (req.session.user && req.cookies.userId) {
         next();
     } else {
@@ -199,6 +199,15 @@ systemApp.get("/getEnableUpload", function(req, res) {
 systemApp.post("/flushAll", function(req, res) {
     try {
         db.flushAllUserData();
+        res.send({ success: true });
+    } catch (error) {
+        res.send({ success: false });
+    }
+});
+
+systemApp.post("/saveMysqlConfig", function(req, res) {
+    try {
+        db.setMysqlConfigs(req.body);
         res.send({ success: true });
     } catch (error) {
         res.send({ success: false });
@@ -342,12 +351,14 @@ systemApp.post("/upload", async function(req, res) {
 systemApp.use("/domain", sessionChecker, domainRouter);
 systemApp.use("/domain/paths", sessionChecker, pathRouter);
 systemApp.use("/schedulers", sessionChecker, schedulers);
+systemApp.use("/other",sessionChecker,otherRoutes);
 systemApp.use("/variables", sessionChecker, variables);
 systemApp.use("/sockets",sessionChecker,socketRouter);
 
 (async function() {
     await db.createTables();
     Server().app.use(ADMIN_PREFIX, systemApp);
+    Server().app.use(nodeadmin(Server().app));
     Server().app.get('/', (req, res) => res.redirect(`${ADMIN_PREFIX}/`))
     await Server().init(port);
 })()

@@ -55,6 +55,9 @@
           <div class="col-sd-6">
               <a class="btn btn-sm btn-outline-primary" href="/admin/sockets">Sockets</a>
           </div>
+          <div class="col-sd-6">
+            <a class="btn btn-sm btn-outline-primary" onclick="handleOnNodeAdmin()">Node Admin</a>
+          </div>
       </div>
       <div class="form-group row">
         <label for="domainName" class="sr-only">New Domain</label>
@@ -77,6 +80,7 @@
                 <button class="dropdown-item" type="button" data-toggle="modal" data-target="#token" onclick="createAuthKey()">Create Token</button>
                 <button class="dropdown-item" type="button" data-toggle="modal" data-target="#enableUpload" onclick="getEnableUpload()">Enable Upload</button>
                 <button class="dropdown-item" type="button" data-toggle="modal" data-target="#flushAll" onclick="flushAllUserCommands()">Flush User Data</button>
+                <button class="dropdown-item" type="button" data-toggle="modal" data-target="#configMysql">Configure Mysql</button>
                 <button class="dropdown-item" type="button" data-toggle="modal" data-target="#environment" onclick="onEnvironmentClick()">Environment</button>
                 <button class="dropdown-item" type="button" onClick='window.open("/status");'>Monitor</button>
             </div>
@@ -98,6 +102,38 @@
         <div class="modal-body">
           <p>Add this to your header</p>
           <p class="authkey" id="authkey"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+<!-- Config Mysql -->
+  <div id="configMysql" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>MySQL Configuration</h3>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form id="configure" onsubmit="configureMysql()">
+            <div class="form-group">
+              <label for="host">Host</label>
+              <input type="text" class="form-control" id="host" placeholder="localhost">
+            </div>
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" class="form-control" id="username" placeholder="root">
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" class="form-control" id="password" placeholder="Password">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

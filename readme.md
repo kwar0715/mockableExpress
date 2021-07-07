@@ -519,6 +519,60 @@ You can change your response by query parameter without do any if else syntax. t
 Templete 1 will received for testDomain1/testPath1?templete=templete1
 Templete 2 will received for testDomain1/testPath1?templete=templete2
 
+## MySQL Database
+Mockabale express created endpoints can directly communicated with MYSQL database. so in <b>#prog#</b> mode. As the result, data can be manupulated thought a database.
+
+### Setup Configurations
+You have to setup mysql connection in mockable express server. you have to click on the right side dropdown and click on the configure Mysql button. Then you can see a configuration window. enter your mysql database host, username and password.
+
+### Connect to Mysql Database
+
+You can use **mysql.connect** to connect database
+
+```
+#prog{
+    try{
+      await mysql.connect("test");
+      // rest of query
+    }catch(e){
+        return JSON.stringify(e);
+    }
+}endprog
+#prog_value#
+```
+### Execute Query
+After connection created, you can execute SQL query using **mysql.query** function
+```
+#prog{
+    try{
+      await mysql.connect("test");
+      const data = await mysql.query('SELECT * FROM data WHERE id={{id}}')
+      return JSON.stringify(data)
+    }catch(e){
+        return JSON.stringify(e);
+    }
+}endprog
+#prog_value#
+```
+
+### Disconnect Mysql 
+```
+#prog{
+    try{
+      await mysql.connect("test");
+      const data = await mysql.query('SELECT * FROM data WHERE id={{id}}')
+      await mysql.disconnect();
+      return JSON.stringify(data)
+    }catch(e){
+        return JSON.stringify(e);
+    }
+}endprog
+#prog_value#
+```
+
+### Mysql Node Admin viewer
+Click on **nodeadmin** button to go nodeAdmin mysql viewer.
+
 ## Limitations
 
 1. Query params should not contain '+' charactor. is it is necessary, it should be changed in the conditions as ' '
