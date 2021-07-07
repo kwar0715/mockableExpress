@@ -98,7 +98,7 @@ pathRouter.post("/:domainId/new", async function(req, res) {
         };
 
         await Database.addPath(domainId, record, pathId);
-        Server().createEndpoint(domain.domainName, record);
+        Server().createEndpoint(domain.domainName, domain.active, record);
         Logger.info(
             `Domain New Path Added {Id: ${domainId},domains:${JSON.stringify(
                 record
@@ -164,8 +164,10 @@ pathRouter.post("/:domainId/:pathId/edit", async function(req, res) {
 
     const domainId = req.params.domainId;
     const pathId = req.params.pathId;
+    const domain = await Database.getDomainFromId(domainId);
     const pathResult = await Database.getPath(domainId, pathId);
     const previousDomainName = pathResult.domainName;
+    const active = domain.active;
     const previousPathUrl = pathResult.paths[0].pathUrl;
     const previousPathMethod = pathResult.paths[0].pathMethod;
     let path = req.body.path;
@@ -195,8 +197,10 @@ pathRouter.post("/:domainId/:pathId/edit", async function(req, res) {
             body: req.body.body
         };
 
+        console.log(record, active)
+
         Server().removeRoute(`${previousDomainName}${previousPathUrl}`, previousPathMethod);
-        Server().createEndpoint(previousDomainName, record);
+        Server().createEndpoint(previousDomainName, active, record);
         await Database.updatePath(domainId, pathId, record);
 
         Logger.info(

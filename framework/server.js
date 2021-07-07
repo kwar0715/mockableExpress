@@ -369,7 +369,13 @@ async function filterCommands(pattern, commandType, str, url) {
   }
 }
 
-Server.prototype.createEndpoint = async function(domainName, pathObject) {
+Server.prototype.createEndpoint = async function(domainName, active, pathObject) {
+
+  if(!active){
+    Logger.info(`Domain : ${domainName} Deactivated`);
+    return;
+  }
+
   const path = `${domainName}${pathObject.pathUrl}`;
   Logger.info(`Path : ${path}`);
   try {
@@ -518,7 +524,7 @@ Server.prototype.applyDomainList = async function() {
   try {
     const results = await Database.getAllPaths();
     results.forEach(result => {
-      this.createEndpoint(result.domainName, {
+      this.createEndpoint(result.domainName, result.active, {
         ...result,
         header: JSON.parse(result.header)
       });

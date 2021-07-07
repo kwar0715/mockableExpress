@@ -82,3 +82,16 @@ function flushAllUserCommands() {
         });
     }
 }
+
+$(function() {
+    $('[type="checkbox"]').change(function(e) {
+        $.ajax({
+            type: 'POST',
+            url: '/admin/domain/active',
+            data: {
+                status: $(this).prop('checked'),
+                id: $(this).attr('domain-id')
+            }
+        });
+    })
+})
