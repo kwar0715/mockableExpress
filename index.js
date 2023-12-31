@@ -43,7 +43,9 @@ systemApp.use(bodyParser.urlencoded({
 
 // create Admin User Default
 try {
-    db.getAllUsers();
+    const data = db.getAllUsers();
+    if(data.length === 0)
+        throw new Error()
 } catch (error) {
     db.setUser("user", "12345678", "", 556677);
 }
